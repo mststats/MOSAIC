@@ -1,0 +1,62 @@
+#ch=1
+if (!exists("ch")) ch="all"
+if (!exists("pops")) pops="all"
+#a=2
+cols=c(1,4)
+HLA=c(28510120,33480577)
+require(boot)
+pathin="HGDP/";source("NAlabels.R")
+whichhaps=1:NUMA
+if (all(pops!="all"))
+  whichhaps=which(hap_NAlabels%in%which(NAfs%in%pops))
+N=length(localanc[[1]][a,,1])
+par(mfrow=c(2,1),cex.lab=2,mar=c(6,5,2,2))
+G=sapply(g.loc,length)
+add.loc=0;if (nchrno>1) for (tch in 2:nchrno) add.loc[tch]=add.loc[tch-1]+g.loc[[tch-1]][G[tch-1]]-g.loc[[tch]][1]
+m=nlp=list()
+for (tch in 1:nchrno) 
+  m[[tch]]=colMeans(localanc[[tch]][a,whichhaps,]) # mean over inds
+mm=mean(unlist(m));Nm=sum(G)
+sm=sd(unlist(m))
+for (tch in 1:nchrno) 
+{
+  #nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) -log(1-pt(abs(m[[tch]][g]-mm)/(sd(localanc[[tch]][a,,g])/sqrt(N)),N-1),10))
+  nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) -log(1-pnorm(abs(m[[tch]][g]-mm)/sm),10))
+  nlp[[tch]][is.infinite(nlp[[tch]])]=20 # if too far out
+  #tmpm=rowMeans(localanc[[tch]][a,,])
+  #nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) {tmp=localanc[[tch]][a,,g]-tmpm;-log(1-pt(mean(tmp)/(sd(tmp)/sqrt(N)),N-1),10)})
+}
+if (ch!="all")
+{
+  plot(g.loc[[ch]],m[[ch]],t='l',ylim=c(min(m[[ch]]),max(m[[ch]])),ylab="mean African ancestry",xlab="position",main=paste("Chromosome ",chrnos[ch]))
+  abline(h=mm)
+  abline(h=mm-2*sm,lty=2)
+  abline(h=mm+2*sm,lty=2)
+  if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
+  plot(g.loc[[ch]],nlp[[ch]],t='l',ylab=bquote(paste(-log[.(10)],"p")),xlab="position",main=paste("Chromosome ",chrnos[ch]))
+  if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
+}
+
+if (ch=="all")
+{
+  l=min(unlist(m));u=max(unlist(m))
+  XLIM=c(g.loc[[1]][1],add.loc[nchrno]+g.loc[[nchrno]][G[nchrno]])
+  par(xaxs="i",xaxt="n")
+  plot(XLIM,c(l,u),t='n',ylab="mean African ancestry",xlab="chromosome")
+  for (tch in 1:nchrno)
+  {
+    lines(g.loc[[tch]]+add.loc[tch], m[[tch]],col=cols[tch%%2+1])
+    mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
+    #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
+  }
+  abline(h=mm)
+  abline(h=mm-2*sm,lty=2)
+  abline(h=mm+2*sm,lty=2)
+  plot(XLIM,range(unlist(nlp)),t='n',ylab=bquote(paste(-log[.(10)],"p")),xlab="chromosome")
+  for (tch in 1:nchrno)
+  {
+    lines(g.loc[[tch]]+add.loc[tch], nlp[[tch]],col=cols[tch%%2+1])
+    mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
+    #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
+  }
+}

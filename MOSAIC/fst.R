@@ -1,0 +1,174 @@
+require(compiler)
+# use Equation 6 of Bhatia et al Genome Research (2013), but sum numerator and denominator over loci
+r_wc_ests=function(p,n) # best comparison b/w Mu and 1/Fst values
+{
+  sumn=sum(n) #-1
+  a=prod(n)/(sumn)
+  bcc=sum(n*p*(1-p))/(sumn-2)#+1)
+  numer=2*a*bcc
+  denom=a*((p[1]-p[2])^2)+(2*a-1)*bcc
+  #denom=a*((p[1]-p[2])^2)+(2*a)*bcc
+  return(c(numer,denom))
+}
+
+r_calc_freqs=function(s,t.L,t.populations,t.y,t.g.map) 
+{
+  n=p=rep(0,t.L)
+  for (l in 1:t.L) 
+  {
+    tmppops=which(t.populations[,t.g.map[s]]==l)
+    n[l]=sum(!is.nan(tmppops))
+    p[l]=mean(t.y[tmppops,s],na.rm=TRUE)
+  }
+  return(list(p,n)) # returns two vectors of length t.L; freq and number
+}
+
+wc_ests=cmpfun(r_wc_ests,list(optimize=3))
+calc_freqs=cmpfun(r_calc_freqs,list(optimize=3))
+which.max.thresh=function(x,thresh) {ans=which.max(x); if (x[ans]<thresh) ans=NaN; ans}
+r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
+{
+  t.L=dim(t.localanc[[1]])[1]
+  G=sapply(t.localanc,function(x) dim(x)[3])
+  NUMA=dim(t.localanc[[1]])[2]
+  allp=alln=list()
+  for (l in 1:t.L)
+    allp[[l]]=alln[[l]]=list()
+  for (ch in 1:length(chrnos))
+  {
+    snps=read.table(paste0(pathin1,"snpfile.",chrnos[ch]))
+    S=nrow(snps)
+    tmp<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
+    tmp<-strsplit(tmp,"")
+    y=matrix(sapply(tmp, as.double), ncol=S)[1:NUMA,]
+    all_rates<-matrix(scan(paste0(pathin1,"rates.",chrnos[ch]),skip=1,quiet=T),ncol=2)
+    locs<-as.integer(snps[,4])
+    tmp=match(locs, all_rates[,1])
+    rates=all_rates[tmp,2] # use ones with hap data; some may be nmissing if in snps file but not in rates file
+    # rates are flat in sections so use rate to the left if missing
+    for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
+    rates<-rates/100 # /100 to move to morgans from centimorgans 
+    g.rates<-seq(rates[1],rates[S],l=G[ch]) # even grid across recombination rates
+    g.map<-sapply(1:S, function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
+    populations=matrix(NaN,NUMA,G[ch])
+    k=0
+    for (ind in 1:(NUMA/2))
+      for (h in 1:2)
+      {
+	k=(ind-1)*2+h
+	populations[k,]=apply(t.localanc[[ch]][,k,],2,which.max.thresh,thresh)
+      }
+    tmp=lapply(1:S,calc_freqs,t.L,populations,y,g.map)
+    freqs_mat=matrix(sapply(tmp,function(x) x[[1]]),t.L) 
+    for (l in 1:t.L) allp[[l]][[ch]]=freqs_mat[l,] # allele freqs for ancs (rows) along chromosome (cols)
+    counts_mat=matrix(sapply(tmp,function(x) x[[2]]),t.L) 
+    for (l in 1:t.L) alln[[l]][[ch]]=counts_mat[l,] # counts for ancs (rows) along chromosome (cols)
+  }
+  return(list("freqs"=allp,"counts"=alln))
+}
+maximal_alleles=cmpfun(r_maximal_alleles,list(optimize=3))
+
+summarise_panels=function(panelname, pathin, chrnos)
+{
+  # now read in panel data and summarise as freqs and counts
+  allp=list();alln=list() 
+  for (ch in 1:length(chrnos))
+  {
+    snps=read.table(paste0(pathin,"snpfile.",chrnos[ch]))
+    S=nrow(snps)
+    tmp<-scan(paste0(pathin,panelname,"genofile.",chrnos[ch]),what="character",quiet=T) 
+    tmp<-strsplit(tmp,"")
+    tmpy=matrix(sapply(tmp, as.double), ncol=S)
+    ny=nrow(tmpy)
+    allp[[ch]]=colMeans(tmpy)
+    alln[[ch]]=ny 
+  }
+  return(list("freqs"=allp,"counts"=alln))
+}
+
+
+r_wc_fst=function(freqs1,counts1,freqs2,counts2) 
+{
+  Hs=Ht=NULL
+  nchrno=length(freqs1)
+  if ((length(counts1[[1]])>1) & (length(counts2[[1]])>1))
+    f_wc=function(s) wc_ests(c(freqs1[[ch]][s],freqs2[[ch]][s]),c(counts1[[ch]][s],counts2[[ch]][s]))
+  if ((length(counts1[[1]])>1) & (length(counts2[[1]])==1))
+    f_wc=function(s) wc_ests(c(freqs1[[ch]][s],freqs2[[ch]][s]),c(counts1[[ch]][s],counts2[[ch]]))
+  if ((length(counts1[[1]])==1) & (length(counts2[[1]])>1))
+    f_wc=function(s) wc_ests(c(freqs1[[ch]][s],freqs2[[ch]][s]),c(counts1[[ch]],counts2[[ch]][s]))
+  if ((length(counts1[[1]])==1) & (length(counts2[[1]])==1))
+    f_wc=function(s) wc_ests(c(freqs1[[ch]][s],freqs2[[ch]][s]),c(counts1[[ch]],counts2[[ch]]))
+  for (ch in 1:nchrno)
+  {
+    S=length(freqs1[[ch]])
+    tmp=sapply(1:S,f_wc)
+    ch_Hs=tmp[1,]
+    ch_Ht=tmp[2,]
+    Hs=c(Hs,ch_Hs)
+    Ht=c(Ht,ch_Ht)
+  }
+  return((1-sum(Hs,na.rm=T)/sum(Ht,na.rm=T)))
+}
+
+v_wc_fst=function(freqs1,counts1,freqs2,counts2) 
+{
+  Hs=Ht=NULL
+  nchrno=length(freqs1)
+  for (ch in 1:nchrno)
+  {
+    sumn=counts1[[ch]]+counts2[[ch]]
+    a=(counts1[[ch]]*counts2[[ch]])/(sumn)
+    bcc=(counts1[[ch]]*freqs1[[ch]]*(1-freqs1[[ch]])+counts2[[ch]]*freqs2[[ch]]*(1-freqs2[[ch]]))/(sumn-2) 
+    numer=2*a*bcc
+    denom=a*((freqs1[[ch]]-freqs2[[ch]])^2)+(2*a-1)*bcc
+    Hs=c(Hs,numer)
+    Ht=c(Ht,denom)
+  }
+  return((1-sum(Hs,na.rm=T)/sum(Ht,na.rm=T)))
+}
+
+#wc_fst=cmpfun(r_wc_fst,list(optimize=3))
+wc_fst=cmpfun(v_wc_fst,list(optimize=3)) # gives the same as the above
+
+Fst_combos=function(target, L, NN, panels) {
+  load(file=paste0("FREQS/", target, "_", L, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running summarise_all.R
+  anc_fst=rep(NaN,choose(L,2))
+  Ls=utils::combn(L,2)
+  for (l in 1:ncol(Ls))
+  {
+    l1=Ls[1,l];l2=Ls[2,l]
+    anc_fst[l]=wc_fst(ancestral_freqs$freqs[[l1]],ancestral_freqs$counts[[l1]],ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]]) 
+    names(anc_fst)[l]=paste0("anc",l1,"x","anc",l2)
+  }
+  tmp_fst=matrix(NaN,length(panels),L)
+  for (l1 in 1:length(panels))
+  {
+    load(paste0("FREQS/", panels[l1],"_freqs.rdata"))
+    for (l2 in 1:L) 
+      tmp_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
+  }
+  rownames(tmp_fst)=panels
+  return(list("ancs"=anc_fst,"panels"=tmp_fst))
+}
+
+report_closest_Fst_panels=function(target,L,NN,numpops) {
+  tmp.tab=matrix(NaN,numpops,L*2)
+  for (a in 1:L) 
+  {
+    tmp=sort(all_Fst[[which(names(all_Fst)==paste0(target,"_",L,"way_",NN))]]$panels[,a])[1:numpops]
+    tmp.tab[,c(2*a-1,a*2)]=cbind(names(tmp),signif(tmp,3))
+  }
+  tmp.tab
+}
+
+Q_Fst=function(x) 
+{ # quotient of Fst i.e. (p-q)^2/(0.5*(p+q))
+  laa=length(x$ancs)
+  d_fst=rep(NaN,laa)
+  combn_aa=utils::combn(ncol(x$panels),2)
+  for (aa in 1:laa) {a1=combn_aa[1,aa]
+  a2=combn_aa[2,aa]
+  d_fst[aa]=mean(((x$panels[,a1]-x$panels[,a2])^2)/(0.5*(x$panels[,a1]+x$panels[,a2])))}
+  return(d_fst)
+}
