@@ -35,7 +35,7 @@ for (remfile in remfiles)
 }
 targets=NULL
 source("plot_funcs.R")
-tmp=c("target", "min alpha", "Fst", "Rst", "r2", "anc mean","anc SE","anc boot mean", "anc boot sd", "noanc mean","noanc SE","noanc boot mean", "noanc boot sd")
+tmp=c("target", "min alpha", "Fst", "Rst", "r2", "anc mean","anc SE","anc boot mean", "anc boot sd")#, "noanc mean","noanc SE","noanc boot mean", "noanc boot sd")
 write(tmp,file="mosaic_dates.csv",sep=",",ncol=length(tmp))
 for (i in 1:length(filenames))
 {
@@ -55,18 +55,18 @@ for (i in 1:length(filenames))
   ##########################
   targets[i]=target
   load(paste0(pathin,"localanc_",filename))
-  load(paste0(pathin,"noanc_unphased_localanc_",filename))
   new_acoancs=create_coancs(localanc,dr)
-  new_coancs=create_coancs(noanc_unphased_localanc,dr)
+  #load(paste0(pathin,"noanc_unphased_localanc_",filename))
+  #new_coancs=create_coancs(noanc_unphased_localanc,dr)
   tmp_fst=all_Fst[[which(names(all_Fst)==paste0(target,"_",L,"way_",NN))]]
   tmpdates=c(target, min(Reduce("+",alpha)/NUMI),tmp_fst$anc,stats$Rst[match(target,stats[,1])],stats$r2[match(target,stats[,1])])
-  kgens=rep(NaN,NUMI);for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(new_coancs,dr,k=k,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  kgens=rep(NaN,NUMI);#for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(new_coancs,dr,k=k,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
   akgens=rep(NaN,NUMI);for (k in 1:NUMI) if (min(alpha[[k]])>thresh) akgens[k]=mean(plot_coanccurves(new_acoancs,dr,k=k,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
   nsamps=100
   G=sapply(localanc,function(x) dim(x)[3])
   aboot.gens=boot.gens=rep(NaN,nsamps)
   aboot.localanc=boot.localanc=list()
-  schrno=21 # FLAG use 1:schrno; set to 3=21 to avoid bug in data
+  schrno=21 # FLAG use 1:schrno; set to 3=21 to avoid Myanmar bug in data
   for (t.ch in 1:schrno) 
   {
     aboot.localanc[[t.ch]]=boot.localanc[[t.ch]]=array(NaN,c(L,NUMA,G[t.ch]))
@@ -85,13 +85,13 @@ for (i in 1:length(filenames))
       for (l in 1:L) for (hap in 1:NUMA)
       {
         aboot.localanc[[t.ch]][l,hap,]=localanc[[t.ch]][l,aboot.haps[hap,t.ch],]
-        boot.localanc[[t.ch]][l,hap,]=noanc_unphased_localanc[[t.ch]][l,boot.haps[hap,t.ch],]
+        #boot.localanc[[t.ch]][l,hap,]=noanc_unphased_localanc[[t.ch]][l,boot.haps[hap,t.ch],]
       }
     }
     aboot.coancs=create_coancs(aboot.localanc,dr,"DIP",max.cM=50)#*mean(unlist(lambda))/100);
-    boot.coancs=create_coancs(boot.localanc,dr,"DIP",max.cM=50)#*mean(unlist(lambda))/100);
+    #boot.coancs=create_coancs(boot.localanc,dr,"DIP",max.cM=50)#*mean(unlist(lambda))/100);
     aboot.gens[r]=mean(plot_coanccurves(aboot.coancs,dr,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
-    boot.gens[r]=mean(plot_coanccurves(boot.coancs,dr,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+    #boot.gens[r]=mean(plot_coanccurves(boot.coancs,dr,PLOT=F,samelambda=samelambda,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
   }  
   close(pb)
   tmpdates=c(tmpdates,mean(akgens,na.rm=T),sd(akgens,na.rm=T)/sqrt(sum(!is.na(akgens))),mean(aboot.gens,na.rm=T),sd(aboot.gens,na.rm=T))

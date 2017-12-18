@@ -5,7 +5,7 @@ if (!exists("pops")) pops="all"
 cols=c(1,4)
 HLA=c(28510120,33480577)
 require(boot)
-pathin="HGDP/";source("NAlabels.R")
+#pathin="HGDP/";source("NAlabels.R")
 whichhaps=1:NUMA
 if (all(pops!="all"))
   whichhaps=which(hap_NAlabels%in%which(NAfs%in%pops))

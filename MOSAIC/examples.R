@@ -64,8 +64,8 @@ if (target=="simulated")
 	#            As=c("Hezhen", "HanNchina", "Han", "Tu", "Oroqen", "Daur", "Xibo", "Tujia", "Yakut"))
 	# 
 	#mixers=c("Sindhi","Mongola")
-	pops<-list(Eu=c("Spanish","Norwegian","Polish","English","Welsh","Ireland","Scottish"),
-		   Af=c("Mandenka","Hadza","BantuKenya","BantuSouthAfrica","Sandawe","BiakaPygmy","MbutiPygmy"))
+	pops<-list(Eu=c("Spanish","Moroccan","Tunisian"),
+		   Af=c("Mandenka","BantuKenya","Ethiopian"))
 	mixers=c("French","Yoruba")
       }
       if (L==3)

@@ -18,7 +18,7 @@ for (i in 1:length(tmp))
 #filenames=c(filenames[tmp2])
 filenames=c(filenames[-tmp2])
 
-for (filename in filenames[8:length(filenames)])
+for (filename in filenames)#[125:length(filenames)])
 {
   mask=NULL
   cat("Looking at ", filename, "\n")

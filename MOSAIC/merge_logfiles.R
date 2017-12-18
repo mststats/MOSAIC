@@ -16,7 +16,7 @@ for (filename in filenames)
   chrnos=as.integer(c(strsplit(strsplit(filename,"-")[[1]][2],"_")[[1]][2],strsplit(strsplit(filename,"-")[[1]][3],"_")[[1]][1]))
   nchrno=diff(chrnos)+1
   NN=as.integer(tail(strsplit(strsplit(filename,paste0("_",GpcM))[[1]][1],"_")[[1]],1))
-  tmp=paste0(target,"_",L,"way_",firstind,"-",NUMI,"_",paste(chrnos,collapse="-"),"_",NN)
+  tmp=paste0(target,"_",L,"way_",firstind,"-",firstind+NUMI-1,"_",paste(chrnos,collapse="-"),"_",NN)
   #filenames=filenames[-grep(tmp,filenames)] # remove the matching ones from the list
   cat("Looking at ", tmp, "\n")
   mfilenames=sort(dir(pattern=glob2rx(paste0(tmp,"*out")),path=pathin))

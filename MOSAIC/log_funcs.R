@@ -19,11 +19,13 @@ extract_paras=function(EMlog, iter, panelnames=NULL)
 }
 # EMlog<-extract_log(logfile)
 # e.g. paras=extract_paras(EMlog, nrow(EMlog))
-plot_loglike=function(EMlog,cexa=2.5,...)
+plot_loglike=function(EMlog,cexa=2.5,
+		      colvec=c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#F0E442", "#0072B2", "#999999"),...)
 {
+
   par(cex.lab=cexa, mar=c(5,5,0,0))
   plot(cumsum(EMlog$time),EMlog$loglikelihood,col=8,t='l',ylab="log-likelihood", xlab="time in seconds",lwd=cexa,...)
-  points(cumsum(EMlog$time),EMlog$loglikelihood,col=EMlog$mode,t='p',pch=20,cex=cexa)
-  legend("bottomright",levels(EMlog$mode),col=1:length(levels(EMlog$mode)),pch=20,cex=cexa)
+  points(cumsum(EMlog$time),EMlog$loglikelihood,col=colvec[EMlog$mode],t='p',pch=20,cex=cexa)
+  legend("bottomright",levels(EMlog$mode),col=colvec[1:length(levels(EMlog$mode))],pch=20,cex=cexa)
 }
 

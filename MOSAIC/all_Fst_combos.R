@@ -41,7 +41,7 @@ for (i in 1:length(filenames))
   prop.don=as.numeric(strsplit(filename,"_")[[1]][7])
   max.donors=as.integer(strsplit(strsplit(filename,"_")[[1]][8],"R")[[1]][1])
   ##########################
-  all_Fst[[i]]=Fst_combos(target,L,NN, rownames(Mu))
+  all_Fst[[i]]=Fst_combos(target,L,NN,rownames(Mu))
   names(all_Fst)[i]=paste0(target,"_",L,"way_",NN)
 }
 save(all_Fst, file=paste0("all_Fst_", L, ".rdata"))

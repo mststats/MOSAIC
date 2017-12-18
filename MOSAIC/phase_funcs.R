@@ -85,9 +85,10 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
   #if (PLOT) cat("\n")
   if (PLOT)
   {
-    plot(g.loc[[t.ch]][c(1,G[[t.ch]])],c(1,lim-1),xlab="locus",ylab="pass",t='n',axes=F)#,main="flipped positions")
-    axis(1)
-    text(x=g.loc[[t.ch]][1],y=1:(lim-1),1:(lim-1))
+    plot(g.loc[[t.ch]][c(1,G[[t.ch]])]*1e-6,c(1,lim-1),xlab="phase flip sites (Mb)",ylab="pass",t='n',axes=F)#,main="flipped positions")
+    mp<-axTicks(1,round(axp=c(min(g.loc[[t.ch]])*1e-6,max(g.loc[[t.ch]])*1e-6,5)))
+    axis(1,at=mp,labels=signif(mp,3))
+    text(x=g.loc[[t.ch]][1]*1e-6,y=1:(lim-1),1:(lim-1))
   }
   if (max(ind.c.v)>t.eps.lower)
     while (nflips>0 & iters<lim) {
@@ -114,12 +115,8 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
       cand<-sort(cand,method="quick") # required?
       if (PLOT) 
       {
-        #plot(g.loc[[t.ch]], ind.c.v,t='l', xlab="locus", ylab="change in log-likelihood", main=paste("Chromosome",chrnos[t.ch],": log-likelihood=", round(ind.c.ll)))
-        #plot(g.loc[[t.ch]], ind.c.v,t='l', xlab="locus", ylab="change in log-likelihood", main=paste("log-likelihood=", round(ind.c.ll)))
-	#abline(h=0,col=3);
-	#points(g.loc[[t.ch]][cand], ind.c.v[cand], col=2) 
-	points(g.loc[[t.ch]][cand], rep(iters,length(cand)),pch=20) 
-	#if (RPE>0) if(length(t.phase.error.locs[[t.ind]][[t.ch]])>0) mtext("|",side=3,at=g.loc[[t.ch]][t.phase.error.locs[[t.ind]][[t.ch]]],cex=0.5,col=8,line=-0.5)
+	points(g.loc[[t.ch]][cand]*1e-6, rep(iters,length(cand)),pch=20) 
+	#if (RPE>0) if(length(t.phase.error.locs[[t.ind]][[t.ch]])>0) mtext("|",side=3,at=g.loc[[t.ch]][t.phase.error.locs[[t.ind]][[t.ch]]]*1e-6,cex=0.5,col=8,line=-0.5)
       }
       #if (PLOT) for (i in 1:length(cand)) cat(cand[i], ":", ind.c.v[cand[i]], "\n") 
       nflips<-length(cand)
@@ -225,8 +222,8 @@ r_phase_mcmc<-function(t.ch, t.ind, M, max.donors, t.initProb, t.flips, verbose,
     g<-sample(2:G[t.ch],1,prob=c.probs[-1]) 
     if (PLOT) 
     {
-      plot(g.loc[[t.ch]], ind.c.v,t='l')
-      points(g.loc[[t.ch]][g], ind.c.v[g], col=2, lwd=2)
+      plot(g.loc[[t.ch]]*1e-6, ind.c.v,t='l')
+      points(g.loc[[t.ch]][g]*1e-6, ind.c.v[g], col=2, lwd=2)
     }
     # given j, choose to propose to flip or not flip with probability c.probs[j]
     p.flip<-rbinom(1,p=c.probs[g],size=1) # this will be low. flip==1 => flip it

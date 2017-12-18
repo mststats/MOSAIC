@@ -41,24 +41,12 @@ for (ch in 1:nchrno)
   }
   hmixloc[[ch]]=hloc
   #gs[[ch]]=1:G[ch] # all gridpoints
-  gs[[ch]]=which(apply(apply((g.true_anc[[ch]]==0 | g.true_anc[[ch]]==1), 2:3, all),2,all)) # only look where g.true defined as 0 or 1
-  #snps<-read.table(paste0(datasource,"snpfile.",chrnos[ch])) 
-  #locs<-as.integer(snps[,4])
-  #S[ch]<-length(locs) 
-  #all_rates<-matrix(scan(paste0(datasource,"rates.",chrnos[ch]),skip=1,quiet=T),ncol=2)
-  #locs<-as.integer(snps[,4])
-  #tmp=match(locs, all_rates[,1])
-  #rates=all_rates[tmp,2] # use ones with hap data; some may be nmissing if in snps file but not in rates file
-  ## rates are flat in sections so use rate to the left if missing
-  #for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
-  #rates<-rates/100 # /100 to move to morgans from centimorgans 
-  #g.rates<-seq(rates[1],rates[S[ch]],l=G[ch]) # even grid across recombination rates
-  #g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
-  #gs[[ch]]=g.map # only look where there are SNPs assigned
+  #gs[[ch]]=which(apply(apply((g.true_anc[[ch]]==0 | g.true_anc[[ch]]==1), 2:3, all),2,all)) # only look where g.true defined as 0 or 1
+  gs[[ch]]=which(gobs[[ch]][[1]]>0) # only look where there are SNPs assigned; assume all have obs at same gridpoints
   # only look where there are SNPs assigned and truth is 0 or 1
-  #tmp=match(which(apply(apply((g.true_anc[[ch]]==0 | g.true_anc[[ch]]==1), 2:3, all),2,all)),g.map)
+  #tmp=match(which(apply(apply((g.true_anc[[ch]]==0 | g.true_anc[[ch]]==1), 2:3, all),2,all)),gs[[ch]])
   #tmp=tmp[!is.na(tmp)]
-  #gs[[ch]]=g.map[tmp]
+  #gs[[ch]]=gs[[ch]][tmp]
   gs[[ch]]=unique(gs[[ch]])
 }
 # subset to look at gridpoints where we know truth only

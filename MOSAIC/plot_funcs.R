@@ -1,4 +1,4 @@
-if (!exists("colvec")) colvec=2:10
+if (!exists("colvec")) colvec<-c("#E69F00", "#56B4E9", "#009E73", "#D55E00", "#CC79A7", "#F0E442", "#0072B2", "#999999")
 happlot<-function(ch,k,x,probs,ylab,mlab=paste("hap", k, "Chromosome",chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(2, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)

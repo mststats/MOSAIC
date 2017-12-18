@@ -13,7 +13,7 @@ chrnos=1:22 # which chromosomes to run on
 #tmp=scan("regional.txt",what="character",quiet=T,skip=as.integer(target)-1,nlines=1);target=tmp[2];mask=tmp[-(1:2)] # read regional.txt for inputs; target is which line to run
 #chrnos=1:22;firstind=1;NUMA=440;nl=200;L=2;datasource="HGDP/";target="NorthAfrican";ANC=T # use this line for testing
 #chrnos=10:15;prop.missing=0.0;firstind=1;target="simulated";NUMA=8;L=3;datasource="HGDP/";RPE=2.0;ANC=T;#ANC=c("Ireland","Yoruba"); # use this line for testing
-chrnos=10:20;prop.missing=0.0;firstind=1;target="simulated";NUMA=8;L=2;datasource="HGDP/";RPE=0.0;ANC=T;
+chrnos=10:10;prop.missing=0.0;firstind=1;target="simulated";NUMA=2;L=2;datasource="HGDP/";RPE=0.0;ANC=T;
 #chrnos=10:22;firstind=1;NUMA=16;nl=200;L=5;datasource="HGDP/";target="SanKhomani";ANC=NULL # use this line for testing
 #chrnos=10:15;firstind=1;NUMA=8;nl=200;L=2;datasource="HGDP/";target="Hazara";ANC=T # use this line for testing
 #chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="spanish/";target="SpainPopn_2";mask=c("Spain","Portugal") # use this line for testing
@@ -168,7 +168,6 @@ if (EM)
       source("all_donates.R") # decide on donor set using updated parameters
     if (PHASE) # & reps>1) # phasing early not the cause of low lambda. 
     {
-      #stop(1)
       source("phase_hunt.R") 
       if (M>0) 
 	source("phase_mcmc.R") # now do MCMC re-phasing w/o output to console (ugly due to txtProgressBar)

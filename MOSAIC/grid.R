@@ -9,6 +9,7 @@ g.rates<-seq(rates[1],rates[S[ch]],l=G[ch]) # even grid across recombination rat
 # create a map of observed loci to gridded loci; grid is even on rates not distances
 if (verbose) cat("Finding new positions on chr", chrnos[ch], "...\n")
 g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
+# FLAG the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
 rm(g.rates)
 if (verbose) cat("Finding number at each location on chr", chrnos[ch], "...\n")
 #g.loc gives physical locus of each gridpoint; average if more than 1 or more obs; else average of nearest two obs
@@ -46,11 +47,20 @@ if (length(emptyg)>0)
     g=emptyg[eg]
     a<-max(which(g.loc[[ch]]!=0 & (1:G[ch])<g))
     b<-min(which(g.loc[[ch]]!=0 & (1:G[ch])>g))
+    wa=1/(g-a)
+    wb=1/(b-g)
+    ws=wa+wb
+    wa=wa/ws
+    wb=wb/ws
+    #a=b # use to the right as per admix.R 
+    #b=a # use to the right as per admix.R 
     if (target=="simulated") 
       for (i in 1:L)
 	for (k in 1:NUMA)
-	  g.true_anc[[ch]][i,k,g]<-0.5*(g.true_anc[[ch]][i,k,a]+g.true_anc[[ch]][i,k,b])
-    g.loc[[ch]][g]<-0.5*(g.loc[[ch]][a]+g.loc[[ch]][b]) # average of physical locus of the two nearest gridpoint w/ data
+	  g.true_anc[[ch]][i,k,g]<-wa*g.true_anc[[ch]][i,k,a]+wb*g.true_anc[[ch]][i,k,b] # linear interpolation; sample jump would be more realistic, but no data to see locus
+	  #g.true_anc[[ch]][i,k,g]<-g.true_anc[[ch]][i,k,a] # use ancestry of previous locus i.e. assume no switch took place
+	  #g.true_anc[[ch]][i,k,g]<-g.true_anc[[ch]][i,k,b] # use ancestry of next locus i.e. assume switch took place early
+    g.loc[[ch]][g]<-wa*g.loc[[ch]][a]+wb*g.loc[[ch]][b] # weighted average of physical locus of the two nearest gridpoint w/ data
   }
 }
 rm(emptyg)

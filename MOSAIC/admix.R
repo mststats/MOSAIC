@@ -31,6 +31,7 @@ for (k in (NUMP+(1:NUMA))) # these are the admixed target haplotypes
   {
     tmpia<-sample(1:L,1,prob=sim.alpha[[ind]]) # sample an ancestry 
     chunklengthM=rexp(1,sim.lambda[[ind]]) # in Morgans as per HapMix
+    chunklengthM=round(chunklengthM/dr)*dr # to the nearest gridpoint
     RHS=which.min(abs(rates[tmps[length(tmps)]+1]+chunklengthM-rates)) # in units of the rates map; match to the genetic loci we have
     # make sure all SNPs later assigned to this gridpoint are switched together by taking rightmost SNP on this gridpoint
     RHS=max(which(g.map==g.map[RHS]))

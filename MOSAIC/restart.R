@@ -102,6 +102,8 @@ source("cleanup.R")
 Mu=a.Mu;rho=a.rho;theta=a.theta;Q=a.Q;alpha=a.alpha;lambda=a.lambda
 o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.Q=a.o.Q;o.alpha=a.o.alpha;o.lambda=a.o.lambda
 noanc_unphased_localanc=get_ancunaware_localanc() # works off noanc_gfbs
+save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
+     noanc_unphased_localanc, flips, g.loc)
 if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n"); coancs=create_coancs(noanc_unphased_localanc,dr,"DIP")
 
 if (verbose) cat("saving final results to file\n")
