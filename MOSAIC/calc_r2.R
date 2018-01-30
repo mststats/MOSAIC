@@ -1,3 +1,8 @@
+# checked with:
+#tmp=list(); for (i in 1:1e2){tmp[[i]]=list();for (ch in 1:nchrno) 
+#{tmp[[i]][[ch]]=array(NaN,dim(localanc[[ch]]));for (h in 1:NUMA) {tmp2=rbinom(G[ch],size=1,prob=localanc[[ch]][a,h,]);tmp[[i]][[ch]][1,h,]=tmp2;tmp[[i]][[ch]][2,h,]=1-tmp2};}
+#};dip_expected_fr2(localanc);mean(sapply(tmp, function(x) dip_fr2(localanc,x)))
+dip_expected_fr2_chr_ind<-function(x,ch,ind)
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
   tmpG=dim(x[[ch]])[3]
@@ -9,13 +14,13 @@ dip_expected_fr2_chr_ind<-function(x,ch,ind)
     p1<-x[[ch]][a,hap[1],]*(1-x[[ch]][a,hap[2],])+(1-x[[ch]][a,hap[1],])*x[[ch]][a,hap[2],] # prob het anc a
     p2<-x[[ch]][a,hap[1],]*x[[ch]][a,hap[2],] # prob hom of anc a
     px=p1+2*p2 # expected number of a alleles out of 2
-    varp=sum((px)^2)/(tmpG)-sum(px/tmpG)^2
+    varp=sum((px)^2)-sum(px)^2/tmpG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     #varx=(sum(p1*(1-p1)+4*p0*p2)/(tmpG)+varp)
     #ans=varp/varx # not good when tested 
     #acov=sum(px^2)/(tmpG-1)-sum(px)^2/tmpG/(tmpG-1)
     #avarx=sum(p1+4*p2)/(tmpG-1)-sum(px)^2/tmpG/(tmpG-1) # unstable
-    avarx = (sum(p1*(1-p1)+4*p0*p2)/(tmpG)+varp)
+    avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     #acor=sqrt(varp/avarx) # 
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
@@ -42,9 +47,9 @@ dip_expected_fr2_ind<-function(x,ind)
     p1<-vecx[1,]*(1-vecx[2,])+(1-vecx[1,])*vecx[2,] # prob het anc a
     p2<-vecx[1,]*vecx[2,] # prob hom of anc a
     px=p1+2*p2 # expected number of a alleles out of 2
-    varp=sum((px)^2)/(sumG)-sum(px/sumG)^2
+    varp=sum((px)^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx = (sum(p1*(1-p1)+4*p0*p2)/(sumG)+varp)
+    avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
@@ -76,9 +81,9 @@ dip_expected_fr2<-function(x)
     p1<-vecx[1,]*(1-vecx[2,])+(1-vecx[1,])*vecx[2,] # prob het anc a
     p2<-vecx[1,]*vecx[2,] # prob hom of anc a
     px=p1+2*p2 # expected number of a alleles out of 2
-    varp=sum((px)^2)/(sumG)-sum(px/sumG)^2
+    varp=sum((px)^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx = (sum(p1*(1-p1)+4*p0*p2)/(sumG)+varp)
+    avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
@@ -91,14 +96,15 @@ hap_expected_fr2_chr_k<-function(x,ch,k)
   for (a in 1:L) # average over choices of a and hap(ind)
   {
     px=x[[ch]][a,k,]
-    varp=sum((px)^2)/(tmpG)-sum(px/tmpG)^2
-    varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx=(sum(px*(1-px))/(tmpG)+varp)
-    #acor=sqrt(varp/avarx) 
+    varp=sum((px)^2)-sum(px)^2/tmpG
+    varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all ancestry a here
+    avarx=(sum(px*(1-px))+varp)
+    #avarx=sum(px)/tmpG-sum(px^2)/(tmpG)+sum((px)^2)/(tmpG)-sum(px/tmpG)^2 # equivalent to below with extra 1/G^2 terms 
+    #avarx=sum(px)/(tmpG)-sum(px/tmpG)^2 # SM Jan2018
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2
+    ans=ans+ar2/L
   }
-  return(ans/L)
+  return(ans)
 }
 hap_expected_fr2_hap<-function(x,k)
 {
@@ -114,13 +120,10 @@ hap_expected_fr2_hap<-function(x,k)
       vecx[(1+OFFSET):(vecG[ch]+OFFSET)]=x[[ch]][a,k,] # all first haps
       OFFSET=OFFSET+vecG[ch]
     }
-    p0<-(1-vecx)*(1-vecx) # prob hom of not anc a
-    p1<-vecx*(1-vecx)+(1-vecx)*vecx # prob het anc a
-    p2<-vecx*vecx # prob hom of anc a
-    px=p1+2*p2 # expected number of a alleles out of 2
-    varp=sum((px)^2)/(sumG)-sum(px/sumG)^2
+    px=vecx
+    varp=sum((px)^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx = (sum(p1*(1-p1)+4*p0*p2)/(sumG)+varp)
+    avarx=(sum(px*(1-px))+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
@@ -142,13 +145,13 @@ hap_expected_fr2<-function(x)
       OFFSET=OFFSET+vecG[ch]*NUMA
     }
     px=vecx
-    varp=sum((px)^2)/(sumG)-sum(px/sumG)^2
+    varp=sum((px)^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx=(sum(px*(1-px))/(sumG)+varp)
+    avarx=(sum(px*(1-px))+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2
+    ans=ans+ar2/L
   }
-  return(ans/L)
+  return(ans)
 }
 
 dip_chr<-function(x) {ans=x[,seq(1,dim(x)[2],2),]+x[,seq(2,dim(x)[2],2),];dim(ans)=c(dim(x)[1],dim(x)[2]/2,dim(x)[3]);ans}

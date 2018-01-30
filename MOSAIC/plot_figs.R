@@ -10,11 +10,10 @@ source("regions.R");ord.pops=rev(unlist(regional.pops));
 #for (MODE in c("copy", "joint", "scaled"))
 #{
   png(filename=paste0(pathout,targetdetails,"_",MODE,"_Mu.png"), width=1200, height=1920)
-  tmp=match(ord.pops,rownames(Mu));tmp=tmp[!is.na(tmp)];Mu=Mu[tmp,]
+  tmp=match(ord.pops,rownames(Mu));tmp=tmp[!is.na(tmp)];Mu=Mu[tmp,];NL=c(NL[tmp],NUMA) # note the re-ordering of NL also
   ord.Mu<-plot_Mu(Mu,alpha,MODE=MODE,cexa=2,shiftl=11,cutoff=0,ord=F)
   dev.off()
   png(filename=paste0(pathout,targetdetails,"_",MODE,"_Mu_beside.png"), width=800*L, height=1920)
-  tmp=match(ord.pops,rownames(Mu));tmp=tmp[!is.na(tmp)];Mu=Mu[tmp,]
   ord.Mu<-plot_Mu(Mu,alpha,MODE=MODE,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
   dev.off()
 #}
