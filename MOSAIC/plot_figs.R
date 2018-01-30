@@ -51,7 +51,7 @@ if (L==3) {d1=2;d2=3} # dimensions of plots
 if (L==4) {d1=2;d2=5} # dimensions of plots
 if (L==5) {d1=3;d2=5} # dimensions of plots
 if (L==6) {d1=3;d2=7} # dimensions of plots
-acoancs=create_coancs(localanc,dr,"DIP",max.cM=50) # FLAG
+#acoancs=create_coancs(localanc,dr,"DIP",max.cM=50) # FLAG
 png(filename=paste0(pathout,targetdetails,"_acoanc.png"), width=320*d2,height=320*d1)
 this_acoplots=plot_coanccurves(acoancs,dr,lwd=4,cexa=2,verbose=F,axisall=F,samelambda=samelambda,asym=asym,min.cM=min.cM)
 dev.off()

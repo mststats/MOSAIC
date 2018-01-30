@@ -172,8 +172,8 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 #require(compiler);create_coancs<-cmpfun(r_create_coancs,list(optimize=optlevel))
 create_coancs<-r_create_coancs
 
-plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,min.cM=1,plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,
-			   asym=F,samelambda=F,optmethod="BFGS")
+plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,
+			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samelambda=F,optmethod="BFGS")
 {
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
@@ -192,14 +192,18 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,m
   kweights=keep=list()
   if (is.null(popnames)) popnames<-1:lpop
   params=array(0,c(lpop,lpop,3))
-  if (PLOT) 
+  if (PLOT)
   {
-    if (lpop==2) {d1=1;d2=3} # dimensions of plots
-    if (lpop==3) {d1=2;d2=3} # dimensions of plots
-    if (lpop==4) {d1=2;d2=5} # dimensions of plots
-    if (lpop==5) {d1=3;d2=5} # dimensions of plots
-    if (lpop==6) {d1=3;d2=7} # dimensions of plots
-    par(mfrow=c(d1,d2), cex.axis=cexa, cex.lab=cexa, cex.main=cexa, mar=c(4,4,2,1)+0.2)
+    if (is.null(dd)) 
+    {
+      dd=c(NaN,NaN)
+      if (lpop==2) {dd[1]=1;dd[2]=3} # dimensions of plots
+      if (lpop==3) {dd[1]=2;dd[2]=3} # dimensions of plots
+      if (lpop==4) {dd[1]=2;dd[2]=5} # dimensions of plots
+      if (lpop==5) {dd[1]=3;dd[2]=5} # dimensions of plots
+      if (lpop==6) {dd[1]=3;dd[2]=7} # dimensions of plots
+    }
+    par(mfrow=c(dd[1],dd[2]), cex.axis=cexa, cex.lab=cexa, cex.main=cexa, mar=c(4,4,2,1)+0.2)
   }
   for (i in 1:lpop) for (j in 1:lpop)
   {
@@ -345,7 +349,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,m
 	       max(relcurve[i,j,],coancs$relprobs[i,j,keep[[(i-1)*lpop+j]],]/kweights[[(i-1)*lpop+j]][keep[[(i-1)*lpop+j]]]))
       if (YLIM[1]>1) YLIM[1]=1 # always include 1
       if (YLIM[2]<1) YLIM[2]=1 # always include 1
-      plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab="relative prob.",main=paste0(popnames[i],"->",popnames[j],": ","@",round(x[i,j,][3],2)))
+      plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab="relative prob.",main=paste0(targetname, popnames[i],"->",popnames[j],": ","@",round(x[i,j,][3],2)))
       if (is.null(k) & plotall) # if plotting group consensus, also show hap / inds in grey
       {
 	# don't forget to undo the weighting
@@ -360,4 +364,4 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,m
   }
   return(list(params=params, relcurve=relcurve))
 }
-#source("coancestry.R");acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2)
+#source("coancestry.R");acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2,targetname=paste0(target,": "))
