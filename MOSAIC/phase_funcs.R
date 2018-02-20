@@ -97,7 +97,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
       BG=as.integer(bg*GpcM) # bg is number of centiMorgans to each side of a proposed phase flip around which don't try more flips
       if (max(ind.c.v)<t.eps.lower) 
       {
-	if (PLOT) cat("Chr ", chrnos[t.ch], "ind", t.ind, "none left to flip ")
+	if (PLOT) cat("Chromosome ", chrnos[t.ch], "individual", t.ind, "none left to flip ")
 	break;
       }
       old.ll<-ind.c.ll
@@ -136,7 +136,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
 	cppbackward(k,NUMA,max.donors,THIN,NUMP,L,0,G[t.ch],G[t.ch],t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,mutmat,maxmiss,label,t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
       }
       ind.c.ll<- -sum(sum(log(t.scalefactor[[1]])))-sum(sum(log(t.scalefactor[[2]])))
-      #if (PLOT) cat("Chr ", chrnos[t.ch], "ind", t.ind, " old:", old.ll, "with ", nflips, "flips:", ind.c.ll)  
+      #if (PLOT) cat("Chromosome ", chrnos[t.ch], "individual", t.ind, " old:", old.ll, "with ", nflips, "flips:", ind.c.ll)  
       if (ind.c.ll==old.ll) # just break
       {
 	#if (PLOT) cat("\n")

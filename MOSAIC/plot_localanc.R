@@ -44,8 +44,8 @@ if (NCHR==1)
 	png(file=paste0("PLOTS/Localanc/", target, "_HAP_", NN, "_", k,".",chrnos[ch],".png"),width=1920,height=960)
       expected_r2[ch,k]=hap_expected_fr2_chr_k(localanc, ch, k)
       cat("E[r2]: ", expected_r2[ch,k], "  ", sep="")
-      if (target!="simulated") par(mfrow=c(1,1),mar=c(2, 5.2, 1, 0)+0.1)
-      if (target=="simulated") par(mfrow=c(2,1),mar=c(2, 5.2, 1, 0)+0.1)
+      if (target!="simulated") par(mfrow=c(1,1),mar=c(4, 5.2, 1, 0)+0.1)
+      if (target=="simulated") par(mfrow=c(2,1),mar=c(4, 5.2, 1, 0)+0.1)
       if (target=="simulated")
       {
 	# how many maximal ancestry predictions are the same as the truth
@@ -57,20 +57,20 @@ if (NCHR==1)
 	cat("correct: ", perc[ch,k], "%   ", sep="")
 	cat("MSE:", mse[ch,k], "  ", sep="")
 	cat("\n")
-        par(mar=c(2, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+        par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
         if (MODE=="LINE")
           {
-	    plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("hap", k, "Chromosome",chrnos[ch]))
+	    plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
             for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	    axis(2)
 	  }
         if (MODE=="BAR" | MODE=="GRAD")
 	  happlot(ch,k,g.loc[[ch]]*1e-6,g.true_anc[[ch]][,k,],"truth",cexa=cexa)
       }
-      par(mar=c(2, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+      par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
       if (MODE=="LINE")
         {
-	  plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("hap", k, "Chromosome",chrnos[ch]))
+	  plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
           for (i in 1:L) lines(g.loc[[ch]]*1e-6, localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	  axis(2)
 	}
@@ -105,8 +105,8 @@ if (NCHR==2)
 	png(file=paste0("PLOTS/Localanc/", target, "_DIP_", NN, "_", ind,".",chrnos[ch],".png"),width=1920,height=960)
       expected_r2[ch,ind]=dip_expected_fr2_chr_ind(localanc, ch, ind)
       cat("E[r2]: ", expected_r2[ch,ind], "  ", sep="")
-      if (target!="simulated") par(mfrow=c(1,1),mar=c(2, 5.2, 1, 0)+0.1)
-      if (target=="simulated") par(mfrow=c(2,1),mar=c(2, 5.2, 1, 0)+0.1)
+      if (target!="simulated") par(mfrow=c(1,1),mar=c(4, 5.2, 1, 0)+0.1)
+      if (target=="simulated") par(mfrow=c(2,1),mar=c(4, 5.2, 1, 0)+0.1)
       if (target=="simulated")
       {
 	perc[ch,ind]<-0 # how many maximal ancestry counts 0,1,2 are the same as the truth
@@ -120,10 +120,10 @@ if (NCHR==2)
 	cat("% correct: ", perc[ch,ind], "  ", sep="")
 	cat("MSE: ", mse[ch,ind], "  ", sep="")
 	cat("\n")
-        par(mar=c(2, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+        par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	if (MODE=="LINE")
 	{
-	  plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("ind", ind, "Chromosome",chrnos[ch]))
+	  plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Position on Chromosome",chrnos[ch]))
           for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
           axis(2)
 	}
@@ -132,7 +132,7 @@ if (NCHR==2)
       }
       if (MODE=="LINE")
       {
-	plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("ind", ind, "Chromosome",chrnos[ch]))
+	plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Position on Chromosome",chrnos[ch]))
 	for (i in 1:L) lines(g.loc[[ch]]*1e-6, localanc[[ch]][i,hap[1],]+localanc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
         axis(2)
       }

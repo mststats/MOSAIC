@@ -30,7 +30,8 @@ for (ch in 1:nchrno)
     {
       par(mar=c(5,5,4,2),mfrow=c(1,1))
       plot(g.loc[[ch]][gs[[ch]]],g.true_anc_gs[[ch]][a,k,],col=3,lwd=cexa*2,t='l',
-	   ylab=paste("E[anc",a,"alleles]"), xlab="locus",main=paste("hap", k, "chromosome", chrnos[ch]),cex.axis=cexa,cex.lab=cexa,cex.main=cexa)
+	   ylab=paste("E[anc",a,"alleles]"), xlab=paste("Position on Chromosome",chrnos[ch]),
+	   main=paste("haplotype", k),cex.axis=cexa,cex.lab=cexa,cex.main=cexa)
       #lines(hmixloc[[ch]],true_anc[[ch]][a,k,],col=4,lwd=cexa*2,lty=2) # sanity check; looks ok
       lines(hmixloc[[ch]],hap_hmixlocalanc[[ch]][a,k,],col=2,lwd=cexa*2)
       if (showunphased)
@@ -73,7 +74,7 @@ for (ch in 1:nchrno)
     {
       par(mar=c(5,5,4,2),mfrow=c(1,1))
       plot(g.loc[[ch]][gs[[ch]]],g.true_anc_gs[[ch]][a,haps[1],]+g.true_anc_gs[[ch]][a,haps[2],],col=3,lwd=cexa*2,t='l',
-	   ylab=paste("E[anc",a,"alleles]"), xlab="locus",main=paste("ind", k, "chromosome", chrnos[ch]),cex.axis=cexa,cex.lab=cexa,cex.main=cexa)
+	   ylab=paste("E[anc",a,"alleles]"), xlab=paste("Position on Chromosome",chrnos[ch]),main=paste("Individual", k),cex.axis=cexa,cex.lab=cexa,cex.main=cexa)
       #lines(hmixloc[[ch]],true_anc[[ch]][a,haps[1],]+true_anc[[ch]][a,haps[2],],col=3,lwd=cexa*2,lty=2) # sanity check; looks ok
       lines(hmixloc[[ch]],hap_hmixlocalanc[[ch]][a,haps[1],]+hap_hmixlocalanc[[ch]][a,haps[2],],col=2,lwd=cexa*2)
       lines(g.loc[[ch]][gs[[ch]]],localanc_gs[[ch]][a,haps[1],]+localanc_gs[[ch]][a,haps[2],],lwd=cexa*2)

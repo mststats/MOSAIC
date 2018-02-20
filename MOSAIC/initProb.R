@@ -33,5 +33,6 @@ for (k in 1:NUMA)
 	initProb[k,(ia-1)*kLL+ik]<-Mu[ik,ia]/NL[ik]*alpha[[ind]][ia] 
   }
   #k_allhaps_initProb=rep(0,L*NUMP); for (l in 1:L) for (ik in 1:NUMP) k_allhaps_initProb[(l-1)*NUMP+ik]=initProb[k,(l-1)*kLL+label[ik]]/NL[label[ik]]
-  # checked using range(k_allhaps_initProb%*%trans_matrix, k_allhaps_initProb)
+  # checked using range(k_allhaps_initProb%*%trans_matrix-k_allhaps_initProb)
+  initProb[k,]=initProb[k,]/sum(initProb[k,])
 }
