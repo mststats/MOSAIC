@@ -1,4 +1,5 @@
 #ch=1
+if (!exists("minS")) minS=10
 if (!exists("ch")) ch="all"
 if (!exists("pops")) pops="all"
 #a=2
@@ -26,14 +27,28 @@ for (tch in 1:nchrno)
   #tmpm=rowMeans(localanc[[tch]][a,,])
   #nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) {tmp=localanc[[tch]][a,,g]-tmpm;-log(1-pt(mean(tmp)/(sd(tmp)/sqrt(N)),N-1),10)})
 }
+blockout=function(t.locs,t.minS,lower,upper)
+{
+  for (s in 1:ceiling(locs[length(locs)])) # 1Mb regions
+  {
+    tmp.loc=which((locs>(s-1)) & (locs<s))
+    if (length(tmp.loc) < minS)
+      polygon(x=1e6*c(s-1,s,s,s-1),y=c(lower,lower,upper,upper),col=8,border=8)
+  }
+}
 if (ch!="all")
 {
   plot(g.loc[[ch]],m[[ch]],t='l',ylim=c(min(m[[ch]]),max(m[[ch]])),ylab="mean African ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")
+  # block out 1Mb regions with fewer than minS markers
+  snps=t(matrix(scan(paste0("HGDP/","snpfile.",ch),what="character"),nrow=6))
+  locs=as.integer(snps[,4])*1e-6
+  blockout(locs,minsS,min(m[[ch]]),max(m[[ch]]))
   abline(h=mm)
   abline(h=mm-2*sm,lty=2)
   abline(h=mm+2*sm,lty=2)
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
   plot(g.loc[[ch]],nlp[[ch]],t='l',ylab=bquote(paste(-log[.(10)],"p")),xlab=paste("Position on Chromosome",chrnos[ch]),main="")
+  blockout(locs,minsS,min(nlp[[ch]]),max(nlp[[ch]]))
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
 }
 
@@ -46,6 +61,9 @@ if (ch=="all")
   for (tch in 1:nchrno)
   {
     lines(g.loc[[tch]]+add.loc[tch], m[[tch]],col=cols[tch%%2+1])
+    snps=t(matrix(scan(paste0("HGDP/","snpfile.",tch),what="character"),nrow=6))
+    locs=as.integer(snps[,4])*1e-6
+    blockout(locs,minsS,min(m[[tch]]),max(m[[tch]]))
     mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
     #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
   }
@@ -56,6 +74,9 @@ if (ch=="all")
   for (tch in 1:nchrno)
   {
     lines(g.loc[[tch]]+add.loc[tch], nlp[[tch]],col=cols[tch%%2+1])
+    snps=t(matrix(scan(paste0("HGDP/","snpfile.",tch),what="character"),nrow=6))
+    locs=as.integer(snps[,4])*1e-6
+    blockout(locs,minsS,min(nlp[[tch]]),max(nlp[[tch]]))
     mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
     #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
   }
