@@ -28,12 +28,12 @@ for (tch in 1:nchrno)
 }
 if (ch!="all")
 {
-  plot(g.loc[[ch]],m[[ch]],t='l',ylim=c(min(m[[ch]]),max(m[[ch]])),ylab="mean African ancestry",xlab="position",main=paste("Chromosome ",chrnos[ch]))
+  plot(g.loc[[ch]],m[[ch]],t='l',ylim=c(min(m[[ch]]),max(m[[ch]])),ylab="mean African ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")
   abline(h=mm)
   abline(h=mm-2*sm,lty=2)
   abline(h=mm+2*sm,lty=2)
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
-  plot(g.loc[[ch]],nlp[[ch]],t='l',ylab=bquote(paste(-log[.(10)],"p")),xlab="position",main=paste("Chromosome ",chrnos[ch]))
+  plot(g.loc[[ch]],nlp[[ch]],t='l',ylab=bquote(paste(-log[.(10)],"p")),xlab=paste("Position on Chromosome",chrnos[ch]),main="")
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
 }
 
