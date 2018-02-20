@@ -1,11 +1,11 @@
 if (!exists("colvec")) colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
-happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),cexa=1) { # probs is L*K*length(x) in dimension
+happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
-  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=paste("Position on Chromosome", chrnos[ch]))
+  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
   upper=lower=rep(0,G)
   for (i in 1:L) 
   {
@@ -15,13 +15,13 @@ happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),cexa=1) { # probs
   }
   axis(2)
 }
-dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),cexa=1) { # probs is L*K*length(x) in dimension
+dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",xlab=paste("Position on Chromosome", chrnos[ch]), ind),cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,2)
-  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=paste("Position on Chromosome", chrnos[ch]))
+  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
   upper=lower=rep(0,G)
   for (i in 1:L) 
   {
@@ -32,13 +32,13 @@ dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),cexa=1) { # 
   axis(2)
 }
 
-happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
+happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
-  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=paste("Position on Chromosome", chrnos[ch]))
+  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
   alpha.Mu<-t.Mu^pow
   alpha.Mu<-t(t(alpha.Mu)/apply(alpha.Mu,2,max))
   upper=lower=rep(0,G)
@@ -53,7 +53,7 @@ happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),t.Mu,pow=4,cex
   axis(2)
 }
 
-dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
+dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
@@ -61,7 +61,7 @@ dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),t.Mu,pow=
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,2)
-  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=paste("Position on Chromosome", chrnos[ch]))
+  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
   alpha.Mu<-t.Mu^pow
   alpha.Mu<-t(t(alpha.Mu)/apply(alpha.Mu,2,max))
   upper=lower=rep(0,G)
