@@ -27,13 +27,16 @@ for (tch in 1:nchrno)
   #tmpm=rowMeans(localanc[[tch]][a,,])
   #nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) {tmp=localanc[[tch]][a,,g]-tmpm;-log(1-pt(mean(tmp)/(sd(tmp)/sqrt(N)),N-1),10)})
 }
-blockout=function(t.locs,t.minS,lower,upper,t.add.loc,t.col="white")
+blockout=function(t.locs,t.minS,lower,upper,t.add.loc,t.col=rgb(t(col2rgb(8))/255,alpha=0.2))
 {
   for (s in 1:ceiling(locs[length(locs)])) # 1Mb regions
   {
     tmp.loc=which((locs>(s-1)) & (locs<s))
     if (length(tmp.loc) < minS)
+    {
+      polygon(x=1e6*c(s-1,s,s,s-1)+t.add.loc,y=c(lower,lower,upper,upper),col="white",border="white")
       polygon(x=1e6*c(s-1,s,s,s-1)+t.add.loc,y=c(lower,lower,upper,upper),col=t.col,border=t.col)
+    }
   }
 }
 if (ch!="all")
