@@ -27,13 +27,13 @@ for (tch in 1:nchrno)
   #tmpm=rowMeans(localanc[[tch]][a,,])
   #nlp[[tch]]=tapply(1:G[tch],1:G[tch],function(g) {tmp=localanc[[tch]][a,,g]-tmpm;-log(1-pt(mean(tmp)/(sd(tmp)/sqrt(N)),N-1),10)})
 }
-blockout=function(t.locs,t.minS,lower,upper)
+blockout=function(t.locs,t.minS,lower,upper,t.add.loc,t.col="white")
 {
   for (s in 1:ceiling(locs[length(locs)])) # 1Mb regions
   {
     tmp.loc=which((locs>(s-1)) & (locs<s))
     if (length(tmp.loc) < minS)
-      polygon(x=1e6*c(s-1,s,s,s-1),y=c(lower,lower,upper,upper),col=8,border=8)
+      polygon(x=1e6*c(s-1,s,s,s-1)+t.add.loc,y=c(lower,lower,upper,upper),col=t.col,border=t.col)
   }
 }
 if (ch!="all")
@@ -42,13 +42,13 @@ if (ch!="all")
   # block out 1Mb regions with fewer than minS markers
   snps=t(matrix(scan(paste0("HGDP/","snpfile.",ch),what="character"),nrow=6))
   locs=as.integer(snps[,4])*1e-6
-  blockout(locs,minsS,min(m[[ch]]),max(m[[ch]]))
+  blockout(locs,minsS,min(m[[ch]]),max(m[[ch]]),0)
   abline(h=mm)
   abline(h=mm-2*sm,lty=2)
   abline(h=mm+2*sm,lty=2)
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
   plot(g.loc[[ch]],nlp[[ch]],t='l',ylab=bquote(paste(-log[.(10)],"p")),xlab=paste("Position on Chromosome",chrnos[ch]),main="")
-  blockout(locs,minsS,min(nlp[[ch]]),max(nlp[[ch]]))
+  blockout(locs,minsS,min(nlp[[ch]]),max(nlp[[ch]]),0)
   if (chrnos[ch]==6) abline(v=HLA,col=2,lwd=2)
 }
 
@@ -63,20 +63,22 @@ if (ch=="all")
     lines(g.loc[[tch]]+add.loc[tch], m[[tch]],col=cols[tch%%2+1])
     snps=t(matrix(scan(paste0("HGDP/","snpfile.",tch),what="character"),nrow=6))
     locs=as.integer(snps[,4])*1e-6
-    blockout(locs,minsS,min(m[[tch]]),max(m[[tch]]))
+    blockout(locs,minsS,l,u,add.loc[[tch]])
     mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
     #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
   }
   abline(h=mm)
   abline(h=mm-2*sm,lty=2)
   abline(h=mm+2*sm,lty=2)
-  plot(XLIM,range(unlist(nlp)),t='n',ylab=bquote(paste(-log[.(10)],"p")),xlab="chromosome")
+  
+  pl=min(unlist(nlp));pu=max(unlist(nlp))
+  plot(XLIM,c(pl,pu),t='n',ylab=bquote(paste(-log[.(10)],"p")),xlab="chromosome")
   for (tch in 1:nchrno)
   {
     lines(g.loc[[tch]]+add.loc[tch], nlp[[tch]],col=cols[tch%%2+1])
     snps=t(matrix(scan(paste0("HGDP/","snpfile.",tch),what="character"),nrow=6))
     locs=as.integer(snps[,4])*1e-6
-    blockout(locs,minsS,min(nlp[[tch]]),max(nlp[[tch]]))
+    blockout(locs,minsS,pl,pu,add.loc[[tch]])
     mtext(chrnos[tch],side=1,at=mean(g.loc[[tch]])+add.loc[tch],col=cols[tch%%2+1],cex=1.2,line=1.2)
     #if (chrnos[tch]==6) abline(v=add.loc[tch]+HLA,col=2,lwd=2)
   }
