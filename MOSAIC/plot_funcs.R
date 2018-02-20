@@ -15,7 +15,7 @@ happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Posit
   }
   axis(2)
 }
-dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",xlab=paste("Position on Chromosome", chrnos[ch]), ind),cexa=1) { # probs is L*K*length(x) in dimension
+dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
