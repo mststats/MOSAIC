@@ -11,7 +11,7 @@ NUMA=as.integer(shargs[5]) # number of target admixed haplotypes
 MC=as.integer(shargs[6]) # number of cores to use
 chrnos=1:22 # which chromosomes to run on
 #tmp=scan("regional.txt",what="character",quiet=T,skip=as.integer(target)-1,nlines=1);target=tmp[2];mask=tmp[-(1:2)] # read regional.txt for inputs; target is which line to run
-#chrnos=1:22;firstind=1;NUMA=440;nl=200;L=2;datasource="HGDP/";target="NorthAfrican";ANC=T # use this line for testing
+chrnos=1:22;firstind=1;NUMA=440;nl=200;L=2;datasource="HGDP/";target="NorthAfrican";ANC=T # use this line for testing
 #chrnos=10:15;prop.missing=0.0;firstind=1;target="simulated";NUMA=8;L=3;datasource="HGDP/";RPE=2.0;ANC=T;#ANC=c("Ireland","Yoruba"); # use this line for testing
 chrnos=10:10;prop.missing=0.0;firstind=1;target="simulated";NUMA=2;L=2;datasource="HGDP/";RPE=0.0;ANC=T;
 #chrnos=10:22;firstind=1;NUMA=16;nl=200;L=5;datasource="HGDP/";target="SanKhomani";ANC=NULL # use this line for testing
@@ -21,7 +21,7 @@ nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
 # somewhat less important things to set
-set.seed(1)
+#set.seed(1)
 if (!exists("PHASE")) PHASE=T
 nl<-1000; # maximum number of haps per population 
 max.donors<-100;prop.don=0.99; # reasonable defaults. 
@@ -136,7 +136,7 @@ if (!(earlydrop & min.Mu.ratio>0))
   source("all_donates.R") # decide on donor set using initial parameters
 
 ############ a few Q only updates first; very useful to do before first re-phasing
-if (Q.total>0)
+if (Q.total>0 & EM)
 {
   o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doQ=doQ;doQ=T;dorho=dotheta=doMu=F;
   if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
@@ -166,6 +166,7 @@ if (EM)
     # if we've dropped any groups then we don't need to re-run thinning as drop_group.R has done this already; otherwise call all_donates.R
     if (max.donors<NUMP & (kLL==old.kLL))
       source("all_donates.R") # decide on donor set using updated parameters
+    #stop("ready to phase")
     if (PHASE) # & reps>1) # phasing early not the cause of low lambda. 
     {
       source("phase_hunt.R") 
