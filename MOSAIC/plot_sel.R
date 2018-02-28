@@ -11,7 +11,7 @@ whichhaps=1:NUMA
 if (all(pops!="all"))
   whichhaps=which(hap_NAlabels%in%which(NAfs%in%pops))
 N=length(localanc[[1]][a,,1])
-par(mfrow=c(2,1),cex.lab=2,mar=c(6,5,2,2))
+par(mfrow=c(2,1),cex.lab=2,cex.axis=2,mar=c(6,5,2,2))
 G=sapply(g.loc,length)
 add.loc=0;if (nchrno>1) for (tch in 2:nchrno) add.loc[tch]=add.loc[tch-1]+g.loc[[tch-1]][G[tch-1]]-g.loc[[tch]][1]
 m=nlp=list()
@@ -43,7 +43,7 @@ if (ch!="all")
 {
   plot(g.loc[[ch]],m[[ch]],t='l',ylim=c(min(m[[ch]]),max(m[[ch]])),ylab="mean African ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")
   # block out 1Mb regions with fewer than minS markers
-  snps=t(matrix(scan(paste0("HGDP/","snpfile.",ch),what="character"),nrow=6))
+  snps=t(matrix(scan(paste0("HGDP/","snpfile.",chrnos[ch]),what="character"),nrow=6))
   locs=as.integer(snps[,4])*1e-6
   blockout(locs,minsS,min(m[[ch]]),max(m[[ch]]),0)
   abline(h=mm)
