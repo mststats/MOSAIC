@@ -13,8 +13,8 @@ for (k in 1:NUMA)
       for (l in 1:L) 
 	for (ik in 1:NUMP) 
 	{
-	  trans_matrix[(ia-1)*NUMP+ik,(l-1)*NUMP+ik]=explicit.trans(Q[[ind]],Mu,rho,NL,ia,T,l,label[ik]) #same hap
-	  trans_matrix[(ia-1)*NUMP+(1:NUMP)[-ik],(l-1)*NUMP+ik]=explicit.trans(Q[[ind]],Mu,rho,NL,ia,F,l,label[ik]) #switch hap
+	  trans_matrix[(ia-1)*NUMP+ik,(l-1)*NUMP+ik]=explicit.trans(PI[[ind]],Mu,rho,NL,ia,T,l,label[ik]) #same hap
+	  trans_matrix[(ia-1)*NUMP+(1:NUMP)[-ik],(l-1)*NUMP+ik]=explicit.trans(PI[[ind]],Mu,rho,NL,ia,F,l,label[ik]) #switch hap
 	}
     # from fiveMinuteStats
     lvec=Re(eigen(t(trans_matrix))$vectors) # Get the left eigenvectors of P

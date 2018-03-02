@@ -342,15 +342,3 @@ plot_Mu_invFst=function(fst_panels,t.L=L,t.Mu=Mu,t.alpha=alpha,t.NL=NL,fst_tol=2
   plot(c(t.Mu),c(invFst),pch=20,xlab="Mu",ylab=bquote(paste("(",F[.("st")],")",""^{-1})),col=c(rep(1,t.kLL),rep(2,t.kLL)))  
   return(list("tMu"=t.Mu, "invFst"=invFst))
 }
-#source("fst.R")
-#fst_panels=matrix(NaN,t.kLL,t.L)
-#for (l1 in 1:t.kLL)
-#{
-#  load(paste0("FREQS/", rownames(t.Mu)[l1],"_freqs.rdata"))
-#  for (l2 in 1:t.L) 
-#    fst_panels[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs, pdata$counts)
-#}
-
-#load("all_Fst_2.rdata");i=49;filename=dir(pattern=glob2rx(paste0(paste0(strsplit(names(all_Fst)[i],"way")[[1]],collapse="*"),"*.RData")),path="RESULTS/");load(paste0("RESULTS/",filename))
-#tmp=plot_Mu_invFst(all_Fst[[i]]$panels)
-#cor.test(tmp$tMu,tmp$invFst)

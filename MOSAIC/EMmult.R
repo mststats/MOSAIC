@@ -94,13 +94,13 @@ r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 
 	  Mu[k,i]=Mu[k,i]+sum(p[,h,i]*counts[[h]][k,]) # mean of Multinomial = np
     Mu<-t(t(Mu)/colSums(Mu))
     Mu[Mu<tmpexp]=tmpexp;Mu<-t(t(Mu)/colSums(Mu))
-    if (!singleQ)
+    if (!singlePI)
       for (ind in 1:NUMI)
       {
         hap=c(ind*2-1,ind*2)
         alpha[[ind]]<-.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
       }
-    if (singleQ)
+    if (singlePI)
     {
       tmpalpha=rep(0,t.L)
       for (ind in 1:NUMI)

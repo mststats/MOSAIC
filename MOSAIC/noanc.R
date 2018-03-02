@@ -44,12 +44,12 @@ for (ind in 1:NUMI)
 }
 noanc.Mu=Mu=matrix(rowSums(Mu%*%Reduce("+",alpha)/NUMI),kLL) 
 o.doMu<-doMu;doMu<-T;o.dotheta<-dotheta;dotheta<-T;o.dorho<-dorho;dorho<-T;
-o.doQ<-doQ;doQ<-F;o.Q<-Q;Q=list();for (ind in 1:NUMI) Q[[ind]]<-matrix(0,1,1)
+o.doPI<-doPI;doPI<-F;o.PI<-PI;PI=list();for (ind in 1:NUMI) PI[[ind]]<-matrix(0,1,1)
 o.alpha=alpha;alpha=list();for (ind in 1:NUMI) alpha[[ind]]=1
 o.lambda=lambda;lambda=list();for (ind in 1:NUMI) lambda[[ind]]=0
 o.prop.don<-prop.don;o.max.donors<-max.donors
 prop.don<-1;max.donors<-NUMP # use all donor haplotypes here 
-for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,Q[[ind]],ind.Mu[[ind]],rho,NL)
+for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],ind.Mu[[ind]],rho,NL)
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch) # possibly overkill / some redundancy as maxmiss and maxmatch may have fallen for this subset
 LOG=F;source("all_donates.R") # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
 cloglike=NaN
@@ -72,12 +72,12 @@ if (getnoancgfbs)
 L<-o.L
 # return parameters, etc to correct sizes
 doMu<-o.doMu;dorho=o.dorho;dotheta=o.dotheta
-doQ<-o.doQ;Q<-o.Q;alpha=o.alpha;lambda=o.lambda
+doPI<-o.doPI;PI<-o.PI;alpha=o.alpha;lambda=o.lambda
 noanc.rho=rho;rho<-rep(noanc.rho,L) # note that this includes all the latent ancestry switches
 noanc.Mu<-Mu;Mu<-NULL; for (l in 1:L) Mu<-cbind(Mu,noanc.Mu)
 noanc.theta=theta;theta<-rep(noanc.theta,L)
 # next line gets called if some groups dropped but it's fast so potential redundancy is ok
-for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,Q[[ind]],Mu,rho,NL)
+for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch)
 ###################### return to original size of problem ###############################
 if (nchrno!=o.nchrno | NUMA!=o.NUMA | NN!=o.NN)

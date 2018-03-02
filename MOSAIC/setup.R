@@ -40,7 +40,7 @@ dr<-1/(GpcM*100) # GpcM is #gridpoints per centiMorgan cM
 g.loc<-list()
 maxmiss=maxmatch=0 # these get set in grid.R which is called by read_panels.R
 #sourceCpp("grid.cpp")
-if (!exists("singleQ")) singleQ=F
+if (!exists("singlePI")) singlePI=F
 source("read_panels.R")
 if (!exists("prop.don")) prop.don<-1
 if (!exists("max.donors")) max.donors<-NUMP # try using less than NUMP
@@ -48,8 +48,8 @@ if (!exists("min.donors")) min.donors<-2
 if (max.donors>NUMP) max.donors<-NUMP # try using less than NUMP
 if (min.donors>NUMP) min.donors<-NUMP 
 phi.theta<-0.2
-if (!exists("absorbrho")) absorbrho=T # should ancestry self-switches be included in rho or diag of Q?
-if (!exists("commonrho")) commonrho=T # needs to be false if it includes Q[i,i]
+if (!exists("absorbrho")) absorbrho=T # should ancestry self-switches be included in rho or diag of PI?
+if (!exists("commonrho")) commonrho=T # needs to be false if it includes PI[i,i]
 if (!exists("commontheta")) commontheta=T
 #theta=o.theta<-rep(phi.theta/(phi.theta+NUMP/L), L) # as per Hapmix
 theta=o.theta<-rep(phi.theta/(phi.theta+max.donors/L), L) # as per Hapmix
@@ -82,17 +82,17 @@ fmutmat<-function(theta, L, maxmiss, maxmatch)
   mutmat
 }
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch)
-Q<-create_Q(alpha,lambda,L,dr,NUMI)
+PI<-create_PI(alpha,lambda,L,dr,NUMI)
 klabel<-unique(label[KNOWN])
 if (USEHAPMIX) source("input_hapmix.R")
 ##################################
 Mu=matrix(1/kLL,kLL,L)
 transitions<-list()
 for (ind in 1:NUMI)
-  transitions[[ind]]<-s_trans(L,kLL,Q[[ind]],Mu,rho,NL)
+  transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
 if (!EM) total=1
 # change next two lines perhaps
-o.Q<-Q;o.alpha<-alpha;o.rho<-rho
+o.PI<-PI;o.alpha<-alpha;o.rho<-rho
 o.theta<-theta;o.phi.theta<-phi.theta
 flips<-list()
 for (ind in 1:NUMI) 

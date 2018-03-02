@@ -5,7 +5,7 @@ for (ind in 1:NUMI)
   # use current ind specific parameters from ancestry aware model
   ind.Mu[[ind]]=matrix(rowSums(t(t(Mu)*alpha[[ind]])),kLL) # p(g) = sum_a(p(g|a)p(a))
   # note that if commonrho=T then this will just be rho 
-  ind.rho[[ind]]=rho%*%alpha[[ind]]+sum(diag(Q[[ind]])) # include all ancestry self-switches as these impose a hap switch (zero if absorbrho)
+  ind.rho[[ind]]=rho%*%alpha[[ind]]+sum(diag(PI[[ind]])) # include all ancestry self-switches as these impose a hap switch (zero if absorbrho)
   #tmp.d=-log(1-ind.rho[[ind]])*max.donors;ind.rho[[ind]]=1-exp(-tmp.d/NUMP) # ~= max.donors/NUMP for small rho 
   # note that if commontheta=T then this will just be theta
   ind.theta[[ind]]=theta%*%alpha[[ind]]

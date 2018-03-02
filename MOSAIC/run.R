@@ -19,7 +19,7 @@ if (!exists("PHASE")) PHASE=T
 nl<-1000; # maximum number of haps per population 
 max.donors<-100;prop.don=0.99; # reasonable defaults. 
 total=200;s.total=10; # number of EM iterations at end and w/in reps respectively
-Q.total=10; # EM iterations for Q only at start respectively; useful before re-phasing
+PI.total=10; # EM iterations for PI only at start respectively; useful before re-phasing
 REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
 # s.M is w/in each iteration of thin / phase / EM and M is after convergence. 
 s.M<-0.00;M=0.00 # these are now multiplied by the #gridpoints in each chromosome to determine how many MCMC iterations are run. No longer really needed
@@ -39,7 +39,7 @@ verbose=T # print certain statements of progress as algorithm runs?
 PLOT=F # create plots as the code runs? 
 EM=T # run EM algorithm?
 doMu=T # update copying matrix parameters?
-doQ=T # update ancestry switching parameters parameters?
+doPI=T # update ancestry switching parameters parameters?
 dorho=T # update recombination w/in same ancestry parameters? 
 dotheta=T # update error / mutation parameters?
 initonly=F; # if TRUE just run until ready to find Mu
@@ -68,7 +68,7 @@ if (max.donors==NUMP & prop.don<1)
 old.runtime<-as.numeric(Sys.time())
 o.total=total
 writelog<-function(alg) # single consistent function to write to EMlogfile
-  write(file=EMlogfile,c(alg,signif(diff.time,4),signif(t(Mu),4),signif(rho,4),c(sapply(Q, function(x) signif(t(x),4))),
+  write(file=EMlogfile,c(alg,signif(diff.time,4),signif(t(Mu),4),signif(rho,4),c(sapply(PI, function(x) signif(t(x),4))),
 			 sapply(alpha, function(x) signif(x,4)),sapply(lambda,function(x) round(x,4)),signif(theta,4),round(cloglike,4)),ncol=length(lognames),append=T)
 
 eps=log(1.01) # i.e. a 1% increase in relative likelihood
@@ -85,22 +85,22 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   if (initonly)
   {
     save(file=paste0(resultsdir,"init_",target,"_",L, "way_", firstind, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,".RData"), 
-     target, panels, Mu, rho, theta, alpha, lambda, Q, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
+     target, panels, Mu, rho, theta, alpha, lambda, PI, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
     source("cleanup.R")
     stop("saving initialisation and quitting")
   }
   tmp<-cluster_windows(windowed_copying,PLOT=F,t.L=L,verbose=verbose)
   Mu<-tmp$Mu
   alpha<-tmp$alpha
-  Q<-tmp$Q
+  PI<-tmp$PI
   all.o.lambda=tmp$lambda
   #lambda=as.list(sapply(tmp$lambda,mean,na.rm=T)) # doesn't work well!
   lambda=o.lambda # re-use o.lambda from above
   rm(windowed_copying,tmp)
-  o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.Q=Q # these are the official starting ancestry related parameters now
+  o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
 }
 get_switches=F
-mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,Q[[ind]],Mu,rho,NL)
+mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
 rm(noanc_gswitches)
 o.M<-M;M<-s.M
 if (EM) source("create_logfile.R")
@@ -108,14 +108,14 @@ LOG=F
 LOG=o.LOG;cloglike=NaN 
 source("all_donates.R") # decide on donor set using initial parameters
 
-############ a few Q only updates first; very useful to do before first re-phasing
-if (Q.total>0 & EM)
+############ a few PI only updates first; very useful to do before first re-phasing
+if (PI.total>0 & EM)
 {
-  o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doQ=doQ;doQ=T;dorho=dotheta=doMu=F;
+  o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doPI=doPI;doPI=T;dorho=dotheta=doMu=F;
   if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
-  total=Q.total;source("mosaic.R")
+  total=PI.total;source("mosaic.R")
   if (!absorbrho | !commonrho | !commontheta) source("all_donates.R") 
-  doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doQ=o.doQ
+  doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doPI=o.doPI
 }
 
 total<-s.total # number of EM steps with repeated loop
@@ -146,8 +146,8 @@ if (EM)
 final.flips=flips
 source("ancunaware.R") # functions for getting localanc and gfbs that are ancestry unaware
 EM=F;getnoancgfbs=T;eps=log(1.01);o.LOG=F;PLOT=F;get_switches=F;
-a.Mu=Mu;a.rho=rho;a.theta=theta;a.Q=Q;a.alpha=alpha;a.lambda=lambda
-a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.Q=o.Q;a.o.alpha=o.alpha;a.o.lambda=o.lambda
+a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
+a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
 samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
 source("coancestry.R")
 
@@ -167,8 +167,8 @@ if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); ac
 for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
 source("noanc.R")
 source("cleanup.R")
-Mu=a.Mu;rho=a.rho;theta=a.theta;Q=a.Q;alpha=a.alpha;lambda=a.lambda
-o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.Q=a.o.Q;o.alpha=a.o.alpha;o.lambda=a.o.lambda
+Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
+o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda
 noanc_unphased_localanc=get_ancunaware_localanc() # works off noanc_gfbs
 save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
      noanc_unphased_localanc, flips, g.loc)
@@ -176,5 +176,5 @@ if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n
 
 if (verbose) cat("saving final results to file\n")
 save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
-     target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.Q, o.rho, Mu, lambda, theta, alpha, Q, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, 0, acoancs, coancs)#, pcoancs)
+     target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, 0, acoancs, coancs)#, pcoancs)
 

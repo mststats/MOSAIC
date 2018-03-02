@@ -2,7 +2,7 @@
 #if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
 for (ITER in 1:total)
 {
-  old.Mu<-Mu; old.Q<-Q; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
+  old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
   old.cloglike<-cloglike
   source("EM_updates.R") 
   source("initProb.R")
@@ -13,7 +13,7 @@ for (ITER in 1:total)
   {
     if ((old.cloglike - cloglike)>1e-3)
     {
-      Mu<-old.Mu; Q<-old.Q; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
+      Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
       source("initProb.R")
       cloglike<-old.cloglike
       warning("loglikelihood has decreased; abandoning EM", immediate.=T)

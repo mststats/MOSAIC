@@ -1,7 +1,8 @@
+# calculations related to EM updates used in EM_updates.R
 require(compiler)
 #sourceCpp("probs.cpp")
 # observed number of switches from (ia,il) to (ja,jl) 
-r.calc_E.n<-function(ch,k,maxdonors,NUMP,NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,mutmat,maxmiss,kLL,L,Q,rho,Mu,t.ndonors,t.donates,t.donatesl,t.donatesr) 
+r.calc_E.n<-function(ch,k,maxdonors,NUMP,NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,mutmat,maxmiss,kLL,L,PI,rho,Mu,t.ndonors,t.donates,t.donatesl,t.donatesr) 
 {
   THIN=ifelse(maxdonors==NUMP,F,T)
   a<-array(0,c(L,kLL,L)) # need to track which groups are switched to for Mu updates
@@ -31,8 +32,8 @@ r.calc_E.n<-function(ch,k,maxdonors,NUMP,NUMA,t.G,t.transitions,t.flips,t.umatch
     # (1) switched to same anc (2) no anc switch but switched hap
     for (jl in (1:kLL)) 
     {
-      psa<-Q[[ind]][ia,ia]
-      npsa<-1-sum(Q[[ind]][ia,]) 
+      psa<-PI[[ind]][ia,ia]
+      npsa<-1-sum(PI[[ind]][ia,]) 
       psr<-rho[ia]
       npsr<-1-rho[ia]
       spsa<-psa/(psa+psr*npsa) # relative contribution of ancestry switches
@@ -66,16 +67,16 @@ r.calc_E.n<-function(ch,k,maxdonors,NUMP,NUMA,t.G,t.transitions,t.flips,t.umatch
 calc_E.n<-r.calc_E.n
 #sum(E.n[[k]]$a)+sum(E.n[[k]]$r)+sum(E.n[[k]]$n)=G-1
 
-create_Q<-function(alpha,lambda,L,dr,NUMI)
+create_PI<-function(alpha,lambda,L,dr,NUMI)
 {
-  Q<-list()
+  PI<-list()
   for (ind in 1:NUMI)
   {
-    Q[[ind]]<-matrix(0,L,L)
+    PI[[ind]]<-matrix(0,L,L)
     for (i in 1:L)
       for (j in 1:L)
-	Q[[ind]][i,j]=(1-exp(-dr*lambda[[ind]]))*alpha[[ind]][j] # rate of actual ancestry switching
+	PI[[ind]][i,j]=(1-exp(-dr*lambda[[ind]]))*alpha[[ind]][j] # rate of actual ancestry switching
   }
-  Q
+  PI
 }
 

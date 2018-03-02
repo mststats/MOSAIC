@@ -1,6 +1,6 @@
 source("transitions.R")
 #### functions to return transition probabilities ####
-s_trans<-function(t.L,t.kLL,t.Q,t.Mu,t.rho,t.NL) 
+s_trans<-function(t.L,t.kLL,t.PI,t.Mu,t.rho,t.NL) 
 {
   knvec<-c(F,T)
   ans<-array(NaN, c(t.L,2,t.L,t.kLL)) 
@@ -8,7 +8,7 @@ s_trans<-function(t.L,t.kLL,t.Q,t.Mu,t.rho,t.NL)
     for (t.kn in 1:2)
       for (t.l in 1:t.L) 
 	for (t.ll in 1:t.kLL) 
-	  ans[t.i,t.kn,t.l,t.ll]<-explicit.trans(t.Q,t.Mu,t.rho,t.NL,t.i,knvec[t.kn],t.l,t.ll) 
+	  ans[t.i,t.kn,t.l,t.ll]<-explicit.trans(t.PI,t.Mu,t.rho,t.NL,t.i,knvec[t.kn],t.l,t.ll) 
   ans
 }
 require(Rcpp)

@@ -11,7 +11,7 @@ if (HPC!=2)
       E.n[[ch]]<-foreach(k=1:NUMA) %dopar% 
       {
 	ind<-as.integer((k+1)*0.5)
-	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,Q,rho,Mu,
+	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,PI,rho,Mu,
 		 ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
       }
     }
@@ -20,7 +20,7 @@ if (HPC!=2)
       E.n[[ch]]<-foreach(k=1:NUMA) %dopar% 
       {
 	ind<-as.integer((k+1)*0.5)
-	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,Q,rho,Mu,
+	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,PI,rho,Mu,
 		 ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],donatesr[[ch]][[ind]])
       }
     }
@@ -37,7 +37,7 @@ if (HPC==2)
     donatesl_chr_ind=getdonates_ind(donatesl[[ch]][[ind]])
     donatesr_chr_ind=getdonates_ind(donatesr[[ch]][[ind]])
     ans=calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],
-		 gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,Q,rho,Mu,ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
+		 gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
     rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
     ans
   }
@@ -75,15 +75,15 @@ if (doMu)
   }
   Mu<-t(t(Mu)/colSums(Mu))
 }
-if (doQ) # note that unlike the other parameters, each individual gets their own Q matrix 
+if (doPI) # note that unlike the other parameters, each individual gets their own PI matrix 
 {
   # note that E.n[[k]]$l[i] = sum(E.n[[k]]$na[,i])+sum(E.n[[k]]$a[,,i])
   # note that sum(E.n[[k]]$na[,i]) = sum(E.n[[k]]$n[,i])+sum(E.n[[k]]$r[,i])
-  if (!exists("singleQ")) singleQ=F
+  if (!exists("singlePI")) singlePI=F
   for (ind in 1:NUMI)
   {
     if (NUMA>1) {hap<-c(ind*2-1,ind*2)} else hap=1
-    if (singleQ) hap=1:NUMA # use all to compute each; i.e. single Q, etc
+    if (singlePI) hap=1:NUMA # use all to compute each; i.e. single PI, etc
     for (i in 1:L){
       denom=0
       for (k in hap) 
@@ -94,20 +94,20 @@ if (doQ) # note that unlike the other parameters, each individual gets their own
 	for (k in hap) 
 	  for (ch in 1:nchrno)
 	    numer=numer+sum(E.n[[ch]][[k]]$a[i,,j])
-	Q[[ind]][i,j]=sum(numer)/sum(denom) 
+	PI[[ind]][i,j]=sum(numer)/sum(denom) 
       }
-      if (absorbrho) Q[[ind]][i,i]=0 # absorb into rho
+      if (absorbrho) PI[[ind]][i,i]=0 # absorb into rho
     }
-    tmp=which(is.na(Q[[ind]]),arr.ind=T) 
-    for (i in tmp[,1]) for (j in tmp[,2]) Q[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
-    trans=Q[[ind]]-diag(rowSums(Q[[ind]])) # strictly speaking this should include an initial condition
+    tmp=which(is.na(PI[[ind]]),arr.ind=T) 
+    for (i in tmp[,1]) for (j in tmp[,2]) PI[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
+    trans=PI[[ind]]-diag(rowSums(PI[[ind]])) # strictly speaking this should include an initial condition
     w=prcomp(t(trans),center=F)$rotation[,L]
     alpha[[ind]]=w/sum(w);alpha[[ind]][alpha[[ind]]<0]=0
-    #lambda[[ind]]=-log(1-sum(Q[[ind]])+sum(diag(Q[[ind]])))/dr 
-    tmp=1-t(t(Q[[ind]]/alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for L=2
+    #lambda[[ind]]=-log(1-sum(PI[[ind]])+sum(diag(PI[[ind]])))/dr 
+    tmp=1-t(t(PI[[ind]]/alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for L=2
     tmp=-log(tmp)/dr; # gives same off diagonals for L=2
     lambda[[ind]]=mean(tmp,na.rm=T)
-    #lambda[[ind]]=mean(-log(1-Q[[ind]])/dr)
+    #lambda[[ind]]=mean(-log(1-PI[[ind]])/dr)
   }
 }
 if (dorho)
@@ -139,10 +139,10 @@ if (dotheta)
   mutmat<-fmutmat(theta, L, maxmiss, maxmatch)
 }
 rm(E.n) 
-if (dorho || doQ || doMu) 
+if (dorho || doPI || doMu) 
 {
   for (ind in 1:NUMI)
-    transitions[[ind]]<-s_trans(L,kLL,Q[[ind]],Mu,rho,NL)
+    transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
   source("initProb.R")
 }
 

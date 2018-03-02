@@ -17,10 +17,10 @@ create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.
   probmass<-matrix(0,G[ch],NUMP)
   switches<-list() # returns empty list if not needed; serves as placeholder
   # fit a HMM with no latent ancestry
-  L<-1;tmpQ<-matrix(0,1,1);
+  L<-1;tmpPI<-matrix(0,1,1);
   noanc_initProb<-matrix(0,H,kLL); for (h in 1:H) noanc_initProb[h,]<-t.Mu/NL[1:kLL]
   noanc_mutmat<-fmutmat(t.theta, L, maxmiss, maxmatch)
-  noanc_transitions<-s_trans(L,t.kLL,tmpQ,t.Mu,t.rho,NL)
+  noanc_transitions<-s_trans(L,t.kLL,tmpPI,t.Mu,t.rho,NL)
   noanc_fors<-noanc_sumfors<-noanc_backs<-noanc_scalefactor<-noanc_scalefactorb<-list()
   for (h in 1:H) { 
     noanc_fors[[h]]<-rep(0,G[ch]*NUMP)

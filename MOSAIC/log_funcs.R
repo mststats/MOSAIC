@@ -11,11 +11,11 @@ extract_paras=function(EMlog, iter, panelnames=NULL)
   t.Mu=t(matrix(paras[1:(L*kLL)],L));paras=paras[-(1:(L*kLL))] 
   rownames(t.Mu)=panelnames
   t.rho=paras[1:L];paras=paras[-(1:L)]
-  t.Q=list();for (ind in 1:NUMI) {t.Q[[ind]]=matrix(paras[1:(L*L)],L);paras=paras[-(1:(L*L))]}
+  t.PI=list();for (ind in 1:NUMI) {t.PI[[ind]]=matrix(paras[1:(L*L)],L);paras=paras[-(1:(L*L))]}
   t.alpha=list();for (ind in 1:NUMI) {t.alpha[[ind]]=paras[1:L];paras=paras[-(1:L)]}
   t.lambda=list();for (ind in 1:NUMI) {t.lambda[[ind]]=paras[1];paras=paras[-1]}
   t.theta=paras[1:L];paras=paras[-(1:L)]
-  return(list(Mu=t.Mu, rho=t.rho, Q=t.Q, alpha=t.alpha, lambda=t.lambda, theta=t.theta))
+  return(list(Mu=t.Mu, rho=t.rho, PI=t.PI, alpha=t.alpha, lambda=t.lambda, theta=t.theta))
 }
 # EMlog<-extract_log(logfile)
 # e.g. paras=extract_paras(EMlog, nrow(EMlog))
