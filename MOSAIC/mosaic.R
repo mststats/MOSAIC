@@ -1,3 +1,4 @@
+# run EM algorithm for total iterations
 #if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
 for (ITER in 1:total)
 {
