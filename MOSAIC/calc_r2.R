@@ -1,8 +1,7 @@
 # checked with:
 #tmp=list(); for (i in 1:1e2){tmp[[i]]=list();for (ch in 1:nchrno) 
-#{tmp[[i]][[ch]]=array(NaN,dim(localanc[[ch]]));for (h in 1:NUMA) {tmp2=rbinom(G[ch],size=1,prob=localanc[[ch]][a,h,]);tmp[[i]][[ch]][1,h,]=tmp2;tmp[[i]][[ch]][2,h,]=1-tmp2};}
-#};dip_expected_fr2(localanc);mean(sapply(tmp, function(x) dip_fr2(localanc,x)))
-dip_expected_fr2_chr_ind<-function(x,ch,ind)
+#{tmp[[i]][[ch]]=array(NaN,dim(localanc[[ch]]));for (h in 1:NUMA) {tmp2=rbinom(G[ch],size=1,prob=localanc[[ch]][1,h,]);tmp[[i]][[ch]][1,h,]=tmp2;tmp[[i]][[ch]][2,h,]=1-tmp2};}
+#};hist(sapply(tmp, function(x) dip_fr2(localanc,x)),20);abline(v=dip_expected_fr2(localanc),col=2)
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
   tmpG=dim(x[[ch]])[3]
@@ -81,7 +80,7 @@ dip_expected_fr2<-function(x)
     p1<-vecx[1,]*(1-vecx[2,])+(1-vecx[1,])*vecx[2,] # prob het anc a
     p2<-vecx[1,]*vecx[2,] # prob hom of anc a
     px=p1+2*p2 # expected number of a alleles out of 2
-    varp=sum((px)^2)-sum(px)^2/sumG
+    varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
@@ -100,7 +99,6 @@ hap_expected_fr2_chr_k<-function(x,ch,k)
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all ancestry a here
     avarx=(sum(px*(1-px))+varp)
     #avarx=sum(px)/tmpG-sum(px^2)/(tmpG)+sum((px)^2)/(tmpG)-sum(px/tmpG)^2 # equivalent to below with extra 1/G^2 terms 
-    #avarx=sum(px)/(tmpG)-sum(px/tmpG)^2 # SM Jan2018
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
@@ -145,9 +143,10 @@ hap_expected_fr2<-function(x)
       OFFSET=OFFSET+vecG[ch]*NUMA
     }
     px=vecx
-    varp=sum((px)^2)-sum(px)^2/sumG
+    varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     avarx=(sum(px*(1-px))+varp)
+    #avarx=sum(px)-sum(px)^2/sumG # SM Jan2018; essentially the same as above
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
