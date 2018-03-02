@@ -1,16 +1,15 @@
-#rm(list=ls());set.seed(1);mean.sim.alpha=c(1,1,8)
+# example usage: Rscript run.R SanKhomani HGDP/ 4 1 60 16
 require(mosaicpackage)
 ######################## first set some options ###############################
 # important things to set
 shargs<-commandArgs(trailingOnly=TRUE) # read in arguments from the command line; 
 target=shargs[1]  # e.g. SpainPopn_1
 datasource=shargs[2]; # i.e. spanish/ ; note the / at the end is crucial
-L=as.integer(shargs[3]) # #ways of admixture
+L=as.integer(shargs[3]) # number of admixing groups
 firstind<-as.integer(shargs[4]); # which target individual to start from. If NUMA=2 then only this ind is run
-NUMA=as.integer(shargs[5]) # number of target admixed haplotypes
-MC=as.integer(shargs[6]) # number of cores to use
+NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes 
+MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
-chrnos=1:22;firstind=1;NUMA=440;nl=200;L=2;datasource="HGDP/";target="NorthAfrican";ANC=T # use this line for testing
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
@@ -107,8 +106,7 @@ o.M<-M;M<-s.M
 if (EM) source("create_logfile.R")
 LOG=F
 LOG=o.LOG;cloglike=NaN 
-FLAG if (!(earlydrop & min.Mu.ratio>0))
-  source("all_donates.R") # decide on donor set using initial parameters
+source("all_donates.R") # decide on donor set using initial parameters
 
 ############ a few Q only updates first; very useful to do before first re-phasing
 if (Q.total>0 & EM)

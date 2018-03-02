@@ -39,7 +39,7 @@ umatch=list() # lookup for donor,target to #matches using t.w and d.w
 maxmatchsize=NULL # maximum size of the umatch matrix at any gridpoint on each chromosome
 for (ch in 1:nchrno)
 {
-  multipanels<-list() # FLAG don't read all of these in at once!
+  multipanels<-list() # shouldn't read all of these in at once!
   for (i in 1:length(panels))
   {
     tmp<-scan(paste0(datasource,panels[i],"genofile.",chrnos[ch]),what="character",quiet=T)

@@ -17,7 +17,7 @@ KNOWN[label<LL]<-T # last one / group only not known
 Y<-matrix(NA, NUMA, S[ch])
 true_anc[[ch]]<-array(0,c(L,NUMA,S[ch]))
 
-# FLAG or simulate all breakpoints along all target chromosomes; then advance along positions, assigning last used donor to next breakpoint. 
+# or simulate all breakpoints along all target chromosomes; then advance along positions, assigning last used donor to next breakpoint. 
 for (k in (NUMP+(1:NUMA))) # these are the admixed target haplotypes
 {
   tmpk=which({1:NN}[!KNOWN]==k)

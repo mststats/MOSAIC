@@ -9,7 +9,7 @@ g.rates<-seq(rates[1],rates[S[ch]],l=G[ch]) # even grid across recombination rat
 # create a map of observed loci to gridded loci; grid is even on rates not distances
 if (verbose) cat("Finding new positions on chr", chrnos[ch], "...\n")
 g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
-# FLAG the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
+# the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
 rm(g.rates)
 if (verbose) cat("Finding number at each location on chr", chrnos[ch], "...\n")
 #g.loc gives physical locus of each gridpoint; average if more than 1 or more obs; else average of nearest two obs
