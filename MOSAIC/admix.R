@@ -45,7 +45,6 @@ for (k in (NUMP+(1:NUMA))) # these are the admixed target haplotypes
     #tmp2k=(tmp2k+1-1)%%(NUMA*2)+2 # this adds one to tmp2k then shifts back to 1:(NUMA*2)
     tmp2k=haps2[haps2!=tmp2k] # use 2 donors per target; switch to one not last used
     Y[tmpk,l]<-as.integer(multipanels[[tmpil]][tmp2k,l]) 
-    if (OUTHAPMIX) hY[k,l]=Y[tmpk,l]
   }
 }
 write.table(t(Y),file=paste0(resultsdir,"simulatedgenofile.",chrnos[ch],sep=""),row.names=F,col.names=F,sep="") # write out admixed individuals
@@ -71,7 +70,6 @@ for (l in 1:kLL)
   for (n in 1:NL[l])
   {
     tmpY<-as.integer(multipanels[[l]][n,]) 
-    if (OUTHAPMIX) hY[k,]=tmpY
     d.w[[ch]]=cpp_unique_haps(tmpY,k,S[ch],G[ch],g.map-1,max(table(g.map)),d.w[[ch]])
     k<-k+1 # go to next one next
   }

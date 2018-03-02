@@ -81,12 +81,6 @@ for (ch in 1:nchrno)
     i=length(multipanels) # Admixed target is always stored last
     multipanels[[i]]<-multipanels[[i]][-(1:(2*(firstind-1))),]
   }
-  if (datasource=="chromopainter/") # remove firstind from panels
-  {
-    i=which(pops$panels==target)
-    hap=c(firstind*2-1,firstind*2)
-    multipanels[[i]]<-multipanels[[i]][-hap,]
-  }
   NL<-c(rep(nl,kLL),NUMA)
   LL<-kLL+1
   for (i in 1:kLL)
@@ -123,7 +117,6 @@ for (ch in 1:nchrno)
   g.rates<-seq(rates[1],rates[S[ch]],l=G[ch])
   g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
   d.w[[ch]]=t.w[[ch]]=list(u=list(),w=list())
-  if (OUTHAPMIX) hY<-matrix(NA, NN, S[ch])
   if (target!="simulated")
   {
     k=1
@@ -133,7 +126,6 @@ for (ch in 1:nchrno)
       for (n in 1:NL[l])
       {
 	Y<-as.integer(multipanels[[l]][n,]) # take whole of the nth haplotype here
-	if (OUTHAPMIX) hY[k,]=Y
 	d.w[[ch]]=cpp_unique_haps(Y,k,S[ch],G[ch],g.map-1,max(table(g.map)),d.w[[ch]])
 	k<-k+1 # go to next one next
       }
@@ -144,7 +136,6 @@ for (ch in 1:nchrno)
     for (n in 1:NL[l])
     {
       Y<-as.integer(multipanels[[l]][n,]) # take whole of the nth haplotype here
-      if (OUTHAPMIX) hY[k,]=Y
       t.w[[ch]]=cpp_unique_haps(Y,k,S[ch],G[ch],g.map-1,max(table(g.map)),t.w[[ch]])
       k<-k+1 # go to next one next
     }
@@ -158,8 +149,6 @@ for (ch in 1:nchrno)
   t.w[[ch]]$u=NULL;t.w[[ch]]$du=NULL
   rm(multipanels)
   source("grid.R")
-  if (OUTHAPMIX)
-    output_data_hapmix(ch)
   rm(snps,rates) # leave in if planning to re-grid
 }
 if (target=="simulated")

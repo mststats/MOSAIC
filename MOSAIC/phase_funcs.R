@@ -116,7 +116,6 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
       if (PLOT) 
       {
 	points(g.loc[[t.ch]][cand]*1e-6, rep(iters,length(cand)),pch=20) 
-	#if (RPE>0) if(length(t.phase.error.locs[[t.ind]][[t.ch]])>0) mtext("|",side=3,at=g.loc[[t.ch]][t.phase.error.locs[[t.ind]][[t.ch]]]*1e-6,cex=0.5,col=8,line=-0.5)
       }
       #if (PLOT) for (i in 1:length(cand)) cat(cand[i], ":", ind.c.v[cand[i]], "\n") 
       nflips<-length(cand)

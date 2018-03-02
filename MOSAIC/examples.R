@@ -13,8 +13,6 @@ if (target!="simulated")
     pops<-list(EU=c("France_17", "Germany-Belgium_1", "Germany-Hungary_7", "Ireland_8", "Neatherlands-Germany_27", "Poland_19", "Switzerland_11", "Switzerland_14"),
 	       `NA`=c("Egypt_85", "Libya-Algeria_82", "NorthAfrica.M-A-L_89", "NorthMorocco_92", "SS.Kenya-LWK_40", "Sub-saharan.Nigeria_43", "Tunisia_83", "WesternSahara_90"),   
 	       AD=target)
-  if (datasource=="chromopainter/") 
-    pops<-list(panels=panels,AD=target)
   panels=unlist(pops)
   kLL=length(panels)-1
 }

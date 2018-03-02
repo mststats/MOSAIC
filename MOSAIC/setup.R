@@ -26,18 +26,11 @@ if (HPC==2)
     donates_chr_ind
   }
 }
-if (OUTHAPMIX)
-  source("output_hapmix.R")
 G<-NULL
 if (NUMA==1 & PHASE)
 {
   warning("can't do re-phasing on a single haplotype: turning off phasing", immediate.=T)
   PHASE=F
-}
-if (NUMA==1 & RPE>0)
-{
-  warning("can't do random re-phasing on a single haplotype: turning off random phase errors", immediate.=T)
-  RPE=0
 }
 gobs<-list()
 if (!exists("GpcM")) GpcM=60 # number of gridpoints per centiMorgan
@@ -62,8 +55,6 @@ if (!exists("commontheta")) commontheta=T
 theta=o.theta<-rep(phi.theta/(phi.theta+max.donors/L), L) # as per Hapmix
 #invsum=1/sum(1/(1:NUMP));o.theta<-rep(0.5*invsum/(NUMP+invsum), L) # Watterson's estimator
 rho=o.rho=rep(1-exp(-Ne/(NUMP/L)*dr),L) # similar to HapMix choice but transformed; 1/L as this will include anc self-switches
-if (prethin)
-  source("pre_donates.R") # find which haps may be useful donors at which gridpoints to which admixed recipients.
 source("donates.R") # find which haps are useful donors at which gridpoints to which admixed recipients.
 source("intermediate_calcs.R")
 source("mix_hmm.R")
@@ -111,16 +102,3 @@ for (ind in 1:NUMI)
     flips[[ind]][[ch]]<-rep(F,G[ch]) 
 }
 phase.error.locs<-list()
-if (RPE>0)# & PHASE) 
-{ 
-  for (ind in 1:NUMI) 
-  {
-    phase.error.locs[[ind]]<-list()
-    for (ch in 1:nchrno) {
-      tmp<-intro_phase_error(ch,ind,flips[[ind]][[ch]],verbose)
-      flips[[ind]][[ch]]<-tmp$err.flips
-      phase.error.locs[[ind]][[ch]]<-tmp$ind.phase.error.locs
-    }
-  }
-}
-
