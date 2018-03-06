@@ -54,8 +54,6 @@ rephaser<-function(t.ch, hap, g, t.transitions, t.umatch, t.maxmatchsize, t.dw, 
   return(list(fors=c.fors, sumfors=c.sumfors, backs=c.backs, scalefactor=c.scalefactor, scalefactorb=c.scalefactorb))
 }
 
-source("intro_phase_error.R")
-
 r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
 		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, t.phase.error.locs, t.initProb, lim=10, PLOT=F, 
 		       minbg=0.1, maxbg=1, mult=1.5)
