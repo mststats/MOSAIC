@@ -1,3 +1,4 @@
+# script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
 # example usage: Rscript run.R SanKhomani HGDP/ 4 1 60 16
 require(mosaicpackage)
 ######################## first set some options ###############################
@@ -85,7 +86,7 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   if (initonly)
   {
     save(file=paste0(resultsdir,"init_",target,"_",L, "way_", firstind, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,".RData"), 
-     target, panels, Mu, rho, theta, alpha, lambda, PI, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
+	 target, panels, Mu, rho, theta, alpha, lambda, PI, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
     source("cleanup.R")
     stop("saving initialisation and quitting")
   }
@@ -155,12 +156,13 @@ source("coancestry.R")
 gfbs<-get_gfbs();source("localanc.R") 
 if (verbose) cat("saving localanc results to file\n")
 if (target!="simulated")
-  save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
-       localanc, final.flips, g.loc)
+  save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
 if (target=="simulated")
-  save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
-       localanc, g.true_anc, final.flips, g.loc)
-save(file=paste0(resultsdir,"gfbs_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), gfbs)
+  save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, g.true_anc, final.flips, g.loc)
+save(file=paste0(resultsdir,"gfbs_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		 "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), gfbs)
 
 if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
 ######## GlobeTrotter style curves original phasing ##########
@@ -170,11 +172,12 @@ source("cleanup.R")
 Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
 o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda
 noanc_unphased_localanc=get_ancunaware_localanc() # works off noanc_gfbs
-save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
-     noanc_unphased_localanc, flips, g.loc)
+save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		 "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), noanc_unphased_localanc, flips, g.loc)
 if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n"); coancs=create_coancs(noanc_unphased_localanc,dr,"DIP")
 
 if (verbose) cat("saving final results to file\n")
-save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), 
-     target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, 0, acoancs, coancs)#, pcoancs)
+save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
+		 GpcM,"_",prop.don,"_",max.donors,".RData"), target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+                 Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, 0, acoancs, coancs)
 

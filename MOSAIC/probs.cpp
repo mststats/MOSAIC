@@ -1,3 +1,4 @@
+// calculate the probability of various switch types along the genome based on MOSAIC fit
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
@@ -80,7 +81,7 @@ List cppprobs(int k,int NUMA,int maxdonors,bool THIN,int L,int kLL,int NN,int NU
 	ginvsum+=tmp;
 	if (gobs[g]>0)
 	{
-  	  tmperrors[ia]+=tmp*(gobs[g]-glk);
+	  tmperrors[ia]+=tmp*(gobs[g]-glk);
 	  tmphits[ia]+=tmp*glk;
 	}
       }

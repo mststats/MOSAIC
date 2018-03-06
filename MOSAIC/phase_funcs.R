@@ -1,3 +1,4 @@
+# functions used in re-phasing target haplotypes based on current MOSAIC fit
 require(compiler)
 require(parallel)
 require(bit) 
@@ -57,7 +58,7 @@ source("intro_phase_error.R")
 
 r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
 		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, t.phase.error.locs, t.initProb, lim=10, PLOT=F, 
-		                                                                                        minbg=0.1, maxbg=1, mult=1.5)
+		       minbg=0.1, maxbg=1, mult=1.5)
 {
   hap<-c(t.ind*2-1,t.ind*2) # t.ind indexes over genotypes, hap the two haplotypes
   # fb calcs moved to here to avoid storing all fors, backs, etc
@@ -72,7 +73,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
 	       t.ndonors,t.donates,t.donatesl,t.flips,t.fors[[h]],t.sumfors[[h]],t.scalefactor[[h]])
     t.backs[[h]]<-rep(0,G[t.ch]*max.donors*L);t.scalefactorb[[h]]<-rep(0,G[t.ch])
     cppbackward(k,NUMA,max.donors,THIN,NUMP,L,0,G[t.ch],G[t.ch],t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,mutmat,maxmiss,label,
-	        t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
+		t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
   }
   ind.orig.ll<-ind.max.ll<-ind.c.ll<- -sum(log(t.scalefactor[[1]]))-sum(log(t.scalefactor[[2]])) # LL for a single individual
   ind.c.v<-create.proposal(t.ch,max.donors,t.fors,t.sumfors,t.backs,t.scalefactor,t.scalefactorb,t.ndonors,ind.c.ll)
@@ -201,7 +202,7 @@ r_phase_mcmc<-function(t.ch, t.ind, M, max.donors, t.initProb, t.flips, verbose,
 	       t.ndonors,t.donates,t.donatesl,t.flips,t.fors[[h]],t.sumfors[[h]],t.scalefactor[[h]])
     t.backs[[h]]<-rep(0,G[t.ch]*max.donors*L);t.scalefactorb[[h]]<-rep(0,G[t.ch])
     cppbackward(k,NUMA,max.donors,THIN,NUMP,L,0,G[t.ch],G[t.ch],t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,mutmat,maxmiss,label,
-	        t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
+		t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
   }
   ind.orig.ll<-ind.max.ll<-ind.c.ll<- -sum(log(t.scalefactor[[1]]))-sum(log(t.scalefactor[[2]])) # LL for a single individual
   ind.max.flips<-t.flips

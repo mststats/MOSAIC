@@ -1,3 +1,5 @@
+# Fst calculations bottleneck is calculating the frequencies of markers for each population (panel).
+# This script will perform these as a one off calculation for each panel and save to file for reuse.
 source("fst.R")
 pathout="FREQS/"
 datasource="HGDP/"

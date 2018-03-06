@@ -1,3 +1,4 @@
+// code to calculate expected numbers of various switch types for use in estimating top (most useful) donors in donates.R
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
@@ -40,7 +41,7 @@ List cppswitches(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int G,IntegerVe
       {
 	gum=(tw_w[h])*dw_size[g]+dw_w[jk];
 	glk=umatch[gum];
-        tmp*=mutmat[maxmiss*glk+(gobs[g]-glk)]; 
+	tmp*=mutmat[maxmiss*glk+(gobs[g]-glk)]; 
       }
       unscaledswitches[g*NUMP+jk]=tmp;
       invsum+=tmp;

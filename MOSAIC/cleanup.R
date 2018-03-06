@@ -1,3 +1,4 @@
+# function to clean up files created by MOSAIC that are no longer needed
 if (ffcleanup & HPC)
 {
   cat("removing all ff files stored in", ffpath, "\n")
@@ -9,9 +10,9 @@ if (ffcleanup & HPC)
       delete(donatesr[[ch]][[ind]])
       if (prethin)
       {
-        delete(prethin_donates[[ch]][[ind]])
-        delete(prethin_donatesl[[ch]][[ind]])
-        delete(prethin_donatesr[[ch]][[ind]])
+	delete(prethin_donates[[ch]][[ind]])
+	delete(prethin_donatesl[[ch]][[ind]])
+	delete(prethin_donatesr[[ch]][[ind]])
       }
     }
 }

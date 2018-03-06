@@ -1,5 +1,6 @@
-#for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # this only require if not reloading but working with current session
-#getnoancgfbs=T;eps=log(1.01);o.LOG=F;PLOT=F;get_switches=F;a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;source("noanc.R");Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI
+# script for calculating local ancestry without MOSAIC inferred re-phasing and without MOSAIC ancestry switches. 
+# i.e. using only knowledge of which donor haplotypes are copied from 
+#for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # this is only required if not reloading but working with current session
 get_ancunaware_localanc=function(){ 
   ancunaware_localanc<-list() # note that ancunaware refers to undoing the re-phasing steps made by MOSAIC
   for (ch in 1:nchrno) {

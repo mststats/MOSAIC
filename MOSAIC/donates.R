@@ -1,7 +1,7 @@
+# functions to calculate the locally specified list of top (most useful) donors to pass to the HMM thus reducing computation time and memory usage
 # if we have a version impervious to phasing it will last longer without changing during thin / phase / EM
 require(compiler)
 # code to select enough donors to capture prop.don of the copying 
-#sourceCpp("switches.cpp") # gives cppswitches
 create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,t.flips,t.kLL,t.Mu,t.rho,t.theta,HPC,prethin=F)
 {
   THIN=F
@@ -54,7 +54,7 @@ create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.
     probmass<-probmass+cppforback(NUMP,THIN,NUMP,L,G[ch],t.ndonors,t.donates,noanc_fors[[h]],noanc_backs[[h]]) # 1 as first argument b/c using all now
     if (getswitches) 
       switches[[h]]<-t(matrix(cppswitches(h,NUMA,NUMP,THIN,NUMP,G[ch],NL,label,noanc_sumfors[[h]],noanc_backs[[h]],
-    				 noanc_transitions,t.flips,noanc_mutmat,maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,t.ndonors,t.donates)$switches,NUMP))
+					  noanc_transitions,t.flips,noanc_mutmat,maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,t.ndonors,t.donates)$switches,NUMP))
   }
   if (max.donors==NUMP & getswitches) 
     return(list(ndonors=t.ndonors,donates=t.donates,donatesl=t.donatesl,donatesr=t.donatesr,switches=switches)) 
@@ -68,12 +68,12 @@ create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.
   probmass<-t(t(probmass)/rowSums(probmass))
   f<-function(x)
   {
-     tmp<-order(x,decreasing=T)[1:max.donors] # descending order of donors; can't use partial sorting as index can't be returned
-     quants<-cumsum(x[tmp]);quants[max.donors]=1
-     donors<-tmp
-     cutoff<-max(which(quants>prop.don)[1], min.donors) # index of first one to go over prop.don but take at least min.donors
-     donors<-donors[1:max.donors] # easier to return also the not needed ones
-     #donors=1:max.donors;cutoff=max.donors;# debugging
+    tmp<-order(x,decreasing=T)[1:max.donors] # descending order of donors; can't use partial sorting as index can't be returned
+    quants<-cumsum(x[tmp]);quants[max.donors]=1
+    donors<-tmp
+    cutoff<-max(which(quants>prop.don)[1], min.donors) # index of first one to go over prop.don but take at least min.donors
+    donors<-donors[1:max.donors] # easier to return also the not needed ones
+    #donors=1:max.donors;cutoff=max.donors;# debugging
     return(list(donors=donors, ndonors=cutoff))
   }
   g.donors<-apply(probmass,1,f) 

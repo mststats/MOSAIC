@@ -20,7 +20,7 @@ extract_paras=function(EMlog, iter, panelnames=NULL)
 # EMlog<-extract_log(logfile)
 # e.g. paras=extract_paras(EMlog, nrow(EMlog))
 plot_loglike=function(EMlog,cexa=2.5,
-                      colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999"),...)
+		      colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999"),...)
 
 {
 

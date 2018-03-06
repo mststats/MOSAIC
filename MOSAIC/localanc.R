@@ -1,3 +1,4 @@
+# calculate the local ancestry estimates based on the gridded forward-backward probabilities gfbs
 if (!exists("G")) G=sapply(gfbs, function(x) nrow(x[[1]]))
 localanc<-list()
 for (ch in 1:nchrno)

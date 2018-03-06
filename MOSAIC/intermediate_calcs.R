@@ -1,6 +1,5 @@
 # calculations related to EM updates used in EM_updates.R
 require(compiler)
-#sourceCpp("probs.cpp")
 # observed number of switches from (ia,il) to (ja,jl) 
 r.calc_E.n<-function(ch,k,maxdonors,NUMP,NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,mutmat,maxmiss,kLL,L,PI,rho,Mu,t.ndonors,t.donates,t.donatesl,t.donatesr) 
 {

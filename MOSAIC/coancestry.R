@@ -1,3 +1,4 @@
+# functions to calculate coancestry curves along target genomes based on relative probabilities of pairs of ancestries at various genomic distances
 r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5)
 {
   # coarser grid here will mean more averaging / smoothing of curves
@@ -66,29 +67,29 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 	    }
 	    krelprobs[j,i,d]=krelprobs[i,j,d]=(totproda+totprodb)*totlength/(totlefta*totrighta+totleftb*totrightb)
 	  }
-        for (i in 1:lpop) # i==j is a special case and therefore faster 
-	  {
-	    totproda=totlefta=totrighta=0
-	    totlength=0    	
-	    for(ch in 1:nchrno){
-	      tmpanc=anclist[[ch]][,i]
-	      leftvec=tmpanc[avec[[ch]]]
-	      rightvecb=tmpanc[bvec[[ch]]]
-	      totproda=totproda+sum(leftvec*rightvecb)
-	      totlefta=totlefta+sum(leftvec)
-	      totrighta=totrighta+sum(rightvecb)
-	      totlength=totlength+length(leftvec)
-	    }
-	    krelprobs[i,i,d]=(totproda)*totlength/(totlefta*totrighta)
+	for (i in 1:lpop) # i==j is a special case and therefore faster 
+	{
+	  totproda=totlefta=totrighta=0
+	  totlength=0    	
+	  for(ch in 1:nchrno){
+	    tmpanc=anclist[[ch]][,i]
+	    leftvec=tmpanc[avec[[ch]]]
+	    rightvecb=tmpanc[bvec[[ch]]]
+	    totproda=totproda+sum(leftvec*rightvecb)
+	    totlefta=totlefta+sum(leftvec)
+	    totrighta=totrighta+sum(rightvecb)
+	    totlength=totlength+length(leftvec)
 	  }
+	  krelprobs[i,i,d]=(totproda)*totlength/(totlefta*totrighta)
+	}
       }
       list(krel=krelprobs, kanc=kancprobs)
     }
-    for (k in 1:NUMA)
-    {
-      relprobs[,,k,]=ans[[k]]$krel
-      ancprobs[,k]=ans[[k]]$kanc
-    }
+      for (k in 1:NUMA)
+      {
+	relprobs[,,k,]=ans[[k]]$krel
+	ancprobs[,k]=ans[[k]]$kanc
+      }
   }
   if (MODE=="DIP") { # warning: this only works well when using long chromosomes!
     ans=foreach(ind=1:NUMI) %dopar%
@@ -117,7 +118,7 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 	  avec[[ch]]=1:(nrow(anclist[[ch]])-round(drange[d])) # start at left, go to drange[d] from right
 	  bvec[[ch]]=(round(drange[d])+1):nrow(anclist[[ch]]) # start at right, go to drange[d] from left 
 	}
-        for (i in 1:(lpop-1))
+	for (i in 1:(lpop-1))
 	  for (j in (i+1):lpop)
 	  {
 	    totproda=totlefta=totrighta=0
@@ -139,31 +140,31 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 	    }
 	    krelprobs[j,i,d]=krelprobs[i,j,d]=(totproda+totprodb)*totlength/(totlefta*totrighta+totleftb*totrightb)
 	  }
-        for (i in 1:lpop) # i==j is a special case and therefore faster 
-	  {
-	    totproda=totlefta=totrighta=0
-	    totlength=0    	
-	    for(ch in 1:nchrno){
-	      tmpanc=anclist[[ch]][,i]
-	      leftvec=tmpanc[avec[[ch]]]
-	      rightvecb=tmpanc[bvec[[ch]]]
-	      totproda=totproda+sum(leftvec*rightvecb)
-	      totlefta=totlefta+sum(leftvec)
-	      totrighta=totrighta+sum(rightvecb)
-	      totlength=totlength+length(leftvec)
-	    }
-	    krelprobs[i,i,d]=(totproda)*totlength/(totlefta*totrighta)
+	for (i in 1:lpop) # i==j is a special case and therefore faster 
+	{
+	  totproda=totlefta=totrighta=0
+	  totlength=0    	
+	  for(ch in 1:nchrno){
+	    tmpanc=anclist[[ch]][,i]
+	    leftvec=tmpanc[avec[[ch]]]
+	    rightvecb=tmpanc[bvec[[ch]]]
+	    totproda=totproda+sum(leftvec*rightvecb)
+	    totlefta=totlefta+sum(leftvec)
+	    totrighta=totrighta+sum(rightvecb)
+	    totlength=totlength+length(leftvec)
 	  }
+	  krelprobs[i,i,d]=(totproda)*totlength/(totlefta*totrighta)
+	}
       }
       #cat("ind:", ind, "dim=", dim(krelprobs), "\n")
       list(krel=krelprobs, kanc=kancprobs)
     }
-    for (ind in 1:NUMI)
-    {
-      #cat("relprob dims for ind", ind, "=", dim(relprobs[,,ind,]),dim(ans[[ind]]$krel),"\n")
-      relprobs[,,ind,]=ans[[ind]]$krel
-      ancprobs[,ind]=ans[[ind]]$kanc
-    }
+      for (ind in 1:NUMI)
+      {
+	#cat("relprob dims for ind", ind, "=", dim(relprobs[,,ind,]),dim(ans[[ind]]$krel),"\n")
+	relprobs[,,ind,]=ans[[ind]]$krel
+	ancprobs[,ind]=ans[[ind]]$kanc
+      }
   }
   relprobs[is.na(relprobs)]=1 # remove uninformative ones
   list(relprobs=relprobs,ancprobs=ancprobs,drange=drange)
@@ -269,15 +270,15 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
     {
       if (!asym)
       {
-        mf=function(y) sum((y[1]*exp(-gap*(y[3]^2)*coancs$drange)+y[2]-relcurve[i,j,])^2)
-        fit<-optim(x[i,j,], mf, method=optmethod)
-        x[i,j,]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	mf=function(y) sum((y[1]*exp(-gap*(y[3]^2)*coancs$drange)+y[2]-relcurve[i,j,])^2)
+	fit<-optim(x[i,j,], mf, method=optmethod)
+	x[i,j,]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
       }
       if (asym)
       {
-        mf=function(y) sum((y[1]*exp(-gap*(y[2]^2)*coancs$drange)+1-relcurve[i,j,])^2)
-        fit<-optim(x[i,j,][c(1,3)], mf, method=optmethod)
-        x[i,j,][c(1,3)]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	mf=function(y) sum((y[1]*exp(-gap*(y[2]^2)*coancs$drange)+1-relcurve[i,j,])^2)
+	fit<-optim(x[i,j,][c(1,3)], mf, method=optmethod)
+	x[i,j,][c(1,3)]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
       }
     }
   }
@@ -290,12 +291,12 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       {
 	ans=0;
 	l=1
-        for (i in 1:lpop) for (j in i:lpop) 
+	for (i in 1:lpop) for (j in i:lpop) 
 	{
 	  ans=ans+sum((y[l]*exp(-gap*(y[length(y)]^2)*coancs$drange)+y[l+1]-relcurve[i,j,])^2)
 	  l=l+2
 	}
-        ans
+	ans
       }
       tmp=NULL;for (i in 1:lpop) for (j in i:lpop) tmp=c(tmp,x[i,j,1:2]);tmp=c(tmp,x[1,1,3])
       fit<-optim(tmp, mf, method=optmethod) 
@@ -309,12 +310,12 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       x[,,3]=fit$par[length(fit$par)]
     }
     if (asym) 
-      {
+    {
       mf=function(y) 
       {
 	ans=0;
 	l=1
-        for (i in 1:lpop) for (j in i:lpop) 
+	for (i in 1:lpop) for (j in i:lpop) 
 	{
 	  ans=ans+sum((y[l]*exp(-gap*(y[length(y)]^2)*coancs$drange)+1-relcurve[i,j,])^2)
 	  l=l+1

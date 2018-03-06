@@ -20,7 +20,7 @@ for (ITER in 1:total)
       break
     }
     if ((cloglike - old.cloglike)< eps) 
-    {cat("EM iterations have converged\n");break;}
+      {cat("EM iterations have converged\n");break;}
   }
   if (LOG) 
   {

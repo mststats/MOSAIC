@@ -1,9 +1,10 @@
+# some example simulations of admixture to try out using the HGDP dataset
 if (target!="simulated")
 {
   if (datasource=="HGDP/" & target=="Hazara") 
     pops<-list(EA=c("HanNchina", "Mongola", "Daur", "Oroqen", "Hezhen", "Xibo", "Tu", "Yi"),#, "Uzbekistani", "BantuKenya", "Mozabite"),
-               NE=c("Pathan", "Iranian", "Balochi", "Makrani", "Cypriot", "Armenian", "Turkish", "Polish"),#, "Chuvash", "Mandenka"), 
-               AD=target)
+  NE=c("Pathan", "Iranian", "Balochi", "Makrani", "Cypriot", "Armenian", "Turkish", "Polish"),#, "Chuvash", "Mandenka"), 
+  AD=target)
   if (datasource=="HGDP/" & target=="NorthAfrican") 
     pops<-list(European=c("French", "English", "Scottish", "Welsh", "GermanyAustria", "Ireland", 
 			  "Greek", "NorthItalian", "Turkish", "Spanish"), #"Sardinian", "Tuscan", "WestSicilian", "EastSicilian", "SouthItalian", "Cypriot", 

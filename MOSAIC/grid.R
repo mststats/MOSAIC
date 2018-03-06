@@ -1,3 +1,4 @@
+# script to compute mapping from markers to evenly (in genetic distace) spaced gridpoints
 # S is number of observed loci, G is number of gridpoints
 if (verbose) cat("mapping chr", chrnos[ch], "to a grid...\n")
 # need to evenly spread total gridpoints across chromosomes s.t. each gap is the same #morgans
@@ -58,8 +59,6 @@ if (length(emptyg)>0)
       for (i in 1:L)
 	for (k in 1:NUMA)
 	  g.true_anc[[ch]][i,k,g]<-wa*g.true_anc[[ch]][i,k,a]+wb*g.true_anc[[ch]][i,k,b] # linear interpolation; sample jump would be more realistic, but no data to see locus
-	  #g.true_anc[[ch]][i,k,g]<-g.true_anc[[ch]][i,k,a] # use ancestry of previous locus i.e. assume no switch took place
-	  #g.true_anc[[ch]][i,k,g]<-g.true_anc[[ch]][i,k,b] # use ancestry of next locus i.e. assume switch took place early
     g.loc[[ch]][g]<-wa*g.loc[[ch]][a]+wb*g.loc[[ch]][b] # weighted average of physical locus of the two nearest gridpoint w/ data
   }
 }

@@ -1,4 +1,4 @@
-#source("transitions.R")
+# calculate the stationary state for the MOSAIC HMM transitions to use as initial probabilities at the first gridpoint in the forward algorithm
 fastcalc_init=T
 if (!fastcalc_init)
   allhaps_initProb=matrix(0,NUMA,L*NUMP)

@@ -1,3 +1,4 @@
+# script to run the fast phase-hunting algorithm to re-phase target genomes using MOSAIC fit
 orig.ll<-max.ll<-c.ll<-list()
 nflips=0
 niters=0
@@ -14,14 +15,16 @@ if (HPC!=2)
       orig.ll[[ch]]<-max.ll[[ch]]<-c.ll[[ch]]<-list()
       tmp<-foreach(ind=1:NUMI) %dopar%
         phase_hunt(eps.lower,ch,ind,flips[[ind]][[ch]], FALSE, ndonors[[ch]][[ind]], donates_chr[[ind]], donatesl_chr[[ind]], donatesr_chr[[ind]], 
-	  	   transitions[[ind]], umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, initProb, PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
+	  	   transitions[[ind]], umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, 
+		   initProb, PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
     }
     if (!HPC)
     {
       orig.ll[[ch]]<-max.ll[[ch]]<-c.ll[[ch]]<-list()
       tmp<-foreach(ind=1:NUMI) %dopar%
       phase_hunt(eps.lower,ch,ind,flips[[ind]][[ch]], FALSE, ndonors[[ch]][[ind]], donates[[ch]][[ind]], donatesl[[ch]][[ind]], donatesr[[ch]][[ind]], 
-		 transitions[[ind]], umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, initProb, PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
+		 transitions[[ind]], umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, initProb, 
+		 PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
     }
     for (ind in 1:(NUMI)) 
     {
@@ -42,8 +45,8 @@ if (HPC==2)
     donates_chr_ind=getdonates_ind(donates[[ch]][[ind]])
     donatesl_chr_ind=getdonates_ind(donatesl[[ch]][[ind]])
     donatesr_chr_ind=getdonates_ind(donatesr[[ch]][[ind]])
-    ans=phase_hunt(eps.lower,ch,ind,flips[[ind]][[ch]], F, ndonors[[ch]][[ind]], donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, 
-	       transitions[[ind]], umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, initProb, PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
+    ans=phase_hunt(eps.lower,ch,ind,flips[[ind]][[ch]], F, ndonors[[ch]][[ind]], donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, transitions[[ind]], 
+		   umatch[[ch]], maxmatchsize[ch], d.w[[ch]], t.w[[ch]], gobs[[ch]][[ind]], mutmat, maxmiss, phase.error.locs, initProb, PLOT=PLOT, minbg=min.bg, maxbg=max.bg)
     ans
   }
   for (ch in 1:nchrno)

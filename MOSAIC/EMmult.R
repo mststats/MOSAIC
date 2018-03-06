@@ -1,3 +1,5 @@
+# Fit a mixture model to windowed switching counts of a chromopainter style model fit 
+# where the number of mixtures is the number of hidden ancestries we wish to model.
 require(gtools)
 require(doParallel)
 tmpexp=exp(.Machine$double.min.exp/1.4)
@@ -18,7 +20,7 @@ zhclust=function(veccounts,k)
   for(i in 1:k)
     for (l in 1:n)
     {
-    membership[l,i]=1/mean((veccounts[l,]-colMeans(as.matrix(veccounts[Z[,i]==1,],sum(Z[,i]))))^2)
+      membership[l,i]=1/mean((veccounts[l,]-colMeans(as.matrix(veccounts[Z[,i]==1,],sum(Z[,i]))))^2)
     }
   return(list(membership=membership))
 }
@@ -48,7 +50,7 @@ loglikeMult<-function(counts, t.alpha, logMu, t.kLL, t.L)
     hap=c(ind*2-1,ind*2)
     sum(apply(counts[[hap[1]]], 2, f, t.alpha[[ind]], logMu, t.kLL, t.L))+sum(apply(counts[[hap[2]]], 2, f, t.alpha[[ind]], logMu, t.kLL, t.L))
   }
-  return(sum(unlist(ans)))
+    return(sum(unlist(ans)))
 }
 
 r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 1% increase in relative likelihood
@@ -78,38 +80,38 @@ r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 
     {
       hp<-matrix(NaN,nw,t.L)
       for (i in 1:t.L) 
-        hp[,i]<-log(alpha[[as.integer((h+1)/2)]][i])+.colSums(counts[[h]]*log(Mu[,i]),kLL,nw) # prob target is of anc i in window iw
+	hp[,i]<-log(alpha[[as.integer((h+1)/2)]][i])+.colSums(counts[[h]]*log(Mu[,i]),kLL,nw) # prob target is of anc i in window iw
       hp<-hp-apply(hp,1,max);hp<-exp(hp); # yes, it's 1
       hp<-hp/rowSums(hp)
       hp
     }
-    for (h in 1:NUMA)
-      p[,h,]=ans[[h]]
+      for (h in 1:NUMA)
+	p[,h,]=ans[[h]]
     # M-step
     o.Mu<-Mu
     Mu[]=0
     for (k in 1:kLL)
       for (i in 1:t.L)
-        for (h in 1:NUMA)
+	for (h in 1:NUMA)
 	  Mu[k,i]=Mu[k,i]+sum(p[,h,i]*counts[[h]][k,]) # mean of Multinomial = np
     Mu<-t(t(Mu)/colSums(Mu))
     Mu[Mu<tmpexp]=tmpexp;Mu<-t(t(Mu)/colSums(Mu))
     if (!singlePI)
       for (ind in 1:NUMI)
       {
-        hap=c(ind*2-1,ind*2)
-        alpha[[ind]]<-.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
+	hap=c(ind*2-1,ind*2)
+	alpha[[ind]]<-.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
       }
     if (singlePI)
     {
       tmpalpha=rep(0,t.L)
       for (ind in 1:NUMI)
       {
-        hap=c(ind*2-1,ind*2)
-        tmpalpha=tmpalpha+.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
+	hap=c(ind*2-1,ind*2)
+	tmpalpha=tmpalpha+.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
       }
       for (ind in 1:NUMI)
-        alpha[[ind]]<-tmpalpha
+	alpha[[ind]]<-tmpalpha
     }
     for (ind in 1:NUMI)
       alpha[[ind]]<-alpha[[ind]]/sum(alpha[[ind]])

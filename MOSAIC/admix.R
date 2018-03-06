@@ -1,3 +1,4 @@
+# script to simulate admixed genomes at a fixed number of generations ago from different donor genomes
 if (verbose) cat("creating admixed Chr ", chrnos[ch], "\n", sep="")
 NL<-c(rep(nl,kLL),NUMA) # number of individuals in each group
 for (k in 1:kLL)

@@ -1,3 +1,6 @@
+# functions used to perform EM inference to initialise copying matrix Mu. First chromopainter style copying is inferred then windowed 
+# (0.5cM by default). Then calculate the expected number of switches into each donor group in each window. 
+# Finally, fit a mixture model (using EMmult.R) where the number of mixtures is the number of hidden ancestries we wish to model.
 window_chunks<-function(nswitches, ww=0.5, min.swiches=0e-4, verbose=F) # windows of 0.5M sum(G)*dr/w*100~=7000 for w=0.5
 {
   nchrno=length(nswitches)
@@ -16,13 +19,13 @@ window_chunks<-function(nswitches, ww=0.5, min.swiches=0e-4, verbose=F) # window
       nswitches[[ch]][nswitches[[ch]]<min.swiches]=NaN
       for (i in 1:nw[ch])
       {
-        wind=((i-1)*w+1):(i*w)
+	wind=((i-1)*w+1):(i*w)
 	wmat[[h]][,i+offsetw[ch]]=rowSums(nswitches[[ch]][,wind,h],na.rm=T) # sum over window 
       }
       if ((nw[ch]*w)<G[ch]) # if any left over just add in to last one
       {
-        wind<-(nw[ch]*w+1):G[ch]
-       	wmat[[h]][,i+offsetw[ch]]=wmat[[h]][,i+offsetw[[ch]]]+rowSums(as.matrix(nswitches[[ch]][,wind,h]),na.rm=T) # sum over window 
+	wind<-(nw[ch]*w+1):G[ch]
+	wmat[[h]][,i+offsetw[ch]]=wmat[[h]][,i+offsetw[[ch]]]+rowSums(as.matrix(nswitches[[ch]][,wind,h]),na.rm=T) # sum over window 
       }
     }
   }
@@ -48,8 +51,8 @@ cluster_windows<-function(windows,PLOT=F,t.L=L,verbose=F)
       for (j in 1:t.L)
       {
 	# average p(i->j)/p(i) across windows and then average this over both haplotypes
-        PI[[ind]][i,j]=0.5*(sum(res$p[-nw,hap[1],i]*res$p[-1,hap[1],j])/sum(res$p[-nw,hap[1],i])+
-                           sum(res$p[-nw,hap[2],i]*res$p[-1,hap[2],j])/sum(res$p[-nw,hap[2],i]))
+	PI[[ind]][i,j]=0.5*(sum(res$p[-nw,hap[1],i]*res$p[-1,hap[1],j])/sum(res$p[-nw,hap[1],i])+
+			    sum(res$p[-nw,hap[2],i]*res$p[-1,hap[2],j])/sum(res$p[-nw,hap[2],i]))
       }
       if (absorbrho) PI[[ind]][i,i]=0
     }

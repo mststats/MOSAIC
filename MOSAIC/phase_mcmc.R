@@ -1,3 +1,5 @@
+# script to run iterations of the MCMC algorithm for re-phasing target genomes based on MOSAIC fit. 
+# phase-hunter is far more efficient and finds approximate best phasing in practice
 max.ll<-mcmc.ll<-mcmc.acc<-list()
 for (ch in 1:nchrno) 
 {

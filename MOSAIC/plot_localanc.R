@@ -1,3 +1,4 @@
+# script to plot the local ancestry of each target admixed genome along each chromosome
 source("plot_funcs.R")
 source("calc_r2.R")
 if (!exists("G")) G=sapply(localanc, function(x) dim(x)[3])
@@ -18,14 +19,14 @@ if (NCHR==2 & NUMA==1)
 }
 #if (target=="simulated") # calculate the true number of gridpoint anc switches => rate of anc switching => #gens since admixture
 #{
-  #obs.rate=sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);mean(m)}) # switch rate / chr
-  #obs.lambda=-log(1-obs.rate)/dr # lambda / chr
-  #obs.lambda=-log(1-sum(obs.sum)/sum(G-nchrno))/dr
-  # SM way
-  #obs.sum=sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);sum(m)})
-  #obs.lambda=sum(obs.sum)*L/(L-1)/2/(sum(G)*dr)
-  #obs.lambda=mean(sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);mean(m)}))*L/2/2/dr
-  #cat("true #gens since admixture =", mean(obs.lambda), "\n")
+#obs.rate=sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);mean(m)}) # switch rate / chr
+#obs.lambda=-log(1-obs.rate)/dr # lambda / chr
+#obs.lambda=-log(1-sum(obs.sum)/sum(G-nchrno))/dr
+# SM way
+#obs.sum=sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);sum(m)})
+#obs.lambda=sum(obs.sum)*L/(L-1)/2/(sum(G)*dr)
+#obs.lambda=mean(sapply(g.true_anc, function(x) {m<-(apply(abs(apply(x[,k,],1,diff)),1,sum)>tol);mean(m)}))*L/2/2/dr
+#cat("true #gens since admixture =", mean(obs.lambda), "\n")
 #}
 if (NCHR==1)
 {
@@ -57,23 +58,23 @@ if (NCHR==1)
 	cat("correct: ", perc[ch,k], "%   ", sep="")
 	cat("MSE:", mse[ch,k], "  ", sep="")
 	cat("\n")
-        par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
-        if (MODE=="LINE")
-          {
-	    plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
-            for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
-	    axis(2)
-	  }
-        if (MODE=="BAR" | MODE=="GRAD")
+	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+	if (MODE=="LINE")
+	{
+	  plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
+	  for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
+	  axis(2)
+	}
+	if (MODE=="BAR" | MODE=="GRAD")
 	  happlot(ch,k,g.loc[[ch]]*1e-6,g.true_anc[[ch]][,k,],"truth",cexa=cexa)
       }
       par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
       if (MODE=="LINE")
-        {
-	  plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
-          for (i in 1:L) lines(g.loc[[ch]]*1e-6, localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
-	  axis(2)
-	}
+      {
+	plot(range(g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Position on Chromosome",chrnos[ch]))
+	for (i in 1:L) lines(g.loc[[ch]]*1e-6, localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
+	axis(2)
+      }
       if (MODE=="BAR")
 	happlot(ch,k,g.loc[[ch]]*1e-6,localanc[[ch]][,k,],ylab=y.lab,cexa=cexa)
       if (MODE=="GRAD")
@@ -109,7 +110,7 @@ if (NCHR==2)
 	perc[ch,ind]<-0 # how many maximal ancestry counts 0,1,2 are the same as the truth
 	for (i in 1:L)
 	  perc[ch,ind]<-perc[ch,ind]+mean(as.integer(localanc[[ch]][i,hap[1],]+localanc[[ch]][i,hap[2],]+0.5)==
-			                  as.integer(g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],]+0.5)) # push to int required here due to shift to the grid
+					  as.integer(g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],]+0.5)) # push to int required here due to shift to the grid
 	perc[ch,ind]<-round(100*perc[ch,ind]/L,2)
 	mse[ch,ind]<-mean((localanc[[ch]][,hap[1],]+localanc[[ch]][,hap[2],]-g.true_anc[[ch]][,hap[1],]-g.true_anc[[ch]][,hap[2],])^2)
 	r2[ch,ind]=dip_fr2_chr_ind(localanc, g.true_anc, ch, ind)
@@ -117,21 +118,21 @@ if (NCHR==2)
 	cat("% correct: ", perc[ch,ind], "  ", sep="")
 	cat("MSE: ", mse[ch,ind], "  ", sep="")
 	cat("\n")
-        par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	if (MODE=="LINE")
 	{
 	  plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Position on Chromosome",chrnos[ch]))
-          for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
-          axis(2)
+	  for (i in 1:L) lines(g.loc[[ch]]*1e-6, g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
+	  axis(2)
 	}
-        if (MODE=="BAR" | MODE=="GRAD")
+	if (MODE=="BAR" | MODE=="GRAD")
 	  dipplot(ch,ind,g.loc[[ch]]*1e-6,g.true_anc[[ch]][,hap[1],]+g.true_anc[[ch]][,hap[2],],ylab="truth",cexa=cexa)
       }
       if (MODE=="LINE")
       {
 	plot(range(g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Position on Chromosome",chrnos[ch]))
 	for (i in 1:L) lines(g.loc[[ch]]*1e-6, localanc[[ch]][i,hap[1],]+localanc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
-        axis(2)
+	axis(2)
       }
       if (MODE=="BAR")
 	dipplot(ch,ind,g.loc[[ch]]*1e-6,localanc[[ch]][,hap[1],]+localanc[[ch]][,hap[2],],,ylab=y.lab,cexa=cexa)

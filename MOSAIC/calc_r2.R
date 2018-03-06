@@ -1,3 +1,6 @@
+# functions for calculating r^2 between inferred and true local ancestry (if known i.e. in a simulation setting)
+# and functions for calculating expected r^2 based on inferred local ancestry alone
+# haploid and diploid versions of all functions, for single chromosomes or genome wide
 # checked with:
 #tmp=list(); for (i in 1:1e2){tmp[[i]]=list();for (ch in 1:nchrno) 
 #{tmp[[i]][[ch]]=array(NaN,dim(localanc[[ch]]));for (h in 1:NUMA) {tmp2=rbinom(G[ch],size=1,prob=localanc[[ch]][1,h,]);tmp[[i]][[ch]][1,h,]=tmp2;tmp[[i]][[ch]][2,h,]=1-tmp2};}
@@ -70,9 +73,9 @@ dip_expected_fr2<-function(x)
     {
       for (ind in 1:NUMI)
       {
-        hap<-c(ind*2-1,ind*2)
-        vecx[1,(vecG[ch]*(ind-1)+1+OFFSET):(vecG[ch]*ind+OFFSET)]=x[[ch]][a,hap[1],] # all first haps
-        vecx[2,(vecG[ch]*(ind-1)+1+OFFSET):(vecG[ch]*ind+OFFSET)]=x[[ch]][a,hap[2],] # all second haps
+	hap<-c(ind*2-1,ind*2)
+	vecx[1,(vecG[ch]*(ind-1)+1+OFFSET):(vecG[ch]*ind+OFFSET)]=x[[ch]][a,hap[1],] # all first haps
+	vecx[2,(vecG[ch]*(ind-1)+1+OFFSET):(vecG[ch]*ind+OFFSET)]=x[[ch]][a,hap[2],] # all second haps
       }
       OFFSET=OFFSET+vecG[ch]*NUMI
     }
@@ -139,7 +142,7 @@ hap_expected_fr2<-function(x)
     for (ch in 1:nchrno)
     {
       for (k in 1:NUMA)
-        vecx[(vecG[ch]*(k-1)+1+OFFSET):(vecG[ch]*k+OFFSET)]=x[[ch]][a,k,] 
+	vecx[(vecG[ch]*(k-1)+1+OFFSET):(vecG[ch]*k+OFFSET)]=x[[ch]][a,k,] 
       OFFSET=OFFSET+vecG[ch]*NUMA
     }
     px=vecx

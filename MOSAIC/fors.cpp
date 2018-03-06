@@ -1,3 +1,4 @@
+// this performs the forward algorithm on the MOSAIC HMM 
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
@@ -37,12 +38,12 @@ void cppforward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int kLL,int L, i
       for (l=0;l<L;l++) {
 	lm=l*maxdonors;
 	fors[gm+lm+dlk]=initProb[l*kLL+llk];
-        if (gobs[gl]>0) 
-        {
+	if (gobs[gl]>0) 
+	{
 	  gum=(tw_w[h])*dw_size[gl]+dw_w[lk];
 	  glk=umatch[gum]; 
 	  fors[gm+lm+dlk]*=mutmat[maxmiss*L*glk+L*(gobs[gl]-glk)+l];
-        }
+	}
 	tmpsum+=fors[gm+lm+dlk];
       }
     }
@@ -85,12 +86,12 @@ void cppforward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int kLL,int L, i
 	}
 	gld=gm+lm+dlk;
 	fors[gld]=tmpsum2; // l appears here in case we want anc-specific theta
-        if (gobs[g]>0) 
-        {
+	if (gobs[g]>0) 
+	{
 	  gum=(tw_w[h])*dw_size[g]+dw_w[lk];
-  	  glk=umatch[gum]; 
+	  glk=umatch[gum]; 
 	  fors[gld]*=mutmat[maxmiss*L*glk+L*(gobs[g]-glk)+l]; // l appears here in case we want anc-specific theta
-        }
+	}
 	//if (fors[gld]<1.0e-16) fors[gld]=1.0e-16;
 	tmpsum+=fors[gld];
       }

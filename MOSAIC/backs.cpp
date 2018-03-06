@@ -1,3 +1,4 @@
+// this performs the backward algorithm on the MOSAIC HMM 
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
@@ -55,8 +56,8 @@ void cppbackward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int L, int gl,i
 	dg=g*offset+dlk; 
 	lk=donates[dg];
 	llk=label[lk];
-  	il=im+lk;
-  	lkl=2*L*(llk*L + i);
+	il=im+lk;
+	lkl=2*L*(llk*L + i);
 	if (gobs[g]==0) 
 	{
 	  emissions[il]=1.0;

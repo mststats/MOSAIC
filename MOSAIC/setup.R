@@ -1,3 +1,4 @@
+# script that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
 require(parallel)
 require(Rcpp)
 if (HPC==1)
@@ -39,7 +40,6 @@ if (!exists("S")) S<-rep(NaN,nchrno) # if no limit is set
 dr<-1/(GpcM*100) # GpcM is #gridpoints per centiMorgan cM
 g.loc<-list()
 maxmiss=maxmatch=0 # these get set in grid.R which is called by read_panels.R
-#sourceCpp("grid.cpp")
 if (!exists("singlePI")) singlePI=F
 source("read_panels.R")
 if (!exists("prop.don")) prop.don<-1

@@ -1,9 +1,5 @@
+# script that reads in the data and lays on a grid along recombination rates map
 source("compressed_grid.R")
-# reads in raw data i.e. does the work of old create_panels.R and convertR.R scripts
-#datasource<-"/data/sanderling/salter/CODE/Genetics/HapMap/"
-#panels<-c("phased_CEU","phased_YRI","phased_MEX")
-#datasource<-"/data/sanderling/salter/CODE/Genetics/HapmixReleasev2/HGDP_phased_genome/"
-#datasource<-"HGDP/" # location of haps, snps, and recombination maps
 panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
 if (!exists("mask")) mask=NULL
 if (!is.null(mask))

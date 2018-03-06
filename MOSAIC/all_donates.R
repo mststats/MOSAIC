@@ -1,3 +1,5 @@
+# script to estimate the most useful donors for all target admixed genomes; other donors will not be used in the HMM
+# note that this is done locally to each gridpoint allowing for changing top donors along each target genome
 # first compute the no-ancestry equivalent parameters Mu, rho, and theta. One for each ind.
 ind.Mu=ind.rho=ind.theta=list()
 for (ind in 1:NUMI) 
@@ -32,7 +34,8 @@ if (HPC!=2)
     {
       tmp<-foreach(ind=1:NUMI) %dopar%
       {
-	tmp2=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin) 
+	tmp2=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],
+			    ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin) 
 	ans_ndonors=tmp2$ndonors
 	ans_donates=ff(tmp2$donates,vmode="integer",dim=c(max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T);close(ans_donates)
 	ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=T);close(ans_donatesl)
@@ -54,7 +57,7 @@ if (HPC!=2)
     {
       tmp<-foreach(ind=1:NUMI) %dopar%
       {
-        ans=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin)
+	ans=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin)
 	if (get_switches)
 	{
 	  tmpswitches=ans$switches
@@ -64,7 +67,7 @@ if (HPC!=2)
 	    for (i in 1:kLL)
 	      ans$switches[[h]][[i]]=rowSums(tmpswitches[[h]][,label[KNOWN]==i]) # sum switches over panels; sum to 1 at each gridpoint for each target hap
 	  }
-        }
+	}
 	ans
       }
     }
@@ -101,7 +104,8 @@ if (HPC==2)
     ch=as.integer((ch_ind-0.5)/NUMI)+1
     ind=(ch_ind-1)%%NUMI+1
     NvecsG=ifelse(max.donors==NUMP, 1, G[ch]) 
-    tmp2=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin)
+    tmp2=create_donates(get_switches,ch,ind,umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],flips[[ind]][[ch]],kLL,ind.Mu[[ind]],
+			ind.rho[[ind]],ind.theta[[ind]],HPC,prethin=prethin)
     ans_ndonors=tmp2$ndonors
     ans_donates=ff(tmp2$donates,vmode="integer",dim=c(max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T);close(ans_donates)
     ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=T);close(ans_donatesl)
@@ -110,36 +114,36 @@ if (HPC==2)
     if (get_switches)
       for (h in 1:H)
       {
-      ans_switches[[h]]=list()
-      for (i in 1:kLL)
-        ans_switches[[h]][[i]]=rowSums(tmp2$switches[[h]][,label[KNOWN]==i]) # sum switches over panels; sum to 1 at each gridpoint for each target hap
+	ans_switches[[h]]=list()
+	for (i in 1:kLL)
+	  ans_switches[[h]][[i]]=rowSums(tmp2$switches[[h]][,label[KNOWN]==i]) # sum switches over panels; sum to 1 at each gridpoint for each target hap
       }
     rm(tmp2)
     gc()
     list(ndonors=ans_ndonors,donates=ans_donates,donatesl=ans_donatesl,donatesr=ans_donatesr,switches=ans_switches)
   }
-  for (ch in 1:nchrno)
-  {
-    for (ind in 1:NUMI)
+    for (ch in 1:nchrno)
     {
-      ch_ind=(ch-1)*NUMI+ind
-      ndonors[[ch]][[ind]]<-tmp[[ch_ind]]$ndonors
-      donates[[ch]][[ind]]<-tmp[[ch_ind]]$donates
-      donatesl[[ch]][[ind]]<-tmp[[ch_ind]]$donatesl
-      donatesr[[ch]][[ind]]<-tmp[[ch_ind]]$donatesr
-      close(donates[[ch]][[ind]]);close(donatesl[[ch]][[ind]]);close(donatesr[[ch]][[ind]])
-      if (get_switches) 
+      for (ind in 1:NUMI)
       {
-	if (NUMA>1) hap<-c(ind*2-1,ind*2)
-	if (NUMA==1) hap<-1
-	for (h in 1:H)
+	ch_ind=(ch-1)*NUMI+ind
+	ndonors[[ch]][[ind]]<-tmp[[ch_ind]]$ndonors
+	donates[[ch]][[ind]]<-tmp[[ch_ind]]$donates
+	donatesl[[ch]][[ind]]<-tmp[[ch_ind]]$donatesl
+	donatesr[[ch]][[ind]]<-tmp[[ch_ind]]$donatesr
+	close(donates[[ch]][[ind]]);close(donatesl[[ch]][[ind]]);close(donatesr[[ch]][[ind]])
+	if (get_switches) 
 	{
-	  for (i in 1:kLL)
-	    noanc_gswitches[[ch]][i,,hap[h]]<-tmp[[ch_ind]]$switches[[h]][[i]] # sum switches over panels; sum to 1 at each gridpoint for each target hap
+	  if (NUMA>1) hap<-c(ind*2-1,ind*2)
+	  if (NUMA==1) hap<-1
+	  for (h in 1:H)
+	  {
+	    for (i in 1:kLL)
+	      noanc_gswitches[[ch]][i,,hap[h]]<-tmp[[ch_ind]]$switches[[h]][[i]] # sum switches over panels; sum to 1 at each gridpoint for each target hap
+	  }
 	}
       }
     }
-  }
   rm(tmp)
 }
 if (LOG)

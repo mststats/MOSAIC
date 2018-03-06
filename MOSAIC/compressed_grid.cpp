@@ -1,3 +1,5 @@
+// function to compress genomes to an evenly (on genetic distance) grid. Lists of unique haplotypes at each gridpoint are
+// returned along with a local map from each genome to the unique haplotype list. Stored such that re-phasing can be done without recomputing the compression
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]

@@ -1,3 +1,4 @@
+// this performs the forward-backward algorithm on the MOSAIC HMM (see gfbs)
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
@@ -33,7 +34,7 @@ NumericVector cppforback(int maxdonors,bool THIN,int NUMP,int L,int G,IntegerVec
 
 // [[Rcpp::export]]
 NumericVector cppgforback(int maxdonors,int THIN,int kLL,int NUMP,IntegerVector label,int L,int G,IntegerVector ndonors,IntegerVector donates,
-                          NumericVector fors,NumericVector backs)
+    NumericVector fors,NumericVector backs)
 {
   int offset=(THIN ? maxdonors : 0); // setting offset=0 for maxdonors==NUMP => use single vector of donors
   int NNL2=maxdonors*L, g, l, n, ln, dln, lk;

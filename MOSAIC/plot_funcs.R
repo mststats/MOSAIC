@@ -1,3 +1,5 @@
+# various functions that create useful plots of MOSAIC model fit
+# such as local ancestry plots, plots of the inferred copying matrix, tables of top donors in selected regions, etc
 if (!exists("colvec")) colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
 happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
@@ -15,7 +17,8 @@ happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Posit
   }
   axis(2)
 }
-dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
+dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) 
+{ # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
@@ -32,7 +35,8 @@ dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("P
   axis(2)
 }
 
-happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
+happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) 
+{ # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
@@ -53,7 +57,8 @@ happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Po
   axis(2)
 }
 
-dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) { # probs is L*K*length(x) in dimension
+dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) 
+{ # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
@@ -234,8 +239,8 @@ plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F
   if (ord) 
     if (!beside)
       return(t.Mu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
-    if (beside)
-      return(ordMu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
+  if (beside)
+    return(ordMu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
 }
 plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst))
 {
@@ -275,70 +280,3 @@ plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t
     return(ordFst)
 }
 
-plot_r2=function(r2file)
-{
-  tmp=read.table(r2file)
-  r2=tmp[,2]
-  names(r2)=paste0(tapply(1:length(r2),1:length(r2),function(i) strsplit(as.character(tmp[i,1]),"way")[[1]][1]),"way")
-  par(mar=c(4,10,0,2))
-  barplot(sort(r2),horiz=T,las=2,xlim=c(0,1))
-  r2
-}
-
-
-# localanc is w.r.t. final phasing. The below undoes this to compare with input phasing
-phase_localanc=function(t.localanc,t.flips) 
-{
-  for (ch in 1:nchrno)
-    for (ind in 1:(NUMA/2))
-    {
-      haps=c(ind*2-1,ind*2)
-      ans=t.localanc[[ch]][,haps,]
-      for (k in haps)
-      {
-	otherhap=ifelse((k%%2)==0,1,2) # if even look at previous; if odd look at next
-	kf=t.flips[[ind]][[ch]] # F and T values
-	for (l in 1:L)
-	  t.localanc[[ch]][l,k,kf]=ans[l,otherhap,kf]
-      }
-    }
-  return(t.localanc)
-}
-
-# gfbs is w.r.t. final phasing. The below undoes this to compare with input phasing
-phase_gfbs=function(t.gfbs,t.flips)
-{
-  for (ch in 1:nchrno)
-    for (ind in 1:(NUMA/2))
-    {
-      haps=c(ind*2-1,ind*2)
-      ans=list(t.gfbs[[ch]][[haps[1]]],t.gfbs[[ch]][[haps[2]]])
-      for (k in haps)
-      {
-	otherhap=ifelse((k%%2)==0,1,2) # if even look at previous; if odd look at next
-	kf=t.flips[[ind]][[ch]] # F and T values
-	for (kl in 1:(L*kLL))
-	  t.gfbs[[ch]][[k]][kf,kl]=ans[[otherhap]][kf,kl]
-      }
-    }
-  return(t.gfbs)
-}
-
-plot_Mu_invFst=function(fst_panels,t.L=L,t.Mu=Mu,t.alpha=alpha,t.NL=NL,fst_tol=2e-3) 
-{
-  for (l in 1:t.L)
-    if (min(fst_panels[,l])<0) # rescale this side's Fst values s.t. min is bigger than zero
-    {
-      fst_panels[,l]=fst_panels[,l]-min(fst_panels[,l])+fst_tol
-    }
-  t.kLL=nrow(t.Mu)
-  t.alpha=Reduce("+",t.alpha)/length(t.alpha)
-  t.Mu=t.Mu/t.NL[1:t.kLL] # copying matrix scaled by number in panel i.e. P(hap in panel | anc)=P(hap|panel)P(panel|anc)
-  t.Mu=t(t(t.Mu)/colSums(t.Mu))
-  #t.Mu=t(t(t.Mu)*t.alpha) # copying matrix times alpha i.e. P(panel,anc)=P(panel|anc)P(anc) 
-  #t.Mu=t.Mu/sum(t.Mu) # normalise
-  invFst=1/fst_panels;rownames(invFst)=rownames(t.Mu)
-  #plot(c(t.Mu),c(invFst),pch=20,xlab="Mu",ylab=bquote(paste(F^{-1},""[.("st")])))  
-  plot(c(t.Mu),c(invFst),pch=20,xlab="Mu",ylab=bquote(paste("(",F[.("st")],")",""^{-1})),col=c(rep(1,t.kLL),rep(2,t.kLL)))  
-  return(list("tMu"=t.Mu, "invFst"=invFst))
-}

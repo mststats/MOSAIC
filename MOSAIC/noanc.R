@@ -23,10 +23,10 @@ if (nchrno!=o.nchrno | NUMA!=o.NUMA | NUMP!=o.NUMP)
     t.w[[ch]]=o.t.w[[which(samp_chrnos[ch]==o.chrnos)]]
     if (NUMP!=o.NUMP)
       for (g in 1:G[ch])
-        d.w[[ch]]$w[[g]]=d.w[[ch]]$w[[g]][dons] # subset of the donors to fit the no latent ancestry model parameters 
+	d.w[[ch]]$w[[g]]=d.w[[ch]]$w[[g]][dons] # subset of the donors to fit the no latent ancestry model parameters 
     if (NUMA!=o.NUMA)
       for (g in 1:G[ch])
-        t.w[[ch]]$w[[g]]=t.w[[ch]]$w[[g]][1:NUMA] # subset of the targets to fit the no latent ancestry model parameters 
+	t.w[[ch]]$w[[g]]=t.w[[ch]]$w[[g]][1:NUMA] # subset of the targets to fit the no latent ancestry model parameters 
   }
   for (ind in 1:NUMI) {flips[[ind]]=list(); for (ch in 1:nchrno) flips[[ind]][[ch]]=o.flips[[ind]][[which(samp_chrnos[ch]==o.chrnos)]]}
   for (ch in 1:nchrno) {gobs[[ch]]=list(); for (ind in 1:NUMI) gobs[[ch]][[ind]]=o.gobs[[which(samp_chrnos[ch]==o.chrnos)]][[ind]]}
@@ -56,7 +56,7 @@ cloglike=NaN
 LOG=o.LOG
 source("initProb.R")
 if(verbose) 
- cat("Fitting no-ancestry model\n") 
+  cat("Fitting no-ancestry model\n") 
 if (LOG) 
 {
   source("create_logfile.R")
