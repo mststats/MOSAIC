@@ -37,11 +37,6 @@ gobs<-list()
 # some default values
 nl<-1000; # maximum number of haps per population 
 max.donors<-100;prop.don=0.99; # reasonable defaults. 
-if (max.donors==NUMP & prop.don<1)
-{
-  warning("can't use prop.don<1 and all donors: setting prop.don to 1", immediate.=T)
-  prop.don=1
-}
 total=200;s.total=10; # number of EM iterations at end and w/in reps respectively
 PI.total=10; # EM iterations for PI only at start respectively; useful before re-phasing
 REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
@@ -81,6 +76,11 @@ if (!exists("singlePI")) singlePI=F
 FLAT=F # set to FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
 source("read_panels.R")
 if (!exists("min.donors")) min.donors<-2 
+if (max.donors==NUMP & prop.don<1)
+{
+  warning("can't use prop.don<1 and all donors: setting prop.don to 1", immediate.=T)
+  prop.don=1
+}
 if (max.donors>NUMP) max.donors<-NUMP # try using less than NUMP
 if (min.donors>NUMP) min.donors<-NUMP 
 phi.theta<-0.2
