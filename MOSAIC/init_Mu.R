@@ -70,13 +70,13 @@ cluster_windows<-function(windows,PLOT=F,t.L=L,verbose=F)
   {
     if (!exists("PNG")) PNG=T
     cexa=ifelse(PNG, 3, 1.5)
-    if (PNG) png(file=paste0("PLOTS/",target,"_",t.L,"-way","_initial_Mu.png"),width=920,height=1490)
+    if (PNG) png(file=paste0(target,"_",t.L,"-way","_initial_Mu.png"),width=920,height=1490)
     par(mfrow=c(1,1))
     source("plot_funcs.R")
     plot_Mu(Mu,alpha,NL,MODE="copy",cexa=cexa)
     if (PNG) dev.off()
     if (!PNG) dev.new()
-    if (PNG) png(file=paste0("PLOTS/",target,"_",t.L,"-way","_initial_curves.png"),width=1490,height=1490)
+    if (PNG) png(file=paste0(target,"_",t.L,"-way","_initial_curves.png"),width=1490,height=1490)
     ans=plot_coanccurves(acoancs,dr*windows$w,PLOT=T,verbose=verbose,cexa=cexa)
     if (PNG) dev.off()
   }

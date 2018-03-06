@@ -6,12 +6,11 @@ There should be a folder with 4 types of input file:
 
 
 A folder called RESULTS needs to be created to hold log-files (foo.out) and results (foo.RData).  
-Also folders called LOGS and PLOTS. 
 
 You'll need to install the R package mosaicpackage_1.0.tar.gz. This is to once-off compile the C++ code that does the forward-backward, etc. 
-You can create this package by running "sh create_package.sh"
+You can create this package by running "sh create_package.sh path_to_R_libraries"
 
-run.R then contains an example run script. It can be run from the command line using Rscript and requires 5 arguments: 
+run.R contains an example run script. It can be run from the command line using Rscript and requires 5 arguments: 
   (1) Target population (2) Folder where data is stored (3) Number of mixing groups (4) Index of first individual (5) Number of target haplotypes 
   Optional 6th argument is number of cores to use for parallel processing. 
 
