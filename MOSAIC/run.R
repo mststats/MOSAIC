@@ -11,61 +11,21 @@ firstind<-as.integer(shargs[4]); # which target individual to start from. If NUM
 NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes 
 MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
+#chrnos=21:22;firstind=1;target="simulated";NUMA=4;L=2;datasource="HGDP/";ANC=T; # example simulation study
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
-# somewhat less important things to set
-#set.seed(1)
 if (!exists("PHASE")) PHASE=T
-nl<-1000; # maximum number of haps per population 
-max.donors<-100;prop.don=0.99; # reasonable defaults. 
-total=200;s.total=10; # number of EM iterations at end and w/in reps respectively
-PI.total=10; # EM iterations for PI only at start respectively; useful before re-phasing
-REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
-# s.M is w/in each iteration of thin / phase / EM and M is after convergence. 
-s.M<-0.00;M=0.00 # these are now multiplied by the #gridpoints in each chromosome to determine how many MCMC iterations are run. No longer really needed
-eps.lower=log(2) # threshold ratio of new likelihood to old required to phase flip
-min.bg=0.1;max.bg=1.0 # default cM length of buffer around phase hunting spikes; hunter will start at min.bg and ramp up to max.bg
-resultsdir="RESULTS/"
-###############################################################################
-
-# the rest are mostly used in debugging, comparing answers w/ Hapmix, etc
+# the rest are mostly used in debugging, etc
 if (!exists("ANC")) ANC=NULL; # no a-priori knowledge of which panels to use for which ancestries
-min.donors=as.integer(10); # take at least this number of haps at each gridpoint
-FLAT=F # set to FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-optlevel=3 # used to compile some functions to speed up
-USEHAPMIX=F # don't use Hapmix EM values to initialise
-tol=1e-8
 verbose=T # print certain statements of progress as algorithm runs?
-PLOT=F # create plots as the code runs? 
 EM=T # run EM algorithm?
 doMu=T # update copying matrix parameters?
 doPI=T # update ancestry switching parameters parameters?
 dorho=T # update recombination w/in same ancestry parameters? 
 dotheta=T # update error / mutation parameters?
-initonly=F; # if TRUE just run until ready to find Mu
-if (nchrno==22) samp_chrnos=c(1,3,7,10,15,17) # indices of chromosomes used in no-ancestry initial fit; swap for contiguous 5Mb blocks of all chromosomes?
-if (nchrno!=22) samp_chrnos=chrnos[1:5] # just use first 5
-subNUMA=NUMA # =NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,NUMA)
-subNL=100 # #individuals from each panel in no-ancestry initial fit
-o.LOG=T;# o.LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
-mcmcprog=F # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
-ffcleanup=T # whether to remove all ff files at the end
-if (target!="simulated") o.lambda=20 else o.lambda=50 # this is less important now for phasing steps as we get o.lambda from init_Mu 
-require(doParallel)
-if (is.na(MC)) {
-  MC=as.integer(detectCores()/2)
-  if (is.na(MC)) {MC=2;warning("using 2 cores as detectCores() has failed",immediate.=T)} # use 2 if can't use detectCores() 
-}
-if (verbose) cat("using", MC, "cores\n")
-registerDoParallel(cores=MC)
 
-source("setup.R") 
-if (max.donors==NUMP & prop.don<1)
-{
-  warning("can't use prop.don<1 and all donors: setting prop.don to 1", immediate.=T)
-  prop.don=1
-}
+source("setup.R") # sets default parameters, sets up some objects required later, reads in data, and initialises model.
 old.runtime<-as.numeric(Sys.time())
 o.total=total
 writelog<-function(alg) # single consistent function to write to EMlogfile
@@ -179,5 +139,5 @@ if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n
 if (verbose) cat("saving final results to file\n")
 save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
 		 GpcM,"_",prop.don,"_",max.donors,".RData"), target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-                 Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, 0, acoancs, coancs)
+                 Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, acoancs, coancs)
 
