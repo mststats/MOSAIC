@@ -147,7 +147,5 @@ for (ch in 1:nchrno)
   source("grid.R")
   rm(snps,rates) # leave in if planning to re-grid
 }
-if (target=="simulated")
-  source("testingsim.R") # various tests of model reaction to extreme examples, etc
 
 if (verbose) cat("Fitting model to ", NUMI, " ", target, " ", L, "-way admixed target individuals using ", kLL, " panels\n", sep="")
