@@ -5,7 +5,7 @@ There should be a folder with 4 types of input file:
 4. recombination map: "rates.chr" 3 rows of #sites, position, recombination rate. 
 
 
-A folder called RESULTS needs to be created to hold log-files (foo.out) and results (foo.RData).  
+A folder called RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
 
 You'll need to install the R package mosaicpackage_1.0.tar.gz. This is to once-off compile the C++ code that does the forward-backward, etc. 
 You can create this package by running "sh create_package.sh path_to_R_libraries"
