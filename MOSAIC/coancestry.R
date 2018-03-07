@@ -173,7 +173,7 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 #require(compiler);create_coancs<-cmpfun(r_create_coancs,list(optimize=optlevel))
 create_coancs<-r_create_coancs
 
-plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,ylab="relative prob.",
+plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
 			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samelambda=F,optmethod="BFGS")
 {
   # plotall indicates whether to plot individual based curves as well as consensus curves
@@ -184,7 +184,15 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
   {
     min.cM=which(coancs$drange<(min.cM/gap/100))
     coancs$drange=coancs$drange[-min.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
-    coancs$relprobs=array(coancs$relprobs[,,,-min.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],dim(coancs$relprobs)[4]-length(min.cM)))
+    coancs$relprobs=array(coancs$relprobs[,,,-min.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
+							dim(coancs$relprobs)[4]-length(min.cM)))
+  }
+  if (!is.null(max.cM))
+  {
+    max.cM=which(coancs$drange>(max.cM/gap/100))
+    coancs$drange=coancs$drange[-max.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
+    coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
+							dim(coancs$relprobs)[4]-length(max.cM)))
   }
   lpop<-dim(coancs$relprobs)[1]
   if (samelambda & lpop>2)
@@ -204,7 +212,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       if (lpop==5) {dd[1]=3;dd[2]=5} # dimensions of plots
       if (lpop==6) {dd[1]=3;dd[2]=7} # dimensions of plots
     }
-    par(mfrow=c(dd[1],dd[2]), cex.axis=0.5*cexa, cex.lab=cexa, cex.main=cexa, mar=c(cexa,cexa,cexa,0)+0.2)
+    par(mfrow=c(dd[1],dd[2]), cex.axis=0.7*cexa, cex.lab=cexa, cex.main=cexa, mar=c(cexa,cexa,cexa,0)+0.2)
   }
   for (i in 1:lpop) for (j in 1:lpop)
   {
@@ -226,7 +234,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       if (all(!keep[[(i-1)*lpop+j]])) # if none pass the threshold, use all
 	keep[[(i-1)*lpop+j]][]=T
       if (verbose)
-	cat("for ancs", i,"->",j, "keeping", which(keep[[(i-1)*lpop+j]]), "\n")
+	cat("for ancs", i,":",j, "keeping", which(keep[[(i-1)*lpop+j]]), "\n")
       kweights[[(i-1)*lpop+j]][!keep[[(i-1)*lpop+j]]]=0
       #kweights[[(i-1)*lpop+j]][]=0;kweights[[(i-1)*lpop+j]][1]=1 # debug by looking at only one ind / hap
       if (all(kweights[[(i-1)*lpop+j]]==0)) kweights[[(i-1)*lpop+j]][]=1
@@ -241,7 +249,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
     relcurve[i,j,]=tmpcurve
   }
   x=array(NaN,c(lpop,lpop,3));x[,,2]=1 # it'll always be approx 1 for x[2]
-  #dh=as.integer(0.2*length(coancs$drange)) # match @ 20% of the way along to get x[3]
+  #dh=as.integer(0.2*length(coancs$drange)) # match at 20% of the way along to get x[3]
   for (i in 1:lpop) for (j in 1:lpop)
   {
     #if (diff(range(relcurve[i,j,]))<1e-3)
@@ -262,7 +270,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
     if (is.nan(x[i,j,2]) | is.infinite(x[i,j,2])) x[i,j,2]=1 
     if (is.nan(x[i,j,3]) | is.infinite(x[i,j,3]) | (x[i,j,3]==0)) x[i,j,3]=5 
     #print(x[i,j,3])
-    if (verbose) cat(i,"->",j, "before:", x[i,j,],"\n")
+    if (verbose) cat(i,":",j, "before:", x[i,j,],"\n")
   }
   if (!samelambda)
   {
@@ -350,7 +358,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
 	       max(relcurve[i,j,],coancs$relprobs[i,j,keep[[(i-1)*lpop+j]],]/kweights[[(i-1)*lpop+j]][keep[[(i-1)*lpop+j]]]))
       if (YLIM[1]>1) YLIM[1]=1 # always include 1
       if (YLIM[2]<1) YLIM[2]=1 # always include 1
-      plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab=ylab,main=paste0(targetname, popnames[i],"->",popnames[j],": ","@",round(x[i,j,][3],2)))
+      plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab=ylab,main=paste0(targetname, popnames[i],":",popnames[j]," (",round(x[i,j,][3],1),")"))
       if (is.null(k) & plotall) # if plotting group consensus, also show hap / inds in grey
       {
 	# don't forget to undo the weighting
