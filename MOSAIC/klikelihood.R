@@ -38,8 +38,8 @@ for (ch in 1:nchrno)
       ind=as.integer((k+1)/2)
       # fb calcs moved to here to avoid storing all fors, backs, etc
       t.fors<-rep(0,G[ch]*max.donors*L);t.sumfors<-matrix(0,G[ch],L);t.scalefactor<-rep(0,G[ch]);
-      cppforward(k,NUMA,max.donors,THIN,NUMP,kLL,L,0,G[ch],G[ch],transitions[[ind]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],mutmat,
-		 maxmiss,initProb[k,],label,ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],flips[[ind]][[ch]],t.fors,t.sumfors,t.scalefactor)
+      cppforward(k,NUMA,max.donors,THIN,NUMP,kLL,L,0,G[ch],G[ch],transitions[[ind]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],
+		 mutmat,maxmiss,initProb[k,],label,ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],flips[[ind]][[ch]],t.fors,t.sumfors,t.scalefactor)
       -sum(log(t.scalefactor))
     }
   }
