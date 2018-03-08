@@ -6,9 +6,9 @@ if (target!="simulated")
   NE=c("Pathan", "Iranian", "Balochi", "Makrani", "Cypriot", "Armenian", "Turkish", "Polish"),#, "Chuvash", "Mandenka"), 
   AD=target)
   if (datasource=="HGDP/" & target=="NorthAfrican") 
-    pops<-list(European=c("French", "English", "Scottish", "Welsh", "GermanyAustria", "Ireland", 
-			  "Greek", "NorthItalian", "Turkish", "Spanish"), #"Sardinian", "Tuscan", "WestSicilian", "EastSicilian", "SouthItalian", "Cypriot", 
-	       African=c("Yoruba", "BantuKenya", "BantuSouthAfrica", "Mandenka", "BiakaPygmy", "Hadza", "MbutiPygmy"), #"Sandawe", 
+    pops<-list(European=c("French", "English", "Scottish", "Welsh", "GermanyAustria", "Ireland", "NorthItalian"), 
+	       # "Turkish", "Spanish"), #"Greek", "Sardinian", "Tuscan", "WestSicilian", "EastSicilian", "SouthItalian", "Cypriot", 
+	       African=c("Yoruba", "BantuKenya", "BantuSouthAfrica", "Mandenka", "Sandawe", "BiakaPygmy", "Hadza", "MbutiPygmy"), #
 	       AD=target)
   if (datasource=="spanish/") 
     pops<-list(EU=c("France_17", "Germany-Belgium_1", "Germany-Hungary_7", "Ireland_8", "Neatherlands-Germany_27", "Poland_19", "Switzerland_11", "Switzerland_14"),
@@ -59,10 +59,9 @@ if (target=="simulated")
     {
       if (L==2)
       {
-	# pops<-list(Eu=c("Brahui", "Balochi", "Burusho", "Armenian", "Iranian", "Lezgin","Georgian"),
-	#            As=c("Hezhen", "HanNchina", "Han", "Tu", "Oroqen", "Daur", "Xibo", "Tujia", "Yakut"))
-	# 
-	#mixers=c("Sindhi","Mongola")
+	#pops<-list(Eu=c("Iranian", "Lezgin", "Armenian", "Sindhi", "Brahui", "Georgian"),
+	#	   As=c("Hezhen", "HanNchina", "Han", "Tu", "Oroqen", "Daur", "Xibo", "Tujia", "Yakut"))
+	#mixers=c("Pathan","Mongola")
 	pops<-list(Eu=c("Spanish","Norwegian","Polish","English","Welsh","Ireland","Scottish"),
 		   Af=c("Mandenka","Hadza","BantuKenya","BantuSouthAfrica","Sandawe","BiakaPygmy","MbutiPygmy"))
 	mixers=c("French","Yoruba")
