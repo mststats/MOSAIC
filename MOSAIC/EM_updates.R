@@ -14,7 +14,7 @@ if (HPC!=2)
       {
 	ind<-as.integer((k+1)*0.5)
 	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],
-		 mutmat,maxmiss,kLL,L,PI,rho,Mu, ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
+		 mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
       }
     }
     if (!HPC)
@@ -23,7 +23,7 @@ if (HPC!=2)
       {
 	ind<-as.integer((k+1)*0.5)
 	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],
-		 mutmat,maxmiss,kLL,L,PI,rho,Mu, ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],donatesr[[ch]][[ind]])
+		 mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],donatesr[[ch]][[ind]])
       }
     }
   }
