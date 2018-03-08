@@ -35,7 +35,7 @@ if (NUMA==1 & PHASE)
 }
 gobs<-list()
 # some default values
-nl<-1000; # maximum number of haps per population 
+if (!exists("nl")) nl=1000; # maximum number of haps per population 
 max.donors<-100;prop.don=0.99; # reasonable defaults. 
 total=200;s.total=10; # number of EM iterations at end and w/in reps respectively
 PI.total=10; # EM iterations for PI only at start respectively; useful before re-phasing
