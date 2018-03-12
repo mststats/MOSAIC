@@ -8,7 +8,7 @@ r_create_umatch=function(ch.d.w,ch.t.w,g.map,t.G)
     if (length(gm)>0)
     {
       tmp=matrix(0,length(ch.d.w$u[[g]]), length(ch.t.w$u[[g]]))
-      for (i in 1:nrow(tmp)) for (j in 1:ncol(tmp)) tmp[i,j]=sum(ch.d.w$u[[g]][[i]]==ch.t.w$u[[g]][[j]],na.rm=T)  
+      for (i in 1:nrow(tmp)) for (j in 1:ncol(tmp)) tmp[i,j]=sum(ch.d.w$u[[g]][[i]]==ch.t.w$u[[g]][[j]],na.rm=T) # note the na.rm=T for missing data compatibility
       ans[[g]]=tmp
     }
     if (length(gm)==0)
