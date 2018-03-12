@@ -39,7 +39,7 @@ if (!exists("nl")) nl=1000; # maximum number of haps per population
 max.donors<-100;prop.don=0.99; # reasonable defaults. 
 total=200;s.total=10; # number of EM iterations at end and w/in reps respectively
 PI.total=10; # EM iterations for PI only at start respectively; useful before re-phasing
-REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
+if (!exists("REPS")) REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
 # s.M is w/in each iteration of thin / phase / EM and M is after convergence. 
 s.M<-0.00;M=0.00 # these are now multiplied by the #gridpoints in each chromosome to determine how many MCMC iterations are run. No longer really needed
 eps.lower=log(2) # threshold ratio of new likelihood to old required to phase flip
