@@ -65,7 +65,6 @@ cluster_windows<-function(windows,PLOT=F,t.L=L,verbose=F)
     alpha[[ind]]=w/sum(w);alpha[[ind]][alpha[[ind]]<0]=0 # very close to the above alpha but now consistent with PI estimates
     lambda[[ind]]=-log(1-PI[[ind]])/dr
   }
-  rownames(Mu)<-panels[1:kLL]#[-ignorepanels]
   if (PLOT)
   {
     if (!exists("PNG")) PNG=T
