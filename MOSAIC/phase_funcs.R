@@ -92,7 +92,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
   if (max(ind.c.v)>t.eps.lower)
     while (nflips>0 & iters<lim) {
       #t.eps.lower=end.eps.lower+0.5*log(lim/iters) # fewer flips at the start in phase hunter, down to 2 as lower threshold for a phase flip
-      bg=((2*inv.logit(mult*iters-mult))-1)*(maxbg-minbg)+minbg # smaller band at the start, increasing quickly
+      bg=((2*boot::inv.logit(mult*iters-mult))-1)*(maxbg-minbg)+minbg # smaller band at the start, increasing quickly
       BG=as.integer(bg*GpcM) # bg is number of centiMorgans to each side of a proposed phase flip around which don't try more flips
       if (max(ind.c.v)<t.eps.lower) 
       {
