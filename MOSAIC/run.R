@@ -50,6 +50,7 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
     source("cleanup.R")
     stop("saving initialisation and quitting")
   }
+  rm(noanc_gswitches) 
   tmp<-cluster_windows(windowed_copying,PLOT=F,t.L=L,verbose=verbose)
   Mu<-tmp$Mu
   alpha<-tmp$alpha
@@ -58,11 +59,10 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   #lambda=as.list(sapply(tmp$lambda,mean,na.rm=T)) # doesn't work well!
   lambda=o.lambda # re-use o.lambda from above
   rm(windowed_copying,tmp)
-  o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
-}
+} else {diag(Mu)=10*diag(Mu);Mu=t(t(Mu)/colSums(Mu))}
+o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
 get_switches=F
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
-rm(noanc_gswitches)
 o.M<-M;M<-s.M
 if (EM) source("create_logfile.R")
 LOG=F
