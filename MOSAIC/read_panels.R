@@ -99,7 +99,7 @@ for (ch in 1:nchrno)
   all_rates<-matrix(scan(paste0(datasource,"rates.",chrnos[ch]),skip=1,quiet=T),ncol=2)
   locs<-as.integer(snps[,4])
   tmp=match(locs, all_rates[,1])
-  rates=all_rates[tmp,2] # use ones with hap data; some may be nmissing if in snps file but not in rates file
+  rates=all_rates[tmp,2] # use ones with hap data; some may be missing if in snps file but not in rates file
   # rates are flat in sections so use rate to the left if missing
   for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
   rates<-rates/100 # /100 to move to morgans from centimorgans 
