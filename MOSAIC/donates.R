@@ -77,12 +77,14 @@ create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.
     return(list(donors=donors, ndonors=cutoff))
   }
   g.donors<-apply(probmass,1,f) 
-  t.ndonors<-vapply(g.donors,function(x) x$ndonors, FUN.VALUE=0)
-  t.donates<-matrix(vapply(g.donors,function(x) x$donors,FUN.VALUE=rep(0,max.donors)),max.donors)
+  t.ndonors<-vapply(g.donors,function(x) x$ndonors,FUN.VALUE=0L)
+  t.donates<-matrix(vapply(g.donors,function(x) x$donors,FUN.VALUE=rep(0L,max.donors)),max.donors)
   # now calculate the right shifted and left shifted locations of the matching indices 
   t.donatesl<-t.donatesr<-matrix(0L,max.donors,G[ch]) # re-sizing and 0s first
-  t.donatesl[,2:G[ch]]<-matrix(unlist(tapply(2:G[ch], 2:G[ch], function(g) match(t.donates[,g], t.donates[,g-1])),use.names=F),max.donors)
-  t.donatesr[,1:(G[ch]-1)]<-matrix(unlist(tapply(1:(G[ch]-1), 1:(G[ch]-1), function(g) match(t.donates[,g], t.donates[,g+1])),use.names=F),max.donors)
+  t.donatesl[,2:G[ch]]<-matrix(unlist(vapply(2:G[ch], function(g) match(t.donates[,g], t.donates[,g-1]),
+					     FUN.VALUE=rep(0L,max.donors)),use.names=F),max.donors)
+  t.donatesr[,1:(G[ch]-1)]<-matrix(unlist(vapply(1:(G[ch]-1), function(g) match(t.donates[,g], t.donates[,g+1]),
+						 FUN.VALUE=rep(0L,max.donors)),use.names=F),max.donors)
   t.donatesl[is.na(t.donatesl)]<-0 # match() returns NA where no match occurs, replace with 0s
   t.donatesr[is.na(t.donatesr)]<-0 # match() returns NA where no match occurs, replace with 0s
   return(list(ndonors=t.ndonors,donates=t.donates-1,donatesl=t.donatesl-1,donatesr=t.donatesr-1,switches=switches)) # -1 to convert to cpp indexing

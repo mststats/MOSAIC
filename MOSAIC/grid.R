@@ -9,7 +9,7 @@ if (FLAT) {G[ch]=as.integer(S[ch]);dr=(rates[S[ch]]-rates[1])/(G[ch]-1);}
 g.rates<-seq(rates[1],rates[S[ch]],l=G[ch]) # even grid across recombination rates
 # create a map of observed loci to gridded loci; grid is even on rates not distances
 if (verbose) cat("Finding new positions on chr", chrnos[ch], "...\n")
-g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
+g.map<-vapply(1:S[ch], function(s) which.min((rates[s]-g.rates)^2),0L) # create map from rates to grid
 # the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
 rm(g.rates)
 if (verbose) cat("Finding number at each location on chr", chrnos[ch], "...\n")

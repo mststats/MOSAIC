@@ -21,7 +21,7 @@ r.create.proposal<-function(t.ch,max.donors,t.fors,t.sumfors,t.backs,t.scalefact
 {
   NNL2=max.donors*L
   g.flip.ll<-function(g) flip.ll(g, t.ch, t.ndonors[g], NNL2, t.scalefactor, t.scalefactorb, t.fors, t.backs)
-  ll=c(ind.c.ll,tapply(2:G[t.ch], 2:G[t.ch], g.flip.ll))
+  ll=c(ind.c.ll,vapply(2:G[t.ch], g.flip.ll,0))
   ll=ll-ind.c.ll
   ll[is.nan(ll)|is.infinite(ll)]=-1 # can happen if no path through
   ll

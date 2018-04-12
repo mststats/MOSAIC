@@ -8,14 +8,6 @@ if (!is.null(mask))
   panels<-panels[-maskpanels] # remove masked groups 
 }
 tmp=match(target,panels); if (!is.na(tmp)) panels=panels[-tmp] # remove target panel
-if (target=="NorthAfrican") 
-{
-  adsubs=c("Bedouin", "Druze", "Egyptian", "Jordanian", "Moroccan", "Mozabite", "Palestinian", "Tunisian")
-  for (i in 1:length(adsubs))
-  {
-    tmp=match(adsubs[i],panels); tmp=tmp[!is.na(tmp)]; if (length(tmp)>0) panels=panels[-tmp]
-  }
-}
 kLL=length(panels)
 if (is.null(ANC))
 {
@@ -101,7 +93,8 @@ for (ch in 1:nchrno)
   tmp=match(locs, all_rates[,1])
   rates=all_rates[tmp,2] # use ones with hap data; some may be missing if in snps file but not in rates file
   # rates are flat in sections so use rate to the left if missing
-  for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
+  tmp=which(is.na(tmp))
+  rates[tmp]=all_rates[vapply(tmp,function(l) which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),0L),2]
   rates<-rates/100 # /100 to move to morgans from centimorgans 
   if (FLAT) 
   {
@@ -111,7 +104,7 @@ for (ch in 1:nchrno)
   rm(all_rates)
   G[ch]<-as.integer((rates[S[ch]]-rates[1])/dr+1)
   g.rates<-seq(rates[1],rates[S[ch]],l=G[ch])
-  g.map<-tapply(1:S[ch], 1:S[ch], function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
+  g.map<-vapply(1:S[ch], function(s) which.min((rates[s]-g.rates)^2),0L) # create map from rates to grid
   d.w[[ch]]=t.w[[ch]]=list(u=list(),w=list())
   if (target!="simulated")
   {
