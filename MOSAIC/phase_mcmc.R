@@ -69,5 +69,5 @@ cloglike<-sum(unlist((max.ll)))
 if (LOG) 
 {
   runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-  writelog("phasemcmc")
+  writelog(EMlogfile,"phasemcmc",diff.time,len)
 }

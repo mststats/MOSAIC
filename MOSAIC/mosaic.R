@@ -24,7 +24,7 @@ for (ITER in 1:total)
   if (LOG) 
   {
     runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-    writelog("EM")
+    writelog(EMlogfile,"EM",diff.time,len)
   }
   #if (verbose) setTxtProgressBar(pb, m)
 }

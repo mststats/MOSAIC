@@ -59,8 +59,9 @@ if(verbose)
   cat("Fitting no-ancestry model\n") 
 if (LOG) 
 {
-  source("create_logfile.R")
-  noancEMlogfile<-EMlogfile
+  tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
+  runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
+  noancEMlogfile=EMlogfile=tmp$logfile
 }
 total=50 # only estimating some of the parameters, not required to be super accurate
 #stop("wait")

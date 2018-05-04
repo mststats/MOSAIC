@@ -163,7 +163,7 @@ if (LOG)
   if (verbose & !get_switches & max.donors<NUMP) 
     cat(": log-likelihood", cloglike, "-> ")
   source("klikelihood.R") # some overhead in this so only run if asked for i.e. LOG=T
-  writelog("thinning")
+  writelog(EMlogfile,"thinning",diff.time,len)
   if (verbose & !get_switches & max.donors<NUMP) 
     cat(cloglike)
 } else cloglike=NaN

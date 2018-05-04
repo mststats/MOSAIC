@@ -28,10 +28,9 @@ dotheta=T # update error / mutation parameters?
 source("setup.R") # sets default parameters, sets up some objects required later, reads in data, and initialises model.
 old.runtime<-as.numeric(Sys.time())
 o.total=total
-writelog<-function(alg) # single consistent function to write to EMlogfile
-  write(file=EMlogfile,c(alg,signif(diff.time,4),signif(t(Mu),4),signif(rho,4),c(sapply(PI, function(x) signif(t(x),4))),
-			 sapply(alpha, function(x) signif(x,4)),sapply(lambda,function(x) round(x,4)),signif(theta,4),round(cloglike,4)),ncol=length(lognames),append=T)
-
+writelog<-function(logfile,alg,diff.time,len) # single consistent function to write to EMlogfile
+  write(file=logfile,c(alg,signif(diff.time,4),signif(t(Mu),4),signif(rho,4),c(sapply(PI, function(x) signif(t(x),4))),
+			 sapply(alpha, function(x) signif(x,4)),sapply(lambda,function(x) round(x,4)),signif(theta,4),round(cloglike,4)),ncol=len,append=T)
 eps=log(1.01) # i.e. a 1% increase in relative likelihood
 get_switches=F
 Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
@@ -65,7 +64,11 @@ o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official startin
 get_switches=F
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
 o.M<-M;M<-s.M
-if (EM) source("create_logfile.R")
+if (EM) {
+  tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
+  runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
+  EMlogfile=tmp$logfile
+}
 LOG=F
 LOG=o.LOG;cloglike=NaN 
 source("all_donates.R") # decide on donor set using initial parameters
