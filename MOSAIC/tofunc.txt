@@ -7,7 +7,6 @@ examples.R
 grid.R
 initProb.R
 klikelihood.R
-localanc.R
 mosaic.R
 noanc.R
 phase_hunt.R
@@ -16,5 +15,5 @@ plot_localanc.R
 read_panels.R
 run.R
 setup.R
-summarise_panels.R
-transitions.R
+
+run all functions through cmpfun to check to missing objects

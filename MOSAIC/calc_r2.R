@@ -8,6 +8,7 @@
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
   tmpG=dim(x[[ch]])[3]
+  L=dim(x[[ch]])[1]
   hap<-c(ind*2-1,ind*2)
   ans=0
   for (a in 1:L)
@@ -33,6 +34,7 @@ dip_expected_fr2_ind<-function(x,ind)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
+  L=dim(x[[1]])[1]
   ans=0
   for (a in 1:L)
   {
@@ -94,6 +96,7 @@ dip_expected_fr2<-function(x)
 hap_expected_fr2_chr_k<-function(x,ch,k)
 {
   tmpG=dim(x[[ch]])[3]
+  L=dim(x[[ch]])[1]
   ans=0
   for (a in 1:L) # average over choices of a and hap(ind)
   {
@@ -111,6 +114,7 @@ hap_expected_fr2_hap<-function(x,k)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
+  L=dim(x[[1]])[1]
   ans=0
   for (a in 1:L)
   {
@@ -134,6 +138,7 @@ hap_expected_fr2<-function(x)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)*NUMA
+  L=dim(x[[1]])[1]
   ans=0
   for (a in 1:L)
   {

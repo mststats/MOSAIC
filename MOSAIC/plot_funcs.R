@@ -1,7 +1,7 @@
 # various functions that create useful plots of MOSAIC model fit
 # such as local ancestry plots, plots of the inferred copying matrix, tables of top donors in selected regions, etc
 if (!exists("colvec")) colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
-happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) { # probs is L*K*length(x) in dimension
+happlot<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",cexa=1) { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
@@ -17,7 +17,7 @@ happlot<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Posit
   }
   axis(2)
 }
-dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("Position on Chromosome", chrnos[ch]),cexa=1) 
+dipplot<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual",ind),xlab="",cexa=1) 
 { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
@@ -35,10 +35,11 @@ dipplot<-function(ch,ind,x,probs,ylab,mlab=paste("Individual",ind),xlab=paste("P
   axis(2)
 }
 
-happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) 
+happlot_Mu<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu,pow=4,cexa=1) 
 { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
+  kLL=nrow(Mu)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
@@ -57,11 +58,12 @@ happlot_Mu<-function(ch,k,x,probs,ylab,mlab=paste("Haplotype", k),xlab=paste("Po
   axis(2)
 }
 
-dipplot_Mu<-function(ch,ind,x,probs,ylab,mlab=paste("Individual", ind),xlab=paste("Position on Chromosome", chrnos[ch]),t.Mu,pow=4,cexa=1) 
+dipplot_Mu<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual", ind),xlab="",t.Mu,pow=4,cexa=1) 
 { # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
+  kLL=nrow(Mu)
   glocs=rep(x,100)
   xlim=range(x)
   x=c(x,rev(x))
@@ -147,7 +149,7 @@ plot_panel_dist=function(donors,ch,a)
 {
   m=colMeans(donors[[ch]][,,a]) # note difference from Chromosomal mean rather than genomewide mean
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
-  plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", chrnos[ch]))
+  plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
 plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F, beside=F, ord=T, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=0,tol=1e-6)
 {

@@ -7,7 +7,6 @@ for (ITER in 1:total)
   source("EM_updates.R") 
   source("initProb.R")
   source("klikelihood.R") # E-step: extra work here as fors will be calculated next iteration of E.n above
-  if (PLOT & L>1) {gfbs<-get_gfbs();source("localanc.R");MODE="BAR";source("plot_localanc.R")}
   cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
   if (!is.na(old.cloglike)) 
   {
