@@ -282,3 +282,22 @@ plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t
     return(ordFst)
 }
 
+# localanc is w.r.t. final phasing. The below undoes this to compare with input phasing (necessary for Fst calculations)
+phase_localanc=function(t.localanc,t.flips) 
+{
+  for (ch in 1:nchrno)
+    for (ind in 1:(NUMA/2))
+    {
+      haps=c(ind*2-1,ind*2)
+      ans=t.localanc[[ch]][,haps,]
+      for (k in haps)
+      {
+	otherhap=ifelse((k%%2)==0,1,2) # if even look at previous; if odd look at next
+	kf=t.flips[[ind]][[ch]] # F and T values
+	for (l in 1:L)
+	  t.localanc[[ch]][l,k,kf]=ans[l,otherhap,kf]
+      }
+    }
+  return(t.localanc)
+}
+
