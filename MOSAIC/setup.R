@@ -97,6 +97,7 @@ source("create_logfile.R")
 source("intermediate_calcs.R")
 source("mix_hmm.R")
 source("phase_funcs.R")
+source("initProbs.R")
 if (LL<L) {stop("Can't fit more latent ancs than panels");}
 ##################################
 # now use principal components to set sensible starting values for the copying matrix

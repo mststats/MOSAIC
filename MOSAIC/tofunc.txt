@@ -5,13 +5,11 @@ create_logfile.R
 EM_updates.R
 examples.R
 grid.R
-initProb.R
 klikelihood.R
 mosaic.R
 noanc.R
 phase_hunt.R
 phase_mcmc.R
-plot_localanc.R
 read_panels.R
 run.R
 setup.R

@@ -145,7 +145,7 @@ if (dorho || doPI || doMu)
 {
   for (ind in 1:NUMI)
     transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
-  source("initProb.R")
+  initProb=initprobs()
 }
 
 

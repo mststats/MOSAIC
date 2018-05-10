@@ -35,7 +35,7 @@ eps=log(1.01) # i.e. a 1% increase in relative likelihood
 get_switches=F
 Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
 source("noanc.R") # always need to run noanc.R b/c need good paras for init_Mu
-source("initProb.R")
+initProb=initprobs()
 runtime<-as.numeric(Sys.time())
 if (kLL>L) # otherwise can't cluster kLL things into L clusters
 {
