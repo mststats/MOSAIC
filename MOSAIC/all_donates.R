@@ -162,7 +162,8 @@ if (LOG)
   runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
   if (verbose & !get_switches & max.donors<NUMP) 
     cat(": log-likelihood", cloglike, "-> ")
-  source("klikelihood.R") # some overhead in this so only run if asked for i.e. LOG=T
+  # some overhead in this so only run if asked for i.e. LOG=T
+  cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
   writelog(EMlogfile,"thinning",diff.time,len)
   if (verbose & !get_switches & max.donors<NUMP) 
     cat(cloglike)

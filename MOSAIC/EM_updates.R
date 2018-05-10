@@ -141,7 +141,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
     }
     if (!commontheta) {t.theta<-misses/(misses+matches);t.theta[(misses+matches)==0]=mean(t.theta[(misses+matches)>0])}
     if (commontheta) t.theta[]<-sum(misses)/sum(misses+matches) 
-    t.mutmat<-fmutmat(t.theta, t.L, t.maxmiss, maxmatch)
+    mutmat<-fmutmat(t.theta, t.L, t.maxmiss, maxmatch)
   }
   rm(E.n) 
   if (t.dorho || t.doPI || t.doMu) 
@@ -150,5 +150,46 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
       t.transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
     initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,label,NL)
   }
-  return(list(PI=t.PI, alpha=t.alpha, lambda=t.lambda, Mu=t.Mu, rho=t.rho, theta=t.theta, transitions=t.transitions, mutmat=t.mutmat, initProb=initProb))
+  return(list(PI=t.PI, alpha=t.alpha, lambda=t.lambda, Mu=t.Mu, rho=t.rho, theta=t.theta, transitions=t.transitions, mutmat=mutmat, initProb=initProb))
+}
+
+
+# run EM algorithm for total iterations
+run_EM=function(verbose=F) {
+  if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
+  for (ITER in 1:total)
+  {
+    old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
+    old.mutmat=mutmat;old.transitions=transitions;old.initProb=initProb
+    old.cloglike<-cloglike
+    tmp=update_params(HPC, nchrno, donates, donatesl, donatesr, NUMA, L, max.donors, NUMP, NUMI, G, transitions, flips,umatch,maxmatchsize,d.w,t.w,gobs,mutmat,maxmiss,kLL,
+		      PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu)
+    PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
+    transitions=tmp$transitions;mutmat=tmp$mutmat;oldinitProb=tmp$initProb
+    #cat("###### check:", range(mutmat-old.mutmat), " : " , cloglike-old.cloglike,"########\n")
+    # E-step: extra work here as fors will be calculated next iteration of E.n above
+    cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
+    cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
+    if (!is.na(old.cloglike)) 
+    {
+      if ((old.cloglike - cloglike)>1e-3)
+      {
+	Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
+	transitions=old.transitions;mutmat=old.mutmat;initProb=old.initProb;
+	cloglike<-old.cloglike
+	warning("loglikelihood has decreased; abandoning EM", immediate.=T)
+	break
+      }
+      if ((cloglike - old.cloglike)< eps) 
+	{cat("EM iterations have converged\n");break;}
+    }
+    if (LOG) 
+    {
+      runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
+      writelog(EMlogfile,"EM",diff.time,len)
+    }
+    if (verbose) setTxtProgressBar(pb, m)
+  }
+  if (verbose) close(pb)
+  return(list(PI=PI,alpha=alpha,lambda=lambda,Mu=Mu,rho=rho,theta=theta,runtime=runtime,initProb=initProb,cloglike=cloglike,transitions=transitions,mutmat=mutmat))
 }

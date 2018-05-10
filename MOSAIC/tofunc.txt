@@ -1,8 +1,6 @@
 admix.R
 all_donates.R
 examples.R
-grid.R
-klikelihood.R
 mosaic.R
 noanc.R
 phase_hunt.R

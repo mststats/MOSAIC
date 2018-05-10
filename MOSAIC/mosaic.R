@@ -9,7 +9,8 @@ for (ITER in 1:total)
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
   transitions=tmp$transitions;mutmat=tmp$mutmat;initProb=tmp$initProb
   initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
-  source("klikelihood.R") # E-step: extra work here as fors will be calculated next iteration of E.n above
+  # E-step: extra work here as fors will be calculated next iteration of E.n above
+  cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
   cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
   if (!is.na(old.cloglike)) 
   {

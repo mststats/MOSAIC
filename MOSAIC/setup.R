@@ -99,6 +99,7 @@ source("mix_hmm.R")
 source("phase_funcs.R")
 source("initProb.R")
 source("EM_updates.R")
+source("klikelihood.R")
 if (LL<L) {stop("Can't fit more latent ancs than panels");}
 ##################################
 # now use principal components to set sensible starting values for the copying matrix
