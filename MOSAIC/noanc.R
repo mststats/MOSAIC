@@ -68,10 +68,9 @@ total=50 # only estimating some of the parameters, not required to be super accu
 #stop("wait")
 if (EM) {
   # no anc fit and all donors included; should remove EM output
-  #tmp=run_EM()
-  #PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
-  #cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
-  source("mosaic.R")
+  tmp=run_EM()
+  PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
+  cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 } 
 #stop("finished noanc part")
 if (!exists("getnoancgfbs")) getnoancgfbs=F 

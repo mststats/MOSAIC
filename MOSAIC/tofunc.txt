@@ -1,7 +1,6 @@
 admix.R
 all_donates.R
 examples.R
-mosaic.R
 noanc.R
 phase_hunt.R
 phase_mcmc.R

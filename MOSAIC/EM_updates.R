@@ -1,7 +1,8 @@
 # function that performs the EM updates for MOSAIC's parameters. First some statistics that are used in multiple EM updates are calculated
 # using functions in intermediate_calcs.R using Cpp code. These amount to counts of various switch types along the target genomes
 update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.max.donors, t.NUMP, t.NUMI, t.G, t.transitions, t.flips,t.umatch, t.maxmatchsize,
-		       t.d.w,t.t.w,t.gobs,t.mutmat,t.maxmiss,t.kLL, t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, t.dotheta, t.doMu)
+		       t.d.w,t.t.w,t.gobs,t.mutmat,t.maxmiss,t.kLL, t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, t.dotheta, t.doMu,
+		       t.label, t.NL, t.initProbs)
 {
   E.n<-list()
   if (t.HPC!=2)
@@ -17,7 +18,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 	{
 	  ind<-as.integer((k+1)*0.5)
 	  calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
-		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]],t.initProbs)
 	}
       }
       if (!t.HPC)
@@ -26,7 +27,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 	{
 	  ind<-as.integer((k+1)*0.5)
 	  calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
-		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.donatesr[[ch]][[ind]])
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.donatesr[[ch]][[ind]],t.initProbs)
 	}
       }
     }
@@ -42,7 +43,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
       donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
       ans=calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],
-		   t.gobs[[ch]][[ind]],t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
+		   t.gobs[[ch]][[ind]],t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind,t.initProbs)
       rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
       ans
     }
@@ -67,8 +68,8 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
     }
     initg=array(NaN, c(t.nchrno,t.NUMA,t.L,t.kLL));
     for (k in 1:t.kLL) 
-      #initg[,,,k]=apply(initi[,,,which(label==k)],-4,sum)
-      initg[,,,k]=apply(array(initi[,,,which(label==k)],c(t.nchrno,t.NUMA,t.L,sum(label==k))),-4,sum)
+      #initg[,,,k]=apply(initi[,,,which(t.label==k)],-4,sum)
+      initg[,,,k]=apply(array(initi[,,,which(t.label==k)],c(t.nchrno,t.NUMA,t.L,sum(t.label==k))),-4,sum)
     t.Mu[]<-0
     for (ja in 1:t.L)
     {
@@ -147,26 +148,24 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
   if (t.dorho || t.doPI || t.doMu) 
   {
     for (ind in 1:t.NUMI)
-      t.transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
-    initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,label,NL)
+      t.transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,t.NL)
+    initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,t.label,t.NL)
   }
   return(list(PI=t.PI, alpha=t.alpha, lambda=t.lambda, Mu=t.Mu, rho=t.rho, theta=t.theta, transitions=t.transitions, mutmat=mutmat, initProb=initProb))
 }
 
 
-# run EM algorithm for total iterations
+# run EM algorithm for total iterations or until convergence
 run_EM=function(verbose=F) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
   for (ITER in 1:total)
   {
     old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
-    old.mutmat=mutmat;old.transitions=transitions;old.initProb=initProb
-    old.cloglike<-cloglike
+    old.mutmat=mutmat;old.transitions=transitions;old.initProb=initProb;old.cloglike<-cloglike
     tmp=update_params(HPC, nchrno, donates, donatesl, donatesr, NUMA, L, max.donors, NUMP, NUMI, G, transitions, flips,umatch,maxmatchsize,d.w,t.w,gobs,mutmat,maxmiss,kLL,
-		      PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu)
+	  	      PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu, label, NL, initProb)
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
-    transitions=tmp$transitions;mutmat=tmp$mutmat;oldinitProb=tmp$initProb
-    #cat("###### check:", range(mutmat-old.mutmat), " : " , cloglike-old.cloglike,"########\n")
+    transitions=tmp$transitions;mutmat=tmp$mutmat;initProb=tmp$initProb
     # E-step: extra work here as fors will be calculated next iteration of E.n above
     cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
     cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
@@ -175,8 +174,7 @@ run_EM=function(verbose=F) {
       if ((old.cloglike - cloglike)>1e-3)
       {
 	Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
-	transitions=old.transitions;mutmat=old.mutmat;initProb=old.initProb;
-	cloglike<-old.cloglike
+	transitions=old.transitions;mutmat=old.mutmat;initProb=old.initProb;cloglike<-old.cloglike
 	warning("loglikelihood has decreased; abandoning EM", immediate.=T)
 	break
       }

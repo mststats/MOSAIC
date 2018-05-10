@@ -3,12 +3,11 @@
 for (ITER in 1:total)
 {
   old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
-  old.cloglike<-cloglike
+  old.mutmat=mutmat;old.transitions=transitions;old.initProb=initProb;old.cloglike<-cloglike
   tmp=update_params(HPC, nchrno, donates, donatesl, donatesr, NUMA, L, max.donors, NUMP, NUMI, G, transitions, flips,umatch,maxmatchsize,d.w,t.w,gobs,mutmat,maxmiss,kLL,
-		       PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu)
+		       PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu, label, NL)
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
   transitions=tmp$transitions;mutmat=tmp$mutmat;initProb=tmp$initProb
-  initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
   # E-step: extra work here as fors will be calculated next iteration of E.n above
   cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
   cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
@@ -17,8 +16,7 @@ for (ITER in 1:total)
     if ((old.cloglike - cloglike)>1e-3)
     {
       Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
-      initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
-      cloglike<-old.cloglike
+      transitions=old.transitions;mutmat=old.mutmat;initProb=old.initProb;cloglike<-old.cloglike
       warning("loglikelihood has decreased; abandoning EM", immediate.=T)
       break
     }
