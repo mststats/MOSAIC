@@ -54,7 +54,8 @@ mutmat<-fmutmat(theta, L, maxmiss, maxmatch) # possibly overkill / some redundan
 LOG=F;source("all_donates.R") # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
 cloglike=NaN
 LOG=o.LOG
-initProb=initprobs()
+initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
+
 if(verbose) 
   cat("Fitting no-ancestry model\n") 
 if (LOG) 

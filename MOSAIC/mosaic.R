@@ -5,7 +5,7 @@ for (ITER in 1:total)
   old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
   old.cloglike<-cloglike
   source("EM_updates.R") 
-  initProb=initprobs()
+  initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
   source("klikelihood.R") # E-step: extra work here as fors will be calculated next iteration of E.n above
   cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
   if (!is.na(old.cloglike)) 
@@ -13,7 +13,7 @@ for (ITER in 1:total)
     if ((old.cloglike - cloglike)>1e-3)
     {
       Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
-      initProb=initprobs()
+      initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
       cloglike<-old.cloglike
       warning("loglikelihood has decreased; abandoning EM", immediate.=T)
       break
