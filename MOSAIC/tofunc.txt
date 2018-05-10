@@ -2,7 +2,6 @@ admix.R
 all_donates.R
 ancunaware.R
 create_logfile.R
-EM_updates.R
 examples.R
 grid.R
 klikelihood.R
@@ -15,3 +14,4 @@ run.R
 setup.R
 
 run all functions through cmpfun to check to missing objects
+and check setup.R for single calls to all before moving into mosaicpackage

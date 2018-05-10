@@ -4,7 +4,10 @@ for (ITER in 1:total)
 {
   old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
   old.cloglike<-cloglike
-  source("EM_updates.R") 
+  tmp=update_params(HPC, nchrno, donates, donatesl, donatesr, NUMA, L, max.donors, NUMP, NUMI, G, transitions, flips,umatch,maxmatchsize,d.w,t.w,gobs,mutmat,maxmiss,kLL,
+		       PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu)
+  PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
+  transitions=tmp$transitions;mutmat=tmp$mutmat;initProb=tmp$initProb
   initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
   source("klikelihood.R") # E-step: extra work here as fors will be calculated next iteration of E.n above
   cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")

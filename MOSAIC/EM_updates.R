@@ -1,151 +1,154 @@
-# script that performs the EM updates for MOSAIC's parameters. First some statistics that are used in multiple EM updates are calculated
+# function that performs the EM updates for MOSAIC's parameters. First some statistics that are used in multiple EM updates are calculated
 # using functions in intermediate_calcs.R using Cpp code. These amount to counts of various switch types along the target genomes
-E.n<-list()
-if (HPC!=2)
+update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.max.donors, t.NUMP, t.NUMI, t.G, t.transitions, t.flips,t.umatch, t.maxmatchsize,
+		       t.d.w,t.t.w,t.gobs,t.mutmat,t.maxmiss,t.kLL, t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, t.dotheta, t.doMu)
 {
-  for (ch in 1:nchrno)
+  E.n<-list()
+  if (t.HPC!=2)
   {
-    if (HPC==1)
+    for (ch in 1:t.nchrno)
     {
-      donates_chr=getdonates(donates[[ch]],NUMI)
-      donatesl_chr=getdonates(donatesl[[ch]],NUMI)
-      donatesr_chr=getdonates(donatesr[[ch]],NUMI)
-      E.n[[ch]]<-foreach(k=1:NUMA) %dopar% 
+      if (t.HPC==1)
       {
-	ind<-as.integer((k+1)*0.5)
-	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],
-		 mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
+	donates_chr=getdonates(t.donates[[ch]],t.NUMI)
+	donatesl_chr=getdonates(t.donatesl[[ch]],t.NUMI)
+	donatesr_chr=getdonates(t.donatesr[[ch]],t.NUMI)
+	E.n[[ch]]<-foreach(k=1:t.NUMA) %dopar% 
+	{
+	  ind<-as.integer((k+1)*0.5)
+	  calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]])
+	}
       }
-    }
-    if (!HPC)
-    {
-      E.n[[ch]]<-foreach(k=1:NUMA) %dopar% 
+      if (!t.HPC)
       {
-	ind<-as.integer((k+1)*0.5)
-	calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],gobs[[ch]][[ind]],
-		 mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates[[ch]][[ind]],donatesl[[ch]][[ind]],donatesr[[ch]][[ind]])
+	E.n[[ch]]<-foreach(k=1:t.NUMA) %dopar% 
+	{
+	  ind<-as.integer((k+1)*0.5)
+	  calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.donatesr[[ch]][[ind]])
+	}
       }
     }
   }
-}
-if (HPC==2)
-{
-  tmp<-foreach(ch_k=(1:(NUMA*nchrno))) %dopar% 
+  if (t.HPC==2)
   {
-    ch=as.integer((ch_k-0.5)/NUMA)+1
-    k=(ch_k-1)%%NUMA+1
-    ind<-as.integer((k+1)*0.5)
-    donates_chr_ind=getdonates_ind(donates[[ch]][[ind]])
-    donatesl_chr_ind=getdonates_ind(donatesl[[ch]][[ind]])
-    donatesr_chr_ind=getdonates_ind(donatesr[[ch]][[ind]])
-    ans=calc_E.n(ch,k,max.donors,NUMP,NUMA,G[ch],transitions[[ind]],flips[[ind]][[ch]],umatch[[ch]],maxmatchsize[ch],d.w[[ch]],t.w[[ch]],
-		 gobs[[ch]][[ind]],mutmat,maxmiss,kLL,L,PI,rho,Mu,ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
-    rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
-    ans
-  }
-    for (ch in 1:nchrno)
+    tmp<-foreach(ch_k=(1:(t.NUMA*t.nchrno))) %dopar% 
     {
-      E.n[[ch]]=list()
-      for (k in 1:NUMA)
-	E.n[[ch]][[k]]=tmp[[(ch-1)*NUMA+k]]
+      ch=as.integer((ch_k-0.5)/t.NUMA)+1
+      k=(ch_k-1)%%t.NUMA+1
+      ind<-as.integer((k+1)*0.5)
+      donates_chr_ind=getdonates_ind(t.donates[[ch]][[ind]])
+      donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
+      donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
+      ans=calc_E.n(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],
+		   t.gobs[[ch]][[ind]],t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
+      rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
+      ans
     }
-}
-cloglike=0;for(ch in 1:nchrno) for (k in 1:NUMA) cloglike=cloglike+E.n[[ch]][[k]]$loglike
-# parameter updates are very fast given E.n[[]]
-if (doMu)
-{
-  initi<-array(NaN,c(nchrno,NUMA,L,NUMP)) # a-posteriori first probs
-  for (k in 1:NUMA)
-  {
-    for (ch in 1:nchrno) 
-      for (k in 1:NUMA) {
-	initi[ch,k,,]<-E.n[[ch]][[k]]$initi
+      for (ch in 1:t.nchrno)
+      {
+	E.n[[ch]]=list()
+	for (k in 1:t.NUMA)
+	  E.n[[ch]][[k]]=tmp[[(ch-1)*t.NUMA+k]]
       }
   }
-  initg=array(NaN, c(nchrno,NUMA,L,kLL));
-  for (k in 1:kLL) 
-    #initg[,,,k]=apply(initi[,,,which(label==k)],-4,sum)
-    initg[,,,k]=apply(array(initi[,,,which(label==k)],c(nchrno,NUMA,L,sum(label==k))),-4,sum)
-  Mu[]<-0
-  for (ja in 1:L)
+  cloglike=0;for(ch in 1:t.nchrno) for (k in 1:t.NUMA) cloglike=cloglike+E.n[[ch]][[k]]$loglike
+  # parameter updates are very fast given E.n[[]]
+  if (t.doMu)
   {
-    for (jl in 1:kLL)
-      for (ch in 1:nchrno)
-	for (k in 1:NUMA)
-	  Mu[jl,ja]<-Mu[jl,ja]+initg[ch,k,ja,jl]+sum(E.n[[ch]][[k]]$a[,jl,ja]) + E.n[[ch]][[k]]$r[jl,ja]
-    if (all(Mu[,ja]==0)) Mu[,ja]=1/kLL
+    initi<-array(NaN,c(t.nchrno,t.NUMA,t.L,t.NUMP)) # a-posteriori first probs
+    for (k in 1:t.NUMA)
+    {
+      for (ch in 1:t.nchrno) 
+	for (k in 1:t.NUMA) {
+	  initi[ch,k,,]<-E.n[[ch]][[k]]$initi
+	}
+    }
+    initg=array(NaN, c(t.nchrno,t.NUMA,t.L,t.kLL));
+    for (k in 1:t.kLL) 
+      #initg[,,,k]=apply(initi[,,,which(label==k)],-4,sum)
+      initg[,,,k]=apply(array(initi[,,,which(label==k)],c(t.nchrno,t.NUMA,t.L,sum(label==k))),-4,sum)
+    t.Mu[]<-0
+    for (ja in 1:t.L)
+    {
+      for (jl in 1:t.kLL)
+	for (ch in 1:t.nchrno)
+	  for (k in 1:t.NUMA)
+	    t.Mu[jl,ja]<-t.Mu[jl,ja]+initg[ch,k,ja,jl]+sum(E.n[[ch]][[k]]$a[,jl,ja]) + E.n[[ch]][[k]]$r[jl,ja]
+      if (all(t.Mu[,ja]==0)) t.Mu[,ja]=1/t.kLL
+    }
+    t.Mu<-t(t(t.Mu)/colSums(t.Mu))
   }
-  Mu<-t(t(Mu)/colSums(Mu))
-}
-if (doPI) # note that unlike the other parameters, each individual gets their own PI matrix 
-{
-  # note that E.n[[k]]$l[i] = sum(E.n[[k]]$na[,i])+sum(E.n[[k]]$a[,,i])
-  # note that sum(E.n[[k]]$na[,i]) = sum(E.n[[k]]$n[,i])+sum(E.n[[k]]$r[,i])
-  if (!exists("singlePI")) singlePI=F
-  for (ind in 1:NUMI)
+  if (t.doPI) # note that unlike the other parameters, each individual gets their own t.PI matrix 
   {
-    if (NUMA>1) {hap<-c(ind*2-1,ind*2)} else hap=1
-    if (singlePI) hap=1:NUMA # use all to compute each; i.e. single PI, etc
-    for (i in 1:L){
-      denom=0
-      for (k in hap) 
-	for (ch in 1:nchrno)
-	  denom=denom+sum(E.n[[ch]][[k]]$na[,i])+sum(E.n[[ch]][[k]]$a[i,,])
-      for (j in 1:L) {
-	numer=0
+    # note that E.n[[k]]$l[i] = sum(E.n[[k]]$na[,i])+sum(E.n[[k]]$a[,,i])
+    # note that sum(E.n[[k]]$na[,i]) = sum(E.n[[k]]$n[,i])+sum(E.n[[k]]$r[,i])
+    if (!exists("singlePI")) singlePI=F
+    for (ind in 1:t.NUMI)
+    {
+      if (t.NUMA>1) {hap<-c(ind*2-1,ind*2)} else hap=1
+      if (singlePI) hap=1:t.NUMA # use all to compute each; i.e. single t.PI, etc
+      for (i in 1:t.L){
+	denom=0
 	for (k in hap) 
-	  for (ch in 1:nchrno)
-	    numer=numer+sum(E.n[[ch]][[k]]$a[i,,j])
-	PI[[ind]][i,j]=sum(numer)/sum(denom) 
+	  for (ch in 1:t.nchrno)
+	    denom=denom+sum(E.n[[ch]][[k]]$na[,i])+sum(E.n[[ch]][[k]]$a[i,,])
+	for (j in 1:t.L) {
+	  numer=0
+	  for (k in hap) 
+	    for (ch in 1:t.nchrno)
+	      numer=numer+sum(E.n[[ch]][[k]]$a[i,,j])
+	  t.PI[[ind]][i,j]=sum(numer)/sum(denom) 
+	}
+	if (absorbrho) t.PI[[ind]][i,i]=0 # absorb into t.rho
       }
-      if (absorbrho) PI[[ind]][i,i]=0 # absorb into rho
+      tmp=which(is.na(t.PI[[ind]]),arr.ind=T) 
+      for (i in tmp[,1]) for (j in tmp[,2]) t.PI[[ind]][i,j]=t.alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. t.alpha
+      trans=t.PI[[ind]]-diag(rowSums(t.PI[[ind]])) # strictly speaking this should include an initial condition
+      w=prcomp(t(trans),center=F)$rotation[,t.L]
+      t.alpha[[ind]]=w/sum(w);t.alpha[[ind]][t.alpha[[ind]]<0]=0
+      #t.lambda[[ind]]=-log(1-sum(t.PI[[ind]])+sum(diag(t.PI[[ind]])))/dr 
+      tmp=1-t(t(t.PI[[ind]]/t.alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for t.L=2
+      tmp=-log(tmp)/dr; # gives same off diagonals for t.L=2
+      t.lambda[[ind]]=mean(tmp,na.rm=T)
+      #t.lambda[[ind]]=mean(-log(1-t.PI[[ind]])/dr)
     }
-    tmp=which(is.na(PI[[ind]]),arr.ind=T) 
-    for (i in tmp[,1]) for (j in tmp[,2]) PI[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
-    trans=PI[[ind]]-diag(rowSums(PI[[ind]])) # strictly speaking this should include an initial condition
-    w=prcomp(t(trans),center=F)$rotation[,L]
-    alpha[[ind]]=w/sum(w);alpha[[ind]][alpha[[ind]]<0]=0
-    #lambda[[ind]]=-log(1-sum(PI[[ind]])+sum(diag(PI[[ind]])))/dr 
-    tmp=1-t(t(PI[[ind]]/alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for L=2
-    tmp=-log(tmp)/dr; # gives same off diagonals for L=2
-    lambda[[ind]]=mean(tmp,na.rm=T)
-    #lambda[[ind]]=mean(-log(1-PI[[ind]])/dr)
   }
-}
-if (dorho)
-{
-  numer=denom=rep(0,L)
-  for (ch in 1:nchrno)
-    for (k in 1:NUMA)
-    {
-      numer=numer+colSums(E.n[[ch]][[k]]$r) # E.n[[ch]][[k]][i,,i] all zero now
-      denom=denom+colSums(E.n[[ch]][[k]]$r)+colSums(E.n[[ch]][[k]]$n)+apply(E.n[[ch]][[k]]$a,1,sum)
-    }
-  if (!commonrho) {rho<-numer/denom;rho[denom==0]=mean(rho[denom>0])}
-  if (commonrho) rho[]<-sum(numer)/sum(denom) 
-  #cat("!commonrho = ", numer/denom, "commonrho = ", sum(numer)/sum(denom), "\n")
-}
-if (dotheta)
-{
-  misses=0;matches=0
-  for (k in 1:NUMA)
+  if (t.dorho)
   {
-    for (ch in 1:nchrno) 
-    {
-      misses=misses+E.n[[ch]][[k]]$e
-      matches=matches+E.n[[ch]][[k]]$h
-    }
+    numer=denom=rep(0,t.L)
+    for (ch in 1:t.nchrno)
+      for (k in 1:t.NUMA)
+      {
+	numer=numer+colSums(E.n[[ch]][[k]]$r) # E.n[[ch]][[k]][i,,i] all zero now
+	denom=denom+colSums(E.n[[ch]][[k]]$r)+colSums(E.n[[ch]][[k]]$n)+apply(E.n[[ch]][[k]]$a,1,sum)
+      }
+    if (!commonrho) {t.rho<-numer/denom;t.rho[denom==0]=mean(t.rho[denom>0])}
+    if (commonrho) t.rho[]<-sum(numer)/sum(denom) 
+    #cat("!commonrho = ", numer/denom, "commonrho = ", sum(numer)/sum(denom), "\n")
   }
-  if (!commontheta) {theta<-misses/(misses+matches);theta[(misses+matches)==0]=mean(theta[(misses+matches)>0])}
-  if (commontheta) theta[]<-sum(misses)/sum(misses+matches) 
-  mutmat<-fmutmat(theta, L, maxmiss, maxmatch)
+  if (t.dotheta)
+  {
+    misses=0;matches=0
+    for (k in 1:t.NUMA)
+    {
+      for (ch in 1:t.nchrno) 
+      {
+	misses=misses+E.n[[ch]][[k]]$e
+	matches=matches+E.n[[ch]][[k]]$h
+      }
+    }
+    if (!commontheta) {t.theta<-misses/(misses+matches);t.theta[(misses+matches)==0]=mean(t.theta[(misses+matches)>0])}
+    if (commontheta) t.theta[]<-sum(misses)/sum(misses+matches) 
+    t.mutmat<-fmutmat(t.theta, t.L, t.maxmiss, maxmatch)
+  }
+  rm(E.n) 
+  if (t.dorho || t.doPI || t.doMu) 
+  {
+    for (ind in 1:t.NUMI)
+      t.transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
+    initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,label,NL)
+  }
+  return(list(PI=t.PI, alpha=t.alpha, lambda=t.lambda, Mu=t.Mu, rho=t.rho, theta=t.theta, transitions=t.transitions, mutmat=t.mutmat, initProb=initProb))
 }
-rm(E.n) 
-if (dorho || doPI || doMu) 
-{
-  for (ind in 1:NUMI)
-    transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
-  initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
-}
-
-

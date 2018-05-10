@@ -1,5 +1,5 @@
 # function to calculate the stationary state for the MOSAIC HMM transitions to use as initial probabilities at the first gridpoint in the forward algorithm
-initprobs=function(fastcalc_init=T, t.NUMA=NUMA, t.L=L, t.NUMP=NUMP, t.kLL=kLL, t.PI=PI, t.Mu=Mu, t.rho=rho, t.alpha=alpha, t.label=label, t.NL=NL) 
+initprobs=function(fastcalc_init=T, t.NUMA, t.L, t.NUMP, t.kLL, t.PI, t.Mu, t.rho, t.alpha, t.label, t.NL) 
 {
   if (!fastcalc_init)
     allhaps_initProb=matrix(0,t.NUMA,t.L*t.NUMP)
