@@ -102,6 +102,7 @@ for (ch in 1:nchrno)
     warning("using flat recombination rates map",immediate.=T)
   }
   rm(all_rates)
+  # G will be correct / consistent w/in 0.5 and is large so almost exactly the same dr across chromosomes
   G[ch]<-as.integer((rates[S[ch]]-rates[1])/dr+1)
   g.rates<-seq(rates[1],rates[S[ch]],l=G[ch])
   g.map<-vapply(1:S[ch], function(s) which.min((rates[s]-g.rates)^2),0L) # create map from rates to grid
@@ -137,7 +138,11 @@ for (ch in 1:nchrno)
   d.w[[ch]]$u=NULL;d.w[[ch]]$du=NULL
   t.w[[ch]]$u=NULL;t.w[[ch]]$du=NULL
   rm(multipanels)
-  source("grid.R")
+  source("grid.R");tmp=create_grid(G[ch],S[ch],g.map, chrnos[ch], NUMA, L, umatch[[ch]], t.w[[ch]], true_anc[[ch]])
+  g.loc[[ch]]=tmp$g.loc;gobs[[ch]]=tmp$gobs;maxmatch_chr=tmp$maxmatch_chr;maxmiss_chr=tmp$maxmiss_chr 
+  if (target=="simulated") g.true_anc[[ch]]=tmp$g.true_anc_chr
+  maxmatch<-max(maxmatch,maxmatch_chr)
+  maxmiss<-max(maxmiss,maxmiss_chr)
   rm(snps,rates) # leave in if planning to re-grid
 }
 
