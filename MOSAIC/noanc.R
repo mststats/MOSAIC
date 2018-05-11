@@ -68,7 +68,8 @@ total=50 # only estimating some of the parameters, not required to be super accu
 #stop("wait")
 if (EM) {
   # no anc fit and all donors included; should remove EM output
-  tmp=run_EM()
+  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+		NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 } 

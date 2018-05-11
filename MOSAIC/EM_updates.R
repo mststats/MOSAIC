@@ -156,25 +156,26 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 
 
 # run EM algorithm for total iterations or until convergence
-run_EM=function(verbose=F) {
+run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.mutmat, t.transitions, t.donates, t.donatesl, t.donatesr, t.NUMA, t.NUMP, t.kLL, t.L,
+		t.NUMI, t.max.donors, t.G, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  t.total, verbose=F, t.len) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
-  for (ITER in 1:total)
+  for (ITER in 1:t.total)
   {
-    old.Mu<-Mu; old.PI<-PI; old.lambda<-lambda; old.alpha<-alpha; old.rho<-rho; old.theta<-theta
-    old.mutmat=mutmat;old.transitions=transitions;old.initProb=initProb;old.cloglike<-cloglike
-    tmp=update_params(HPC, nchrno, donates, donatesl, donatesr, NUMA, L, max.donors, NUMP, NUMI, G, transitions, flips,umatch,maxmatchsize,d.w,t.w,gobs,mutmat,maxmiss,kLL,
-	  	      PI, alpha, lambda, Mu, rho, theta, ndonors, doPI, dorho, dotheta, doMu, label, NL, initProb)
-    PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta
-    transitions=tmp$transitions;mutmat=tmp$mutmat;initProb=tmp$initProb
+    old.Mu<-t.Mu; old.PI<-t.PI; old.lambda<-t.lambda; old.alpha<-t.alpha; old.rho<-t.rho; old.theta<-t.theta
+    old.mutmat=t.mutmat;old.transitions=t.transitions;old.initProb=t.initProb;old.cloglike<-cloglike
+    tmp=update_params(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.max.donors, t.NUMP, t.NUMI, t.G, t.transitions, t.flips,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,
+		      t.mutmat,t.maxmiss,t.kLL,t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, ndonors, doPI, dorho, dotheta, doMu, label, NL, t.initProb)
+    t.PI=tmp$PI;t.alpha=tmp$alpha;t.lambda=tmp$lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta
+    t.transitions=tmp$transitions;t.mutmat=tmp$mutmat;t.initProb=tmp$initProb
     # E-step: extra work here as fors will be calculated next iteration of E.n above
-    cloglike=get_loglike(NUMA, nchrno, G, L, kLL, max.donors, NUMP, donates, donatesl, transitions, maxmatchsize, umatch, flips, mutmat, maxmiss, initProb)
-    cat(round(100*ITER/total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
+    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.L, t.kLL, t.max.donors, t.NUMP, t.donates, t.donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb)
+    cat(round(100*ITER/t.total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
     if (!is.na(old.cloglike)) 
     {
       if ((old.cloglike - cloglike)>1e-3)
       {
-	Mu<-old.Mu; PI<-old.PI; lambda<-old.lambda; alpha<-old.alpha; rho<-old.rho; theta<-old.theta
-	transitions=old.transitions;mutmat=old.mutmat;initProb=old.initProb;cloglike<-old.cloglike
+	t.Mu<-old.Mu; t.PI<-old.PI; t.lambda<-old.lambda; t.alpha<-old.alpha; t.rho<-old.rho; t.theta<-old.theta
+	t.transitions=old.transitions;t.mutmat=old.mutmat;t.initProb=old.initProb;cloglike<-old.cloglike
 	warning("loglikelihood has decreased; abandoning EM", immediate.=T)
 	break
       }
@@ -184,10 +185,10 @@ run_EM=function(verbose=F) {
     if (LOG) 
     {
       runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-      writelog(EMlogfile,"EM",diff.time,len)
+      writelog(EMlogfile,"EM",diff.time,t.len)
     }
     if (verbose) setTxtProgressBar(pb, m)
   }
   if (verbose) close(pb)
-  return(list(PI=PI,alpha=alpha,lambda=lambda,Mu=Mu,rho=rho,theta=theta,runtime=runtime,initProb=initProb,cloglike=cloglike,transitions=transitions,mutmat=mutmat))
+  return(list(PI=t.PI,alpha=t.alpha,lambda=t.lambda,Mu=t.Mu,rho=t.rho,theta=t.theta,runtime=runtime,initProb=t.initProb,cloglike=cloglike,transitions=t.transitions,mutmat=t.mutmat))
 }

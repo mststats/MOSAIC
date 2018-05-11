@@ -79,7 +79,8 @@ if (PI.total>0 & EM)
   o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doPI=doPI;doPI=T;dorho=dotheta=doMu=F;
   if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
   total=PI.total
-  tmp=run_EM()
+  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   if (!absorbrho | !commonrho | !commontheta) source("all_donates.R") 
@@ -95,7 +96,8 @@ if (EM)
     if (reps==REPS) 
       M=o.M # on last rep do more MCMC phasing
     # location of this an issue. If above thin&phase, low lambda. If below then first rep has lowered log-like
-    tmp=run_EM()
+    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	      NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     old.kLL=kLL
@@ -112,7 +114,8 @@ if (EM)
   total=o.total # do longer run EM on last rep
   if (verbose)
     cat("run one final round of EM\n")
-  tmp=run_EM()
+  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 }

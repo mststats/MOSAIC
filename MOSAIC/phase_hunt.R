@@ -1,4 +1,5 @@
 # script to run the fast phase-hunting algorithm to re-phase target genomes using MOSAIC fit
+# not written as a function to avoid copying of large flips object
 orig.ll<-max.ll<-c.ll<-list()
 nflips=0
 niters=0
