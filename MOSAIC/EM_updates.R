@@ -157,7 +157,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 
 # run EM algorithm for total iterations or until convergence
 run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.mutmat, t.transitions, t.donates, t.donatesl, t.donatesr, t.NUMA, t.NUMP, t.kLL, t.L,
-		t.NUMI, t.max.donors, t.G, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  t.total, verbose=F, t.len) {
+		t.NUMI, t.max.donors, t.G, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  t.total, verbose=F, t.len, cloglike, t.LOG) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
   for (ITER in 1:t.total)
   {
@@ -182,10 +182,10 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
       if ((cloglike - old.cloglike)< eps) 
 	{cat("EM iterations have converged\n");break;}
     }
-    if (LOG) 
+    if (t.LOG) 
     {
       runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-      writelog(EMlogfile,"EM",diff.time,t.len)
+      writelog(EMlogfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     }
     if (verbose) setTxtProgressBar(pb, m)
   }

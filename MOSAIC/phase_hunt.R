@@ -72,5 +72,5 @@ if (verbose)
 if (LOG) 
 {
   runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-  writelog(EMlogfile,"phasehunt",diff.time,len)
+  writelog(EMlogfile,"phasehunt",diff.time,len,Mu,rho,PI,alpha,lambda,theta,cloglike) 
 }

@@ -12,6 +12,5 @@ create_logfile=function(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,G
   len=length(lognames) # total number of items to log
   write(file=EMlogfile, lognames, ncol=length(lognames)) # start the EM log file
   rtime<-as.numeric(Sys.time())
-  writelog(EMlogfile,"EM",0,len)
   return(list(runtime=rtime,logfile=EMlogfile,len=len))
 }

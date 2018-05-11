@@ -53,7 +53,7 @@ optlevel=3 # used to compile some functions to speed up
 tol=1e-8
 subNUMA=NUMA # =NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,NUMA)
 subNL=100 # #individuals from each panel in no-ancestry initial fit
-o.LOG=T;# o.LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
+LOG=T;# LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
 mcmcprog=F # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
 ffcleanup=T # whether to remove all ff files at the end
 if (nchrno==22) samp_chrnos=c(1,3,7,10,15,17) # indices of chromosomes used in no-ancestry initial fit; swap for contiguous 5Mb blocks of all chromosomes?
@@ -99,6 +99,7 @@ source("mix_hmm.R")
 source("phase_funcs.R")
 source("initProb.R")
 source("EM_updates.R")
+source("all_donates.R")
 source("klikelihood.R")
 if (LL<L) {stop("Can't fit more latent ancs than panels");}
 ##################################

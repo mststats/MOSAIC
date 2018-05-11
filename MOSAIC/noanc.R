@@ -51,9 +51,10 @@ o.prop.don<-prop.don;o.max.donors<-max.donors
 prop.don<-1;max.donors<-NUMP # use all donor haplotypes here 
 for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],ind.Mu[[ind]],rho,NL)
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch) # possibly overkill / some redundancy as maxmiss and maxmatch may have fallen for this subset
-LOG=F;source("all_donates.R") # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
-cloglike=NaN
-LOG=o.LOG
+# dummy run; this will return all donors at all gridpoints and is not affected by parameter values
+tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
+		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F)
+ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
 
 if(verbose) 
@@ -69,7 +70,7 @@ total=50 # only estimating some of the parameters, not required to be super accu
 if (EM) {
   # no anc fit and all donors included; should remove EM output
   tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-		NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
+		NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 } 
@@ -77,7 +78,7 @@ if (EM) {
 if (!exists("getnoancgfbs")) getnoancgfbs=F 
 if (getnoancgfbs)
   noanc_gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
-	      label, ndonors, flips)
+	              label, ndonors, flips)
 L<-o.L
 # return parameters, etc to correct sizes
 doMu<-o.doMu;dorho=o.dorho;dotheta=o.dotheta

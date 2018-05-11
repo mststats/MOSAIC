@@ -28,19 +28,22 @@ dotheta=T # update error / mutation parameters?
 source("setup.R") # sets default parameters, sets up some objects required later, reads in data, and initialises model.
 old.runtime<-as.numeric(Sys.time())
 o.total=total
-writelog<-function(logfile,alg,diff.time,len) # single consistent function to write to EMlogfile
-  write(file=logfile,c(alg,signif(diff.time,4),signif(t(Mu),4),signif(rho,4),c(sapply(PI, function(x) signif(t(x),4))),
-			 sapply(alpha, function(x) signif(x,4)),sapply(lambda,function(x) round(x,4)),signif(theta,4),round(cloglike,4)),ncol=len,append=T)
+writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to EMlogfile
+  write(file=t.logfile,c(t.alg,signif(t.diff.time,4),signif(t(t.Mu),4),signif(t.rho,4),c(sapply(t.PI, function(x) signif(t(x),4))),
+			 sapply(t.alpha, function(x) signif(x,4)),sapply(t.lambda,function(x) round(x,4)),signif(t.theta,4),round(t.cloglike,4)),ncol=t.len,append=T)
 eps=log(1.01) # i.e. a 1% increase in relative likelihood
-get_switches=F
 Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
+runtime=NaN
 source("noanc.R") # always need to run noanc.R b/c need good paras for init_Mu
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
 runtime<-as.numeric(Sys.time())
 if (kLL>L) # otherwise can't cluster kLL things into L clusters
 {
   source("init_Mu.R")
-  get_switches=T;LOG=F;source("all_donates.R") # use this to get #switches in noanc model w/o writelog
+  # use this to get #switches in noanc model w/o writelog
+  tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
+		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F)
+  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike;noanc_gswitches=tmp$noanc_gswitches
   windowed_copying<-window_chunks(nswitches=noanc_gswitches,ww=0.5,verbose=verbose) # similar in the same windows
   if (initonly)
   {
@@ -61,7 +64,6 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
 } else {diag(Mu)=10*diag(Mu);Mu=t(t(Mu)/colSums(Mu))}
 rownames(Mu)<-panels[1:kLL]
 o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
-get_switches=F
 mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
 o.M<-M;M<-s.M
 if (EM) {
@@ -69,9 +71,11 @@ if (EM) {
   runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
   EMlogfile=tmp$logfile
 }
-LOG=F
-LOG=o.LOG;cloglike=NaN 
-source("all_donates.R") # decide on donor set using initial parameters
+cloglike=NaN 
+# decide on donor set using initial parameters
+tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
+		t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F)
+ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
 ############ a few PI only updates first; very useful to do before first re-phasing
 if (PI.total>0 & EM)
@@ -80,10 +84,15 @@ if (PI.total>0 & EM)
   if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
   total=PI.total
   tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
-  if (!absorbrho | !commonrho | !commontheta) source("all_donates.R") 
+  if (!absorbrho | !commonrho | !commontheta) 
+  {
+    tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
+		    t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG)
+    ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
+  }
   doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doPI=o.doPI
 }
 
@@ -97,14 +106,18 @@ if (EM)
       M=o.M # on last rep do more MCMC phasing
     # location of this an issue. If above thin&phase, low lambda. If below then first rep has lowered log-like
     tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	      NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
+	      NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     old.kLL=kLL
     if (max.donors<NUMP & (kLL==old.kLL))
-      source("all_donates.R") # decide on donor set using updated parameters
-    #stop("ready to phase")
-    if (PHASE) # & reps>1) # phasing early not the cause of low lambda. 
+    {
+      # decide on donor set using updated parameters
+      tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
+	  	      t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG)
+      ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
+    }
+    if (PHASE) 
     {
       source("phase_hunt.R") 
       if (M>0) 
@@ -115,13 +128,13 @@ if (EM)
   if (verbose)
     cat("run one final round of EM\n")
   tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len) 
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 }
 final.flips=flips
 source("ancunaware.R") # functions for getting localanc and gfbs that are ancestry unaware
-EM=F;getnoancgfbs=T;eps=log(1.01);o.LOG=F;PLOT=F;get_switches=F;
+EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;PLOT=F;
 a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
 a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
 samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
