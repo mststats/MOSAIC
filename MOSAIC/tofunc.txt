@@ -2,7 +2,6 @@ admix.R
 all_donates.R
 examples.R
 noanc.R
-mix_hmm.R get_gfbs()
 
 ??? perhaps not the below to avoid creating copies of large objects
 could merge into single file to create single function for R-package

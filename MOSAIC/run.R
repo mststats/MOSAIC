@@ -128,7 +128,9 @@ samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
 source("coancestry.R")
 
 ######### fully Mosaic curves with Mosaic phasing ############
-gfbs<-get_gfbs();source("localanc.R") 
+gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
+	      label, ndonors, flips)
+source("localanc.R") 
 if (verbose) cat("saving localanc results to file\n")
 if (target!="simulated")
   save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),

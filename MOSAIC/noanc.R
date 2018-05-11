@@ -76,7 +76,8 @@ if (EM) {
 #stop("finished noanc part")
 if (!exists("getnoancgfbs")) getnoancgfbs=F 
 if (getnoancgfbs)
-  noanc_gfbs=get_gfbs()
+  noanc_gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
+	      label, ndonors, flips)
 L<-o.L
 # return parameters, etc to correct sizes
 doMu<-o.doMu;dorho=o.dorho;dotheta=o.dotheta
