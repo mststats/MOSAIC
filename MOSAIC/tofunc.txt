@@ -2,11 +2,13 @@ admix.R
 all_donates.R
 examples.R
 noanc.R
+mix_hmm.R get_gfbs()
 
-??? perhaps not the below
-phase_hunt.R
-phase_mcmc.R
-read_panels.R
+??? perhaps not the below to avoid creating copies of large objects
+could merge into single file to create single function for R-package
+phase_hunt.R (flips)
+phase_mcmc.R (flips)
+read_panels.R (data)
 run.R
 setup.R
 
