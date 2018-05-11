@@ -1,5 +1,4 @@
 admix.R
-all_donates.R
 examples.R
 noanc.R
 
