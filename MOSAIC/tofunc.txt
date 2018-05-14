@@ -1,4 +1,3 @@
-admix.R
 examples.R
 noanc.R
 

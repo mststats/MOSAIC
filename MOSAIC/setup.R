@@ -74,6 +74,7 @@ g.loc<-list()
 maxmiss=maxmatch=0 # these get set in grid.R which is called by read_panels.R
 if (!exists("singlePI")) singlePI=F
 FLAT=F # set to FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
+source("admix.R")
 source("read_panels.R")
 if (!exists("min.donors")) min.donors=10
 if (max.donors==NUMP & prop.don<1)

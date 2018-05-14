@@ -131,7 +131,12 @@ for (ch in 1:nchrno)
     }
   }
   if (target=="simulated")
-    source("admix.R")
+  {
+    tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL)
+    d.w[[ch]]=tmp$d.w.ch
+    t.w[[ch]]=tmp$t.w.ch
+    true_anc[[ch]]=tmp$true_anc.ch
+  }
   umatch[[ch]]=create_umatch(d.w[[ch]],t.w[[ch]],g.map,G[ch])
   maxmatchsize[ch]=max(sapply(umatch[[ch]],function(x) prod(dim(x))))
   # don't need to keep the haps any more
