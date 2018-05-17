@@ -67,6 +67,7 @@ create_grid=function(t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr
     maxmatch_chr<-max(unlist(t.umatch_chr))
     maxmiss_chr<-max(gobs_chr[[ind]]-sapply(1:t.G_chr, function(g) min(t.umatch_chr[[g]][,t.t.w_chr$w[[g]][haps]+1])),na.rm=T)
   }
-  if (target=="simulated") return(list(g.loc_chr=g.loc_chr,gobs_chr=gobs_chr,maxmatch_chr=maxmatch_chr,maxmiss_chr=maxmiss_chr,g.true_anc_chr))
+  if (target=="simulated") return(list(g.loc_chr=g.loc_chr,gobs_chr=gobs_chr,maxmatch_chr=maxmatch_chr,maxmiss_chr=maxmiss_chr,
+				       g.true_anc_chr=g.true_anc_chr))
   if (target!="simulated") return(list(g.loc_chr=g.loc_chr,gobs_chr=gobs_chr,maxmatch_chr=maxmatch_chr,maxmiss_chr=maxmiss_chr))
 }
