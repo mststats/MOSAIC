@@ -12,7 +12,7 @@ NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes
 MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
 chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-chrnos=19:22;firstind=1;NUMA=4;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+chrnos=15:20;firstind=1;NUMA=4;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files

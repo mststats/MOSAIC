@@ -174,12 +174,12 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 create_coancs<-r_create_coancs
 
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
-			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samelambda=F,optmethod="BFGS")
+			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
 {
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
   # asym=T allows asymptote to be something other than 1
-  # samelambda=T forces single estimation of all curves; not sensible for (>2)-way
+  # samedates=T forces single estimation of all curves; not sensible for (>2)-way
   if (min.cM!=0) 
   {
     min.cM=which(coancs$drange<(min.cM/gap/100))
@@ -195,8 +195,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
 							dim(coancs$relprobs)[4]-length(max.cM)))
   }
   lpop<-dim(coancs$relprobs)[1]
-  if (samelambda & lpop>2)
-    warning("using samelambda for more than 2-way event is not sensible")
+  if (samedates& lpop>2)
+    warning("using samedates for more than 2-way event is not sensible")
   relcurve=array(0,c(lpop,lpop,dim(coancs$relprobs)[4]))
   kweights=keep=list()
   if (is.null(popnames)) popnames<-1:lpop
@@ -272,7 +272,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
     #print(x[i,j,3])
     if (verbose) cat(i,":",j, "before:", x[i,j,],"\n")
   }
-  if (!samelambda)
+  if (!samedates)
   {
     for (i in 1:lpop) for (j in 1:lpop)
     {
@@ -290,7 +290,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       }
     }
   }
-  if (samelambda)
+  if (samedates)
   {
     x[,,3]=mean(x[,,3])
     if (!asym)
@@ -371,6 +371,6 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,t
       lines(gap*coancs$drange*100 , x[i,j,][1]*exp(-gap*x[i,j,][3]*coancs$drange)+x[i,j,][2], col=3, lwd=lwd) # note x[3] is already exponentiated
     }
   }
-  return(list(params=params, relcurve=relcurve))
+  return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3])) # redundancy here but useful to focus 
 }
-#source("coancestry.R");acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2,targetname=paste0(target,": "))
+#acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2,targetname=paste0(target,": "))
