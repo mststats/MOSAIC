@@ -111,7 +111,6 @@ for (ind in 1:NUMI)
   alpha[[ind]]=rep(1/L,L)
   lambda[[ind]]<-o.lambda
 }
-rm(Y) # leave in if planning to re-grid
 fmutmat<-function(theta, L, maxmiss, maxmatch)
 {
   mutmat<-array(NaN, c(L,maxmiss+1,maxmatch+1)) # +1 to include 0

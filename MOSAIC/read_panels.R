@@ -13,14 +13,17 @@ if (is.null(ANC))
 {
   tmp<-panels
   tmp<-tmp[tmp!=target] # take everything else except the target as a potential donor panel
-  pops<-list(panels=tmp, AD=target)
   panels=as.character(tmp)
   kLL=length(panels)
   if (target!="simulated") panels[kLL+1]=target
 }
 if (target=="simulated") true_anc<-g.true_anc<-list()
 if (!is.null(ANC) | target=="simulated") # always call this if looking at a simulation and / or if ANC=T
-  source("examples.R") # example simulations and real admixed panels
+{
+  # example simulations
+  tmp=example_sims(NUMA, L, o.lambda) # note that this may use reduced set of panels
+  ANC=tmp$ANC;mixers=tmp$mixers;panels=tmp$panels;kLL=tmp$kLL;sim.alpha=tmp$sim.alpha;sim.lambda=tmp$sim.lambda
+}
 d.w=list() # map to unique donor  haps at each gridpoint
 t.w=list() # map to unique target haps at each gridpoint
 umatch=list() # lookup for donor,target to #matches using t.w and d.w
@@ -106,9 +109,9 @@ for (ch in 1:nchrno)
   G[ch]<-as.integer((rates[S[ch]]-rates[1])/dr+1)
   g.rates<-seq(rates[1],rates[S[ch]],l=G[ch])
   g.map<-vapply(1:S[ch], function(s) which.min((rates[s]-g.rates)^2),0L) # create map from rates to grid
-  d.w[[ch]]=t.w[[ch]]=list(u=list(),w=list())
   if (target!="simulated")
   {
+    d.w[[ch]]=t.w[[ch]]=list(u=list(),w=list())
     k=1
     for (l in 1:kLL)
     {
@@ -132,7 +135,7 @@ for (ch in 1:nchrno)
   }
   if (target=="simulated")
   {
-    tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL)
+    tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL, sim.alpha, sim.lambda)
     d.w[[ch]]=tmp$d.w.ch
     t.w[[ch]]=tmp$t.w.ch
     true_anc[[ch]]=tmp$true_anc.ch

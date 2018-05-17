@@ -1,4 +1,3 @@
-examples.R
 noanc.R
 
 ??? perhaps not the below to avoid creating copies of large objects
