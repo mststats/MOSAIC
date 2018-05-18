@@ -2,7 +2,7 @@
 # note that this is done locally to each gridpoint allowing for changing top donors along each target genome
 # first compute the no-ancestry equivalent parameters Mu, rho, and theta. One for each ind.
 all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches, t.max.donors, t.NUMP, t.G, t.umatch, t.maxmatchsize, t.d.w, 
-		     t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG) {
+		     t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG, t.transitions, t.mutmat) {
   ind.Mu=ind.rho=ind.theta=list()
   for (ind in 1:t.NUMI) 
   {
@@ -37,7 +37,7 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	{
 	  tmp2=create_donates(t.get_switches,ch,ind,t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],
-			      t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin) 
+			      t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.max.donors,t.NUMP) 
 	  ans_ndonors=tmp2$ndonors
 	  ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T)
 	  close(ans_donates)
@@ -64,7 +64,7 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	{
 	  ans=create_donates(t.get_switches,ch,ind,t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],
-			     t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin)
+			     t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.max.donors,t.NUMP)
 	  if (t.get_switches)
 	  {
 	    tmpswitches=ans$switches
@@ -113,7 +113,7 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
       ind=(ch_ind-1)%%t.NUMI+1
       NvecsG=ifelse(t.max.donors==t.NUMP, 1, t.G[ch]) 
       tmp2=create_donates(t.get_switches,ch,ind,t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],t.kLL,
-			  ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin)
+			  ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.max.donors,t.NUMP)
       ans_ndonors=tmp2$ndonors
       #FLAG next line bug
       ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T)
@@ -166,7 +166,7 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(": log-likelihood", cloglike, "-> ")
     # some overhead in this so only run if asked for i.e. t.LOG=T
-    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, L, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, transitions, t.maxmatchsize, t.umatch, t.flips, mutmat, maxmiss, t.initProb)
+    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, L, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, maxmiss, t.initProb)
     writelog(EMlogfile,"thinning",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(cloglike)

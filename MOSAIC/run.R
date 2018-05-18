@@ -36,8 +36,8 @@ eps=log(1.01) # i.e. a 1% increase in relative likelihood
 Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
 runtime=NaN
 # always need to run noanc.R b/c need good paras for init_Mu
-tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMI, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		    prop.don, max.donors, maxmatch, maxmiss, transitions, initProb, d.w, t.w) 
+tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w) 
 transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
@@ -47,7 +47,7 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   source("init_Mu.R")
   # use this to get #switches in noanc model w/o writelog
   tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
-		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F)
+		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike;noanc_gswitches=tmp$noanc_gswitches
   windowed_copying<-window_chunks(nswitches=noanc_gswitches,ww=0.5,verbose=verbose) # similar in the same windows
   if (initonly)
@@ -79,7 +79,7 @@ if (EM) {
 cloglike=NaN 
 # decide on donor set using initial parameters
 tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
-		t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F)
+		t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat)
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
 ############ a few PI only updates first; very useful to do before first re-phasing
@@ -96,7 +96,7 @@ if (PI.total>0 & EM)
   if (!absorbrho | !commonrho | !commontheta) 
   {
     tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
-		    t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG)
+		    t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, mutmat)
     ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
   }
   doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doPI=o.doPI
@@ -121,7 +121,7 @@ if (EM)
     {
       # decide on donor set using updated parameters
       tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
-	  	      t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG)
+	  	      t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, mutmat)
       ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     }
     if (PHASE) 
@@ -165,8 +165,8 @@ save(file=paste0(resultsdir,"gfbs_",target,"_", L, "way_", firstind, "-", firsti
 if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
 ######## GlobeTrotter style curves original phasing ##########
 for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
-tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMI, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		    prop.don, max.donors, maxmatch, maxmiss, transitions, initProb, d.w, t.w) 
+tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w) 
 transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 source("cleanup.R")
