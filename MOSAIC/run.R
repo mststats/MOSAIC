@@ -39,7 +39,7 @@ runtime=NaN
 tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMI, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		    prop.don, max.donors, maxmatch, maxmiss, transitions, initProb, d.w, t.w) 
 transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
-#ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
+ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
 runtime<-as.numeric(Sys.time())
 if (kLL>L) # otherwise can't cluster kLL things into L clusters
