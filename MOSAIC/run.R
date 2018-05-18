@@ -12,7 +12,7 @@ NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes
 MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
 chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-chrnos=15:20;firstind=1;NUMA=4;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
@@ -35,7 +35,11 @@ writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.l
 eps=log(1.01) # i.e. a 1% increase in relative likelihood
 Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
 runtime=NaN
-source("noanc.R") # always need to run noanc.R b/c need good paras for init_Mu
+# always need to run noanc.R b/c need good paras for init_Mu
+tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMI, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+		    prop.don, max.donors, maxmatch, maxmiss, transitions, initProb, d.w, t.w) 
+transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
+#ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
 runtime<-as.numeric(Sys.time())
 if (kLL>L) # otherwise can't cluster kLL things into L clusters
@@ -84,8 +88,9 @@ if (PI.total>0 & EM)
   o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doPI=doPI;doPI=T;dorho=dotheta=doMu=F;
   if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
   total=PI.total
-  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
+  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, doPI, doMu, 
+	     dotheta, dorho)
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   if (!absorbrho | !commonrho | !commontheta) 
@@ -106,8 +111,9 @@ if (EM)
     if (reps==REPS) 
       M=o.M # on last rep do more MCMC phasing
     # location of this an issue. If above thin&phase, low lambda. If below then first rep has lowered log-like
-    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	      NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
+    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	      NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, doPI, doMu, 
+	      dotheta, dorho) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     old.kLL=kLL
@@ -128,8 +134,9 @@ if (EM)
   total=o.total # do longer run EM on last rep
   if (verbose)
     cat("run one final round of EM\n")
-  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
-	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG) 
+  tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NUMP, kLL, L,
+	     NUMI, max.donors, G, gobs, maxmatchsize, umatch, flips, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, 
+	     doPI, doMu, dotheta, dorho) 
   PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 }
@@ -158,7 +165,10 @@ save(file=paste0(resultsdir,"gfbs_",target,"_", L, "way_", firstind, "-", firsti
 if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
 ######## GlobeTrotter style curves original phasing ##########
 for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
-source("noanc.R")
+tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMI, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+		    prop.don, max.donors, maxmatch, maxmiss, transitions, initProb, d.w, t.w) 
+transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
+ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 source("cleanup.R")
 Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
 o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda

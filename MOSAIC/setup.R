@@ -58,6 +58,7 @@ mcmcprog=F # whether to plot a progress bar for the MCMC phasing; makes for ugly
 ffcleanup=T # whether to remove all ff files at the end
 if (nchrno==22) samp_chrnos=c(1,3,7,10,15,17) # indices of chromosomes used in no-ancestry initial fit; swap for contiguous 5Mb blocks of all chromosomes?
 if (nchrno!=22) samp_chrnos=chrnos[1:5] # just use first 5
+if (length(samp_chrnos)>nchrno) samp_chrnos=chrnos # use all if try to use too many
 if (!exists("GpcM")) GpcM=60 # number of gridpoints per centiMorgan
 if (!exists("Ne")) Ne=9e4 # effective population size
 if (!exists("S")) S<-rep(NaN,nchrno) # if no limit is set
@@ -101,6 +102,7 @@ source("phase_funcs.R")
 source("initProb.R")
 source("EM_updates.R")
 source("all_donates.R")
+source("noanc.R") 
 source("klikelihood.R")
 if (LL<L) {stop("Can't fit more latent ancs than panels");}
 ##################################

@@ -156,19 +156,20 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 
 
 # run EM algorithm for total iterations or until convergence
-run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.mutmat, t.transitions, t.donates, t.donatesl, t.donatesr, t.NUMA, t.NUMP, t.kLL, t.L,
-		t.NUMI, t.max.donors, t.G, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  t.total, verbose=F, t.len, cloglike, t.LOG) {
+run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.mutmat, t.transitions, t.ndonors, t.donates, t.donatesl, 
+		t.donatesr, t.NUMA, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmiss, 
+		t.d.w, t.t.w,  t.total, verbose=F, t.len, cloglike, t.LOG, t.EMlogfile, t.doPI, t.doMu, t.dotheta, t.dorho) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
   for (ITER in 1:t.total)
   {
     old.Mu<-t.Mu; old.PI<-t.PI; old.lambda<-t.lambda; old.alpha<-t.alpha; old.rho<-t.rho; old.theta<-t.theta
     old.mutmat=t.mutmat;old.transitions=t.transitions;old.initProb=t.initProb;old.cloglike<-cloglike
     tmp=update_params(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.max.donors, t.NUMP, t.NUMI, t.G, t.transitions, t.flips,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,
-		      t.mutmat,t.maxmiss,t.kLL,t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, ndonors, doPI, dorho, dotheta, doMu, label, NL, t.initProb)
+		      t.mutmat,t.maxmiss,t.kLL,t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, t.dotheta, t.doMu, label, NL, t.initProb)
     t.PI=tmp$PI;t.alpha=tmp$alpha;t.lambda=tmp$lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta
     t.transitions=tmp$transitions;t.mutmat=tmp$mutmat;t.initProb=tmp$initProb
     # E-step: extra work here as fors will be calculated next iteration of E.n above
-    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.L, t.kLL, t.max.donors, t.NUMP, t.donates, t.donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb)
+    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.L, t.kLL, t.max.donors, t.NUMP, t.ndonors, t.donates, t.donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb)
     cat(round(100*ITER/t.total), "%: ", cloglike, "(", cloglike-old.cloglike, ")", "\n")
     if (!is.na(old.cloglike)) 
     {
@@ -185,7 +186,7 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
     if (t.LOG) 
     {
       runtime<-as.numeric(Sys.time());diff.time<-runtime-old.runtime;old.runtime<-runtime;
-      writelog(EMlogfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
+      writelog(t.EMlogfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     }
     if (verbose) setTxtProgressBar(pb, m)
   }
