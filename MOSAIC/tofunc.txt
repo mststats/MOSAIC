@@ -1,10 +1,10 @@
 ??? Perhaps not the below to avoid creating copies of large objects
 could merge into single file to create single function for R-package
+read_panels.R (data)
+setup.R
 phase_hunt.R (flips)
 phase_mcmc.R (flips)
-read_panels.R (data)
 run.R
-setup.R
 
 Run all functions through cmpfun to check to missing objects
 and check setup.R for single calls to all before moving into mosaicpackage
