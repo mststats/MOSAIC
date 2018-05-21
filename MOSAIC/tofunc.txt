@@ -1,4 +1,4 @@
-??? perhaps not the below to avoid creating copies of large objects
+??? Perhaps not the below to avoid creating copies of large objects
 could merge into single file to create single function for R-package
 phase_hunt.R (flips)
 phase_mcmc.R (flips)
@@ -6,6 +6,6 @@ read_panels.R (data)
 run.R
 setup.R
 
-run all functions through cmpfun to check to missing objects
+Run all functions through cmpfun to check to missing objects
 and check setup.R for single calls to all before moving into mosaicpackage
 check for functions that take no arguments i.e. grep "()", *.R

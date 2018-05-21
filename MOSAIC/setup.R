@@ -55,7 +55,6 @@ subNUMA=NUMA # =NUMA=>use all; number of target haps used in no-ancestry initial
 subNL=100 # #individuals from each panel in no-ancestry initial fit
 LOG=T;# LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
 mcmcprog=F # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
-ffcleanup=T # whether to remove all ff files at the end
 if (nchrno==22) samp_chrnos=c(1,3,7,10,15,17) # indices of chromosomes used in no-ancestry initial fit; swap for contiguous 5Mb blocks of all chromosomes?
 if (nchrno!=22) samp_chrnos=chrnos[1:5] # just use first 5
 if (length(samp_chrnos)>nchrno) samp_chrnos=chrnos # use all if try to use too many
@@ -99,6 +98,7 @@ source("create_logfile.R")
 source("init_Mu.R")
 source("intermediate_calcs.R")
 source("mix_hmm.R")
+source("cleanup.R")
 source("phase_funcs.R")
 source("initProb.R")
 source("EM_updates.R")

@@ -53,7 +53,7 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   {
     save(file=paste0(resultsdir,"init_",target,"_",L, "way_", firstind, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,".RData"), 
 	 target, panels, Mu, rho, theta, alpha, lambda, PI, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
-    source("cleanup.R")
+    if (HPC) cleanup_ff_files(donates, donatesl, donatesr, nchrno, NUMI, ffpath, FALSE)
     stop("saving initialisation and quitting")
   }
   rm(noanc_gswitches) 
@@ -169,7 +169,7 @@ tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatc
 transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 noanc_gfbs=tmp$noanc_gfbs
-source("cleanup.R")
+if (HPC) cleanup_ff_files(donates, donatesl, donatesr, nchrno, NUMI, ffpath, FALSE)
 Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
 o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda
 noanc_unphased_localanc=get_ancunaware_localanc(NUMA,L,G,nchrno,noanc_gfbs,Mu,alpha) # works off noanc_gfbs

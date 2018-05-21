@@ -1,18 +1,19 @@
 # function to clean up files created by MOSAIC that are no longer needed
-if (ffcleanup & HPC)
+cleanup_ff_files=function(t.donates, t.donatesl, t.donatesr, t.nchrno, t.NUMI, t.ffpath, t.prethin=FALSE, 
+			  t.prethin_donates=NULL,t.prethin_donatesl=NULL,t.prethin_donatesr=NULL)
 {
-  cat("removing all ff files stored in", ffpath, "\n")
-  for (ch in 1:nchrno) 
-    for(ind in 1:NUMI) 
+  cat("removing all ff files stored in", t.ffpath, "\n")
+  for (ch in 1:t.nchrno) 
+    for(ind in 1:t.NUMI) 
     {
-      delete(donates[[ch]][[ind]])
-      delete(donatesl[[ch]][[ind]])
-      delete(donatesr[[ch]][[ind]])
-      if (prethin)
+      delete(t.donates[[ch]][[ind]])
+      delete(t.donatesl[[ch]][[ind]])
+      delete(t.donatesr[[ch]][[ind]])
+      if (t.prethin)
       {
-	delete(prethin_donates[[ch]][[ind]])
-	delete(prethin_donatesl[[ch]][[ind]])
-	delete(prethin_donatesr[[ch]][[ind]])
+	delete(t.prethin_donates[[ch]][[ind]])
+	delete(t.prethin_donatesl[[ch]][[ind]])
+	delete(t.prethin_donatesr[[ch]][[ind]])
       }
     }
 }
