@@ -2,7 +2,7 @@
 # just fit noanc on a couple of targets and a couple of chromosomes
 fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.umatch, t.G, t.flips, t.gobs,
 			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.max.donors, t.maxmatch, t.maxmiss, 
-			 t.initProb, t.d.w, t.t.w) {
+			 t.initProb, t.d.w, t.t.w, getnoancgfbs=FALSE) {
   nchrno=length(t.chrnos)
   o.nchrno=nchrno;o.chrnos=t.chrnos;t.chrnos=t.samp_chrnos;nchrno=length(t.samp_chrnos);
   o.NUMA=t.NUMA;t.NUMA=min(o.NUMA,subNUMA);t.NUMI=max(t.NUMA/2,1)
@@ -73,11 +73,9 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
     tmp=run_EM(HPC, nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr,
 	       t.NUMA, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.gobs, maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  total, verbose=F, 
 	       len, cloglike, LOG, noancEMlogfile, doPI, doMu, dotheta, dorho) 
-    t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$t.Mu;t.rho=tmp$t.rho;t.theta=tmp$t.theta;runtime=tmp$runtime;t.initProb=tmp$t.initProb;
+    t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta;runtime=tmp$runtime;t.initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   } 
-  #stop("finished noanc part")
-  if (!exists("getnoancgfbs")) getnoancgfbs=F 
   if (getnoancgfbs)
     noanc_gfbs=get_gfbs(t.NUMP, t.max.donors, donates, donatesl, donatesr, t.NUMA, t.L, t.G, t.kLL, transitions, t.umatch, maxmatchsize, t.d.w, t.t.w, t.gobs, mutmat, t.maxmiss, t.initProb, 
 			t.label, ndonors, t.flips)
@@ -91,6 +89,10 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   # next line gets called if some groups dropped but it's fast so potential redundancy is ok
   for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch)
+  if (!getnoancgfbs)
   return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
 	      donates=donates, donatesl=donatesl, donatesr=donatesr))
+  if (getnoancgfbs)
+  return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
+	      donates=donates, donatesl=donatesl, donatesr=donatesr,noanc_gfbs=noanc_gfbs))
 }

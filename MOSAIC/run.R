@@ -38,13 +38,12 @@ runtime=NaN
 # always need to run noanc.R b/c need good paras for init_Mu
 tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w) 
-transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
+transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
 runtime<-as.numeric(Sys.time())
 if (kLL>L) # otherwise can't cluster kLL things into L clusters
 {
-  source("init_Mu.R")
   # use this to get #switches in noanc model w/o writelog
   tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
 		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat)
@@ -166,9 +165,10 @@ if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); ac
 ######## GlobeTrotter style curves original phasing ##########
 for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
 tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w) 
-transitions=tmp$t.transitionsmutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
+		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w, getnoancgfbs=TRUE) 
+transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
+noanc_gfbs=tmp$noanc_gfbs
 source("cleanup.R")
 Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
 o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda

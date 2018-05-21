@@ -96,6 +96,7 @@ theta=o.theta<-rep(phi.theta/(phi.theta+max.donors/L), L) # as per Hapmix
 rho=o.rho=rep(1-exp(-Ne/(NUMP/L)*dr),L) # similar to HapMix choice but transformed; 1/L as this will include anc self-switches
 source("donates.R") # find which haps are useful donors at which gridpoints to which admixed recipients.
 source("create_logfile.R")
+source("init_Mu.R")
 source("intermediate_calcs.R")
 source("mix_hmm.R")
 source("phase_funcs.R")
