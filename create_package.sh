@@ -7,5 +7,5 @@ rlib=$1
 rm -rf mosaicpackage/ mosaicpackage_1.0.tar.gz 
 Rscript create_package.R
 R CMD build mosaicpackage
-R CMD INSTALL --library $rlib mosaicpackage_1.0.tar.gz
+R CMD INSTALL -l $rlib mosaicpackage_1.0.tar.gz
 
