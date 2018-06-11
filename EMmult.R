@@ -63,7 +63,7 @@ r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 
   for (h in 1:NUMA)
     tmp[,((h-1)*nw+1):(h*nw)]=counts[[h]] # stack across target haps
   tmp=tmp+1e-3
-  tmp=logit(tmp/rowSums(tmp))
+  tmp=qlogis(tmp/rowSums(tmp))
   tmp<-ziffy(tmp,t.L)
   alpha=list()
   for (h in 1:NUMI) 
