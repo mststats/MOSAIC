@@ -77,9 +77,12 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
   return(list(d.w.ch=d.w.ch, t.w.ch=t.w.ch, true_anc.ch=true_anc.ch))
 }
 
+rdirichlet=function(n, t.alpha) {
+  y=matrix(rgamma(n*length(t.alpha), t.alpha,1), ncol=length(t.alpha), byrow=TRUE)
+  return(y/rowSums(y))
+}
 
 # some example simulations of admixture to try out using the HGDP dataset
-require(gtools) # for rdirichlet
 example_sims=function(t.NUMA, t.L, t.o.lambda) {
   sim.alpha<-sim.lambda<-list()
   NUMI<-max(1,t.NUMA/2)

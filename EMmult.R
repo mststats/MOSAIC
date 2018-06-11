@@ -1,6 +1,5 @@
 # Fit a mixture model to windowed switching counts of a chromopainter style model fit 
 # where the number of mixtures is the number of hidden ancestries we wish to model.
-require(gtools)
 require(doParallel)
 tmpexp=exp(.Machine$double.min.exp/1.4)
 zhclust=function(veccounts,k)

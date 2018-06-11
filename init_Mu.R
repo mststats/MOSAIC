@@ -33,7 +33,6 @@ window_chunks<-function(nswitches, ww=0.5, min.swiches=0e-4, verbose=F) # window
 }
 cluster_windows<-function(windows,PLOT=F,t.L=L,verbose=F)
 {
-  require(gtools)
   source("EMmult.R")
   nw=ncol(windows$wmat[[1]])
   res<-EMmult(windows$wmat, t.L, verbose=verbose) # fit the mixture model
