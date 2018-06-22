@@ -170,7 +170,7 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
   list(relprobs=relprobs,ancprobs=ancprobs,drange=drange)
 }
 #if (!exists("optlevel")) optlevel=3
-#require(compiler);create_coancs<-cmpfun(r_create_coancs,list(optimize=optlevel))
+#create_coancs<-cmpfun(r_create_coancs,list(optimize=optlevel))
 create_coancs<-r_create_coancs
 
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",

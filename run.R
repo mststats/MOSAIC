@@ -1,6 +1,5 @@
 # script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
 # example usage: Rscript run.R SanKhomani HGDP/ 4 1 60 16
-require(mosaicpackage)
 ######################## first set some options ###############################
 # important things to set
 shargs<-commandArgs(trailingOnly=TRUE) # read in arguments from the command line; 
@@ -12,7 +11,7 @@ NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes
 MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
 chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+#chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
@@ -57,7 +56,7 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
     stop("saving initialisation and quitting")
   }
   rm(noanc_gswitches) 
-  tmp<-cluster_windows(windowed_copying,PLOT=F,t.L=L,verbose=verbose)
+  tmp<-cluster_windows(windowed_copying,t.L=L,verbose=verbose)
   Mu<-tmp$Mu
   alpha<-tmp$alpha
   PI<-tmp$PI
@@ -140,18 +139,16 @@ if (EM)
   cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
 }
 final.flips=flips
-source("ancunaware.R") # functions for getting localanc and gfbs that are ancestry unaware
 EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;PLOT=F;
 a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
 a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
 samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
-source("coancestry.R")
 
 ######### fully Mosaic curves with Mosaic phasing ############
 gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
 	      label, ndonors, flips)
-source("localanc.R") 
 if (verbose) cat("saving localanc results to file\n")
+source("localanc.R")
 if (target!="simulated")
   save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)

@@ -1,5 +1,4 @@
 # transition probabilities function and function to return forward-backward probabilities using Cpp code in forbacks.cpp
-source("transitions.R")
 #### function to return transition probabilities ####
 s_trans<-function(t.L,t.kLL,t.PI,t.Mu,t.rho,t.NL) 
 {
@@ -12,7 +11,6 @@ s_trans<-function(t.L,t.kLL,t.PI,t.Mu,t.rho,t.NL)
 	  ans[t.i,t.kn,t.l,t.ll]<-explicit.trans(t.PI,t.Mu,t.rho,t.NL,t.i,knvec[t.kn],t.l,t.ll) 
   ans
 }
-require(Rcpp)
 
 get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.G, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, t.initProb, 
 		   t.label, t.ndonors, t.flips)

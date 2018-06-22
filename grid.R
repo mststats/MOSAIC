@@ -1,6 +1,6 @@
 # function to compute mapping from markers to evenly spaced (in genetic distance) gridpoints
 # t.S_chr is number of observed loci, t.G_chr is number of gridpoints; note this is called for a particular chromosome
-create_grid=function(t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr, t.t.w_chr, t.true_anc_chr){
+create_grid=function(t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr, t.t.w_chr, t.true_anc_chr, t.locs, t.NUMI){
   if (verbose) cat("mapping chr", t.chrno, "to a grid...\n")
   # need to evenly spread total gridpoints across chromosomes s.t. each gap is the same #morgans
   # create a map of observed loci to gridded loci; grid is even on t.rates not distances
@@ -8,7 +8,7 @@ create_grid=function(t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr
   # the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
   if (verbose) cat("Finding number at each location on chr", t.chrno, "...\n")
   #g.loc_chr gives physical locus of each gridpoint; average if more than 1 or more obs; else average of nearest two obs
-  g.loc_chr<-rep(0L,t.G_chr); for (s in 1:t.S_chr) g.loc_chr[t.g.map[s]]<-g.loc_chr[t.g.map[s]]+locs[s]/sum(t.g.map==t.g.map[s]) 
+  g.loc_chr<-rep(0L,t.G_chr); for (s in 1:t.S_chr) g.loc_chr[t.g.map[s]]<-g.loc_chr[t.g.map[s]]+t.locs[s]/sum(t.g.map==t.g.map[s]) 
   if (target=="simulated")
   {
     if (verbose) cat("Mapping true ancestry array for chr", t.chrno, "to the grid\n")
@@ -58,7 +58,7 @@ create_grid=function(t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr
   }
   rm(emptyg)
   gobs_chr<-list()
-  for (ind in 1:NUMI) 
+  for (ind in 1:t.NUMI) 
   {
     haps=c(ind*2-1,ind*2)
     gobs_chr[[ind]]<-sapply(1:t.G_chr,function(g) max(t.umatch_chr[[g]][,t.t.w_chr$w[[g]][haps]+1]))

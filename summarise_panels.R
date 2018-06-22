@@ -1,7 +1,6 @@
 # Fst calculations computational bottleneck is calculating the frequencies of markers for each population (panel).
 # This function will perform these as a one off calculation for each panel and save to file for reuse.
 # if panels=NULL then it will run for all panels in sample.names
-source("fst.R")
 write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22, panels=NULL) {
   if (is.null(panels)) 
   {

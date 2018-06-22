@@ -1,7 +1,4 @@
 # functions used in re-phasing target haplotypes based on current MOSAIC fit
-require(compiler)
-require(parallel)
-require(bit) 
 flip.ll<-function(g, t.ch, ndonorsg, NNL2, t.scalefactor, t.scalefactorb, t.fors, t.backs)
 {
   g=g-1
@@ -181,7 +178,6 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
 
 #phase_hunt<-cmpfun(r_phase_hunt,list(optimize=optlevel)) # 
 phase_hunt<-r_phase_hunt
-require(parallel)
 r_phase_mcmc<-function(t.ch, t.ind, M, max.donors, t.initProb, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
 		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, PLOT=F, mcmcprog, mcmchill=T) 
 {

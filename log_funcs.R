@@ -1,4 +1,4 @@
-# extract parameters from a specified log file
+# function to extract parameters from a specified log file
 extract_log=function(logfile)
 {
   EMlog=read.delim(logfile, sep=" ")

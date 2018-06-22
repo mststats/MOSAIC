@@ -1,7 +1,5 @@
 # script to plot the local ancestry of each target admixed genome along each chromosome
 plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,t.gfbs=NULL) {
-  source("plot_funcs.R")
-  source("calc_r2.R")
   if (is.null(t.Mu) & MODE=="GRAD") stop("Please supply a copying matrix Mu for use with this plot")
   if (is.null(t.gfbs) & MODE=="GRAD") stop("Please supply a full array of posterior probabilities for use with this plot")
   G=sapply(t.localanc, function(x) dim(x)[3])
@@ -9,7 +7,6 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
   L=dim(t.localanc[[1]])[1]
   nchrno=length(t.chrnos)
   NUMI=NUMA/2
-  #source("localanc.R")
   if (NCHR==2 & NUMA==1)
   {
     warning("changing NCHR to HAP as only on hap in target",immediate.=T)

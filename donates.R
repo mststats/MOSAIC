@@ -1,6 +1,5 @@
 # functions to calculate the locally specified list of top (most useful) donors to pass to the HMM thus reducing computation time and memory usage
 # if we have a version impervious to phasing it will last longer without changing during thin / phase / EM
-require(compiler)
 # code to select enough donors to capture prop.don of the copying 
 create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,t.flips,t.kLL,t.Mu,t.rho,t.theta,HPC,prethin=FALSE,
 			 t.max.donors,t.NUMP,prethin_ndonors=NULL, prethin_donates=NULL, prethin_donatesl=NULL, prethin_donatesr=NULL)

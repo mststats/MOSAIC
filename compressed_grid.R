@@ -16,6 +16,5 @@ r_create_umatch=function(ch.d.w,ch.t.w,g.map,t.G)
   }
   ans
 }
-require(compiler)
 create_umatch=cmpfun(r_create_umatch,list(optimize=3))
 

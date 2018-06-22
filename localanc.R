@@ -18,8 +18,6 @@ for (ch in 1:nchrno)
 # re-order truth to be same labels
 if (target=="simulated")
 {
-  require(combinat)
-  source("calc_r2.R")
   r.ord<-function(ord) 
   {
     tmp.anc<-g.true_anc

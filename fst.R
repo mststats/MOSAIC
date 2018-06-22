@@ -1,6 +1,5 @@
 # functions to estimate Fst between genomes and also Rst (see MOSAIC paper)
 # use Equation 6 of Bhatia et al Genome Research (2013), but sum numerator and denominator over loci
-require(compiler)
 r_wc_ests=function(p,n) # best comparison b/w Mu and 1/Fst values
 {
   sumn=sum(n) #-1

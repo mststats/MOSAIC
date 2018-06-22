@@ -14,7 +14,6 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
     # note that if commontheta=T then this will just be t.theta
     ind.theta[[ind]]=t.theta%*%t.alpha[[ind]]
   }
-  require(parallel)
   if (verbose & !t.get_switches & t.max.donors<t.NUMP)
     cat("thinning to at most", t.max.donors, "donors at each gridpoint")
   if (t.NUMA==1) {H=1} else H=2
