@@ -1,6 +1,6 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
-admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.sim.alpha, t.sim.lambda,
-		       prop.missing=0) {
+admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
+		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, prop.missing=0) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
@@ -22,9 +22,9 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
       tmpia<-sample(1:t.L,1,prob=t.sim.alpha[[ind]]) # sample an ancestry 
       chunklengthM=rexp(1,t.sim.lambda[[ind]]) # in Morgans as per HapMix
       chunklengthM=round(chunklengthM/dr)*dr # to the nearest gridpoint
-      RHS=which.min(abs(rates[tmps[length(tmps)]+1]+chunklengthM-rates)) # in units of the rates map; match to the genetic loci we have
+      RHS=which.min(abs(t.rates[tmps[length(tmps)]+1]+chunklengthM-t.rates)) # in units of the rates map; match to the genetic loci we have
       # make sure all SNPs later assigned to this gridpoint are switched together by taking rightmost SNP on this gridpoint
-      RHS=max(which(g.map==g.map[RHS]))
+      RHS=max(which(t.g.map==t.g.map[RHS]))
       if (RHS==(t.S[t.ch]-1)) RHS=t.S[t.ch] # required as sometimes there's a gap of zero appended to the rates
       tmps=c(tmps, RHS)
       tmpil<-t.kLL+tmpia # use one panel in each anc
@@ -57,10 +57,10 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
   for (l in 1:t.kLL)
   {
     # do donors
-    for (n in 1:NL[l])
+    for (n in 1:t.NL[l])
     {
       tmpY<-as.integer(t.multipanels[[l]][n,]) 
-      d.w.ch=cpp_unique_haps(tmpY,k,t.S[t.ch],t.G[t.ch],g.map-1,max(table(g.map)),d.w.ch)
+      d.w.ch=cpp_unique_haps(tmpY,k,t.S[t.ch],t.G[t.ch],t.g.map-1,max(table(t.g.map)),d.w.ch)
       k<-k+1 # go to next one next
     }
     # now do targets
@@ -69,9 +69,9 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
   # now do targets
   l=t.kLL+1
   k=1
-  for (n in 1:NL[l])
+  for (n in 1:t.NL[l])
   {
-    t.w.ch=cpp_unique_haps(Y[k,],k,t.S[t.ch],t.G[t.ch],g.map-1,max(table(g.map)),t.w.ch)
+    t.w.ch=cpp_unique_haps(Y[k,],k,t.S[t.ch],t.G[t.ch],t.g.map-1,max(table(t.g.map)),t.w.ch)
     k<-k+1 # go to next one next
   }
   return(list(d.w.ch=d.w.ch, t.w.ch=t.w.ch, true_anc.ch=true_anc.ch))

@@ -6,6 +6,3 @@ phase_hunt.R (flips)
 phase_mcmc.R (flips)
 run.R # could leave as a run file or create a text file for this
 
-Run all functions through cmpfun to check to missing objects
-and check setup.R for single calls to all before moving into mosaicpackage
-check for functions that take no arguments i.e. grep "()", *.R

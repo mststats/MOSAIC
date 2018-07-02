@@ -15,25 +15,3 @@ for (ch in 1:nchrno)
     localanc[[ch]][,k,]<-t(t(localanc[[ch]][,k,])/apply(localanc[[ch]][,k,],2,sum))
   }
 }
-# re-order truth to be same labels
-if (target=="simulated")
-{
-  r.ord<-function(ord) 
-  {
-    tmp.anc<-g.true_anc
-    for (ch in 1:nchrno) tmp.anc[[ch]][,,]=g.true_anc[[ch]][ord,,]
-    return(dip_fr2(tmp.anc,localanc))
-  }
-  all.ord<-permn(L)
-  best.r<-0
-  for (i in 1:length(all.ord))
-    if (r.ord(all.ord[[i]])>best.r) 
-    {
-      best.r=r.ord(all.ord[[i]])
-      best.ord<-all.ord[[i]]
-    }
-  for (ch in 1:nchrno) 
-    g.true_anc[[ch]][,,]<-g.true_anc[[ch]][best.ord,,]
-  for (k in 1:NUMI) 
-    sim.alpha[[k]]<-sim.alpha[[k]][best.ord]
-}

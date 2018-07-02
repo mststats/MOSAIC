@@ -134,7 +134,7 @@ read_panels=function(datasource, mask=NULL) {
     }
     if (target=="simulated")
     {
-      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL, sim.alpha, sim.lambda)
+      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch
