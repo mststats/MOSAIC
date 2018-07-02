@@ -148,8 +148,11 @@ samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
 gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
 	      label, ndonors, flips)
 if (verbose) cat("saving localanc results to file\n")
-source("localanc.R")
-if (target!="simulated")
+if (target!="simulated") tmp=get_localanc(gfbs,G,L,kLL,NUMA,NUMI)
+if (target=="simulated") tmp=get_localanc(gfbs,G,L,kLL,NUMA,NUMI,t.g.true_anc=g.true_anc)
+localanc=tmp$localanc
+if (target=="simulated") 
+  g.true_anc=tmp$g.true_anc
   save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
 if (target=="simulated")

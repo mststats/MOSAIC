@@ -8,8 +8,8 @@ rm -rf MOSAIC/ MOSAIC_1.0.tar.gz
 Rscript create_package.R
 echo "import(parallel)" >> MOSAIC/NAMESPACE
 echo "import(compiler)" >> MOSAIC/NAMESPACE
-#echo "import(cluster)" >> MOSAIC/NAMESPACE
-#echo "import(combinat)" >> MOSAIC/NAMESPACE
+echo "importFrom(cluster, fanny)" >> MOSAIC/NAMESPACE
+echo "importFrom(combinat, permn)" >> MOSAIC/NAMESPACE
 #echo "import(bit) " >> MOSAIC/NAMESPACE
 
 rm MOSAIC/Read-and-delete-me
