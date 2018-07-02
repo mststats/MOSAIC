@@ -1,33 +1,5 @@
 # script that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-require(parallel)
-require(compiler)
-require(cluster)
-require(combinat)
-require(Rcpp)
-require(bit) 
-require(mosaicpackage)
-
-source("grid.R")
-source("compressed_grid.R")
-source("calc_r2.R")
-source("transitions.R")
-source("ancunaware.R") # functions for getting localanc and gfbs that are ancestry unaware
-source("coancestry.R")
-source("plot_funcs.R")
-source("fst.R")
-source("admix.R")
-source("donates.R") # find which haps are useful donors at which gridpoints to which admixed recipients.
-source("create_logfile.R")
-source("init_Mu.R")
-source("intermediate_calcs.R")
-source("mix_hmm.R")
-source("cleanup.R")
-source("phase_funcs.R")
-source("initProb.R")
-source("EM_updates.R")
-source("all_donates.R")
-source("noanc.R") 
-source("klikelihood.R")
+require(MOSAIC)
 
 if (HPC==1)
 {
@@ -99,10 +71,9 @@ if (is.na(MC)) {
 if (verbose) cat("using", MC, "cores\n")
 registerDoParallel(cores=MC)
 g.loc<-list()
-maxmiss=maxmatch=0 # these get set in read_panels.R
+maxmiss=maxmatch=0 # these get set by read_panels()
 if (!exists("singlePI")) singlePI=F
 FLAT=F # set to FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-source("read_panels.R") # tofunc
 tmp=read_panels(datasource) # FLAG decide on mask usage here
 maxmatch=tmp$maxmatch;maxmiss=tmp$maxmiss;umatch=tmp$umatch;d.w=tmp$d.w;t.w=tmp$t.w;g.loc=tmp$g.loc;gobs=tmp$gobs
 NUMP=tmp$NUMP;LL=tmp$LL;NUMI=tmp$NUMI;label=tmp$label;KNOWN=tmp$KNOWN;kLL=tmp$kLL;NL=tmp$NL;G=tmp$G;NN=tmp$NN;

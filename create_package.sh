@@ -4,8 +4,16 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 rlib=$1
-rm -rf mosaicpackage/ mosaicpackage_1.0.tar.gz 
+rm -rf MOSAIC/ MOSAIC_1.0.tar.gz 
 Rscript create_package.R
-R CMD build mosaicpackage
-R CMD INSTALL -l $rlib mosaicpackage_1.0.tar.gz
+echo "import(parallel)" >> MOSAIC/NAMESPACE
+echo "import(compiler)" >> MOSAIC/NAMESPACE
+#echo "import(cluster)" >> MOSAIC/NAMESPACE
+#echo "import(combinat)" >> MOSAIC/NAMESPACE
+#echo "import(bit) " >> MOSAIC/NAMESPACE
+
+rm MOSAIC/Read-and-delete-me
+
+R CMD build MOSAIC
+R CMD INSTALL -l $rlib MOSAIC_1.0.tar.gz
 

@@ -1,4 +1,5 @@
 *) functionize: see tofunc.txt
+*) Edit create_package.sh to include DESCRIPTION, etc
 *) shapeit input
 *) flags for command line options e.g. --MC 16 etc
 *) don't grab all memory by default on a cluster: see Busby email.
