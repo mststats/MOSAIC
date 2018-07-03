@@ -1,4 +1,4 @@
-# script for calculating local ancestry without MOSAIC inferred re-phasing and without MOSAIC ancestry switches. 
+# functions for calculating local ancestry without MOSAIC inferred re-phasing and without MOSAIC ancestry switches. 
 # i.e. using only knowledge of which donor haplotypes are copied from 
 get_ancunaware_localanc=function(t.NUMA,t.L,t.G,t.nchrno,t.noanc_gfbs,t.Mu,t.alpha){ 
   ancunaware_localanc<-list() # note that ancunaware refers to undoing the re-phasing steps made by MOSAIC

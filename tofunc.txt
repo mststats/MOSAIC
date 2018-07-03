@@ -3,5 +3,5 @@ could merge into single file to create single function for R-package
 
 phase_hunt.R (flips)
 phase_mcmc.R (flips)
-run.R # could leave as a run file or create a text file for this
+run.R # could leave as an R file or create a text file for this
 
