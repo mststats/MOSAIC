@@ -2,7 +2,7 @@
 # using functions in intermediate_calcs.R using Cpp code. These amount to counts of various switch types along the target genomes
 update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.max.donors, t.NUMP, t.NUMI, t.G, t.transitions, t.flips,t.umatch, t.maxmatchsize,
 		       t.d.w,t.t.w,t.gobs,t.mutmat,t.maxmiss,t.kLL, t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, t.dotheta, t.doMu,
-		       t.label, t.NL, t.initProbs)
+		       t.label, t.NL, t.initProbs, t.singlePI=FALSE)
 {
   E.n<-list()
   if (t.HPC!=2)
@@ -85,11 +85,10 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
   {
     # note that E.n[[k]]$l[i] = sum(E.n[[k]]$na[,i])+sum(E.n[[k]]$a[,,i])
     # note that sum(E.n[[k]]$na[,i]) = sum(E.n[[k]]$n[,i])+sum(E.n[[k]]$r[,i])
-    if (!exists("singlePI")) singlePI=F
     for (ind in 1:t.NUMI)
     {
       if (t.NUMA>1) {hap<-c(ind*2-1,ind*2)} else hap=1
-      if (singlePI) hap=1:t.NUMA # use all to compute each; i.e. single t.PI, etc
+      if (t.singlePI) hap=1:t.NUMA # use all to compute each; i.e. single t.PI, etc
       for (i in 1:t.L){
 	denom=0
 	for (k in hap) 

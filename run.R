@@ -1,5 +1,7 @@
 # script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
 # example usage: Rscript run.R SanKhomani HGDP/ 4 1 60 16
+require(MOSAIC)
+require(foreach) # FLAG unnecessary once phase_hunt and phase_mcmc are functionised
 ######################## first set some options ###############################
 # important things to set
 shargs<-commandArgs(trailingOnly=TRUE) # read in arguments from the command line; 
@@ -13,9 +15,7 @@ chrnos=1:22 # which chromosomes to run on
 chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
 #chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
-HPC=2 # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
 ffpath="/dev/shm/" # location of fast-files
-if (!exists("PHASE")) PHASE=T
 # the rest are mostly used in debugging, etc
 if (!exists("ANC")) ANC=NULL; # no a-priori knowledge of which panels to use for which ancestries
 verbose=T # print certain statements of progress as algorithm runs?
@@ -24,8 +24,10 @@ doMu=T # update copying matrix parameters?
 doPI=T # update ancestry switching parameters parameters?
 dorho=T # update recombination w/in same ancestry parameters? 
 dotheta=T # update error / mutation parameters?
+PLOT=F
 
-source("setup.R") # sets default parameters, sets up some objects required later, reads in data, and initialises model.
+tmp=setup_data_etc(NUMA,target,nchrno) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
+attach(tmp);rm(tmp)
 old.runtime<-as.numeric(Sys.time())
 o.total=total
 writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to EMlogfile
@@ -36,7 +38,7 @@ Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # f
 runtime=NaN
 # always need to run noanc.R b/c need good paras for init_Mu
 tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w) 
+		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, 100) 
 transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
@@ -48,13 +50,6 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
 		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike;noanc_gswitches=tmp$noanc_gswitches
   windowed_copying<-window_chunks(nswitches=noanc_gswitches,ww=0.5,verbose=verbose) # similar in the same windows
-  if (initonly)
-  {
-    save(file=paste0(resultsdir,"init_",target,"_",L, "way_", firstind, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,".RData"), 
-	 target, panels, Mu, rho, theta, alpha, lambda, PI, windowed_copying, L, NUMA, nchrno, chrnos, g.loc, tol, dr, NL, kLL, 0)
-    if (HPC) cleanup_ff_files(donates, donatesl, donatesr, nchrno, NUMI, ffpath, FALSE)
-    stop("saving initialisation and quitting")
-  }
   rm(noanc_gswitches) 
   tmp<-cluster_windows(windowed_copying,t.L=L,verbose=verbose)
   Mu<-tmp$Mu
@@ -142,7 +137,7 @@ final.flips=flips
 EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;PLOT=F;
 a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
 a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
-samp_chrnos=chrnos;subNUMA=NUMA;subNL=max(NL) # use them all
+samp_chrnos=chrnos;
 
 ######### fully Mosaic curves with Mosaic phasing ############
 gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
@@ -165,7 +160,7 @@ if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); ac
 ######## GlobeTrotter style curves original phasing ##########
 for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
 tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, umatch, G, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w, getnoancgfbs=TRUE) 
+		    prop.don, max.donors, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, max(NL), getnoancgfbs=TRUE) 
 transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
 ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
 noanc_gfbs=tmp$noanc_gfbs
@@ -179,6 +174,6 @@ if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n
 
 if (verbose) cat("saving final results to file\n")
 save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
-		 GpcM,"_",prop.don,"_",max.donors,".RData"), target, phase.error.locs, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-                 Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, tol, dr, NL, kLL, acoancs, coancs)
+		 GpcM,"_",prop.don,"_",max.donors,".RData"), target, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+                 Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs)
 

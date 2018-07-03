@@ -61,7 +61,7 @@ r.calc_E.n<-function(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G,t.transitions,t.flips,t
   a[is.nan(a)]=0;r[is.nan(r)]=0;n[is.nan(n)]=0;na[is.nan(na)]=0
   list(a=a,r=r,na=na,n=n,l=l,e=probs$errors,h=probs$hits,initi=initi,loglike=loglike) 
 }
-#  calc_E.n<-cmpfun(r.calc_E.n,list(optimize=optlevel))
+#  calc_E.n<-cmpfun(r.calc_E.n,list(optimize=3))
 calc_E.n<-r.calc_E.n
 #sum(E.n[[k]]$a)+sum(E.n[[k]]$r)+sum(E.n[[k]]$n)=G-1
 

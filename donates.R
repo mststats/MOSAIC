@@ -89,3 +89,22 @@ create_donates<-function(getswitches,ch,ind,t.umatch,t.maxmatchsize,t.dw,t.tw,t.
   t.donatesr[is.na(t.donatesr)]<-0 # match() returns NA where no match occurs, replace with 0s
   return(list(ndonors=t.ndonors,donates=t.donates-1,donatesl=t.donatesl-1,donatesr=t.donatesr-1,switches=switches)) # -1 to convert to cpp indexing
 }
+# functions to load up the donors already created by create_donates etc
+getdonates<-function(t.donates,t.NUMI) # note that this is used for donates, donatesl, and donatesr
+{
+  donates_chr=list()
+  for(ind in 1:t.NUMI) 
+  {
+    open(t.donates[[ind]])
+    donates_chr[[ind]]=t.donates[[ind]][] # open all donors on this chromosome
+    close(t.donates[[ind]])
+  }
+  donates_chr
+}
+getdonates_ind<-function(t.donates) # note that this is used for donates, donatesl, and donatesr
+{
+  open(t.donates)
+  donates_chr_ind=t.donates[] # open all donors on this chromosome
+  close(t.donates)
+  donates_chr_ind
+}

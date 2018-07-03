@@ -163,7 +163,7 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
   {
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(": log-likelihood", cloglike, "-> ")
-    # some overhead in this so only run if asked for i.e. t.LOG=T
+    # some overhead in this so only run if asked for i.e. t.LOG==TRUE
     cloglike=get_loglike(t.NUMA, t.nchrno, t.G, L, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, maxmiss, t.initProb)
     writelog(EMlogfile,"thinning",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 

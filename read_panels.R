@@ -1,6 +1,8 @@
 # function that reads in the data and lays on a grid along recombination rates map
-read_panels=function(datasource, mask=NULL) {
+read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, mask=NULL, S=rep(NaN,t.nchrno)) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
+  gobs=g.loc=list()
+  maxmatch=maxmiss=0
   if (!is.null(mask))
   {
     maskpanels=NULL;for (maskpanel in mask) {tmp2=match(maskpanel,panels);if (length(tmp2)>0) maskpanels=c(maskpanels,tmp2)}
@@ -27,7 +29,8 @@ read_panels=function(datasource, mask=NULL) {
   t.w=list() # map to unique target haps at each gridpoint
   umatch=list() # lookup for donor,target to #matches using t.w and d.w
   maxmatchsize=NULL # maximum size of the umatch matrix at any gridpoint on each chromosome
-  for (ch in 1:nchrno)
+  G=NULL
+  for (ch in 1:t.nchrno)
   {
     multipanels<-list() # shouldn't read all of these in at once!
     for (i in 1:length(panels))
@@ -71,7 +74,7 @@ read_panels=function(datasource, mask=NULL) {
       i=length(multipanels) # Admixed target is always stored last
       multipanels[[i]]<-multipanels[[i]][-(1:(2*(firstind-1))),]
     }
-    NL<-c(rep(nl,kLL),NUMA)
+    NL<-c(rep(t.nl,kLL),NUMA)
     LL<-kLL+1
     for (i in 1:kLL)
       NL[i]<-min(NL[i],nrow(multipanels[[i]])) # make sure none are asked for more than they have
@@ -98,7 +101,7 @@ read_panels=function(datasource, mask=NULL) {
     tmp=which(is.na(tmp))
     rates[tmp]=all_rates[vapply(tmp,function(l) which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),0L),2]
     rates<-rates/100 # /100 to move to morgans from centimorgans 
-    if (FLAT) 
+    if (t.FLAT) 
     {
       rates<-seq(rates[1],2*rates[S[ch]],l=S[ch])
       warning("using flat recombination rates map",immediate.=T)
@@ -134,7 +137,7 @@ read_panels=function(datasource, mask=NULL) {
     }
     if (target=="simulated")
     {
-      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map)
+      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch

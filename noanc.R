@@ -2,12 +2,13 @@
 # just fit noanc on a couple of targets and a couple of chromosomes
 fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.umatch, t.G, t.flips, t.gobs,
 			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.max.donors, t.maxmatch, t.maxmiss, 
-			 t.initProb, t.d.w, t.t.w, getnoancgfbs=FALSE) {
+			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, getnoancgfbs=FALSE, t.LOG=T) {
+  # subNUMA=t.NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,t.NUMA)
   nchrno=length(t.chrnos)
   o.nchrno=nchrno;o.chrnos=t.chrnos;t.chrnos=t.samp_chrnos;nchrno=length(t.samp_chrnos);
-  o.NUMA=t.NUMA;t.NUMA=min(o.NUMA,subNUMA);t.NUMI=max(t.NUMA/2,1)
+  o.NUMA=t.NUMA;t.NUMA=min(o.NUMA,t.subNUMA);t.NUMI=max(t.NUMA/2,1)
   o.NUMP<-t.NUMP;o.label<-t.label;o.KNOWN<-t.KNOWN;o.NL<-NL;o.NN<-NN
-  dons<-NULL;for (k in 1:t.kLL) dons<-c(dons,sort(sample(which(t.label==k),min(subNL,sum(t.label==k)))))
+  dons<-NULL;for (k in 1:t.kLL) dons<-c(dons,sort(sample(which(t.label==k),min(t.subNL,sum(t.label==k)))))
   t.NUMP<-length(dons);t.label<-c(t.label[dons],t.label[!t.KNOWN]);NL<-c(table(t.label));NN<-sum(NL);t.KNOWN<-c(t.KNOWN[dons],t.KNOWN[!t.KNOWN])
   # if required, use subset of targets and subset of donors on subset of chromosomes
   if (nchrno!=o.nchrno | t.NUMA!=o.NUMA | t.NUMP!=o.NUMP) 
@@ -60,7 +61,7 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
 
   if(verbose) 
     cat("Fitting no-ancestry model\n") 
-  if (LOG) 
+  if (t.LOG) 
   {
     tmp=create_logfile(resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,NN,GpcM)
     runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
@@ -72,7 +73,7 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
     # no anc fit and all donors included; should remove EM output
     tmp=run_EM(HPC, nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr,
 	       t.NUMA, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.gobs, maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  total, verbose=F, 
-	       len, cloglike, LOG, noancEMlogfile, doPI, doMu, dotheta, dorho) 
+	       len, cloglike, t.LOG, noancEMlogfile, doPI, doMu, dotheta, dorho) 
     t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta;runtime=tmp$runtime;t.initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   } 

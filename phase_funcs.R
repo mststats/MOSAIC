@@ -23,7 +23,7 @@ r.create.proposal<-function(t.ch,max.donors,t.fors,t.sumfors,t.backs,t.scalefact
   ll[is.nan(ll)|is.infinite(ll)]=-1 # can happen if no path through
   ll
 }
-#create.proposal<-cmpfun(r.create.proposal,list(optimize=optlevel)) # 
+#create.proposal<-cmpfun(r.create.proposal,list(optimize=3)) # 
 create.proposal<-r.create.proposal
 # H1 gets: fors[1] to g, backs[2] from g and new fors from g, new backs to g
 # H2 gets: fors[2] to g, backs[1] from g and new fors from g, new backs to g
@@ -52,7 +52,7 @@ rephaser<-function(t.ch, hap, g, t.transitions, t.umatch, t.maxmatchsize, t.dw, 
 }
 
 r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
-		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, t.phase.error.locs, t.initProb, lim=10, PLOT=F, 
+		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, t.initProb, lim=10, PLOT=FALSE, 
 		       minbg=0.1, maxbg=1, mult=1.5)
 {
   hap<-c(t.ind*2-1,t.ind*2) # t.ind indexes over genotypes, hap the two haplotypes
@@ -176,10 +176,10 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.ind, t.flips, verbose, t.ndonors, t.
   return(list(ind.max.ll=ind.max.ll,ind.orig.ll=ind.orig.ll,ind.max.flips=t.flips,nflips=t.nflips,niters=iters))
 }
 
-#phase_hunt<-cmpfun(r_phase_hunt,list(optimize=optlevel)) # 
+#phase_hunt<-cmpfun(r_phase_hunt,list(optimize=3)) # 
 phase_hunt<-r_phase_hunt
 r_phase_mcmc<-function(t.ch, t.ind, M, max.donors, t.initProb, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
-		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, PLOT=F, mcmcprog, mcmchill=T) 
+		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, mutmat, maxmiss, PLOT=FALSE, mcmcprog, mcmchill=T) 
 {
   M=as.integer(M*G[t.ch])
   NNL2=max.donors*L
@@ -280,5 +280,5 @@ r_phase_mcmc<-function(t.ch, t.ind, M, max.donors, t.initProb, t.flips, verbose,
   }
   return(list(ind.max.flips=ind.max.flips,ind.mcmc.ll=ind.mcmc.ll,ind.max.ll=ind.max.ll,ind.mcmc.acc=ind.mcmc.acc))
 }
-#phase_mcmc<-cmpfun(r_phase_mcmc,list(optimize=optlevel)) # 
+#phase_mcmc<-cmpfun(r_phase_mcmc,list(optimize=3)) # 
 phase_mcmc<-r_phase_mcmc

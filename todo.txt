@@ -1,3 +1,6 @@
+*) replace all tmp= and tmp$ with attach() calls (neater) in run.R only
+*) fix all FLAGs
+*) reduce imports() and replace with importFrom calls
 *) functionize: see tofunc.txt
 *) Edit create_package.sh to include DESCRIPTION, etc
 *) shapeit input

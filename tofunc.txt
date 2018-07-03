@@ -1,6 +1,6 @@
 ??? Perhaps not the below to avoid creating copies of large objects
 could merge into single file to create single function for R-package
-setup.R
+
 phase_hunt.R (flips)
 phase_mcmc.R (flips)
 run.R # could leave as a run file or create a text file for this

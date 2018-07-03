@@ -169,11 +169,10 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
   relprobs[is.na(relprobs)]=1 # remove uninformative ones
   list(relprobs=relprobs,ancprobs=ancprobs,drange=drange)
 }
-#if (!exists("optlevel")) optlevel=3
-#create_coancs<-cmpfun(r_create_coancs,list(optimize=optlevel))
+#create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
 create_coancs<-r_create_coancs
 
-plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=T,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
+plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRUE,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
 			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
 {
   # plotall indicates whether to plot individual based curves as well as consensus curves

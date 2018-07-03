@@ -1,7 +1,7 @@
 # functions used to perform EM inference to initialise copying matrix Mu. First chromopainter style copying is inferred then windowed 
 # (0.5cM by default). Then calculate the expected number of switches into each donor group in each window. 
 # Finally, fit a mixture model (using EMmult.R) where the number of mixtures is the number of hidden ancestries we wish to model.
-window_chunks<-function(nswitches, ww=0.5, min.swiches=0e-4, verbose=F) # windows of 0.5M sum(G)*dr/w*100~=7000 for w=0.5
+window_chunks<-function(nswitches, ww=0.5, min.swiches=0e-4, verbose=FALSE) # windows of 0.5M sum(G)*dr/w*100~=7000 for w=0.5
 {
   nchrno=length(nswitches)
   #for (ch in 1:nchrno) nswitches[[ch]]<-nswitches[[ch]][-ignorepanels,,]
@@ -85,7 +85,7 @@ loglikeMult<-function(counts, t.alpha, logMu, t.kLL, t.L)
     return(sum(unlist(ans)))
 }
 
-r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 1% increase in relative likelihood
+r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=FALSE, t.singlePI=FALSE) # # i.e. a 1% increase in relative likelihood
 {
   kLL=nrow(counts[[1]])
   nw=ncol(counts[[1]])
@@ -128,13 +128,13 @@ r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 
 	  Mu[k,i]=Mu[k,i]+sum(p[,h,i]*counts[[h]][k,]) # mean of Multinomial = np
     Mu<-t(t(Mu)/colSums(Mu))
     Mu[Mu<tmpexp]=tmpexp;Mu<-t(t(Mu)/colSums(Mu))
-    if (!singlePI)
+    if (!t.singlePI)
       for (ind in 1:NUMI)
       {
 	hap=c(ind*2-1,ind*2)
 	alpha[[ind]]<-.colSums(p[,hap[1],]+p[,hap[2],], nw, t.L)
       }
-    if (singlePI)
+    if (t.singlePI)
     {
       tmpalpha=rep(0,t.L)
       for (ind in 1:NUMI)
@@ -164,7 +164,7 @@ r_EMmult<-function(counts, t.L, itmax=200, eps=log(1.01), verbose=F) # # i.e. a 
   return(list(Mu=Mu,alpha=alpha,ll=ll,p=p))
 }
 EMmult<-r_EMmult
-#EMmult<-cmpfun(r_EMmult,list(optimize=optlevel))
+#EMmult<-cmpfun(r_EMmult,list(optimize=3))
 
 cluster_windows<-function(windows,t.L=L,verbose=F)
 {
