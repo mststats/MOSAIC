@@ -4,6 +4,7 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
 			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.max.donors, t.maxmatch, t.maxmiss, 
 			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, getnoancgfbs=FALSE, t.LOG=T) {
   # subNUMA=t.NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,t.NUMA)
+  ans=list()
   nchrno=length(t.chrnos)
   o.nchrno=nchrno;o.chrnos=t.chrnos;t.chrnos=t.samp_chrnos;nchrno=length(t.samp_chrnos);
   o.NUMA=t.NUMA;t.NUMA=min(o.NUMA,t.subNUMA);t.NUMI=max(t.NUMA/2,1)
@@ -91,9 +92,16 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch)
   if (!getnoancgfbs)
-  return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
-	      donates=donates, donatesl=donatesl, donatesr=donatesr))
+  ans$transitions=transitions
+  ans$mutmat=mutmat
+  ans$Mu=t.Mu
+  ans$theta=t.theta
+  ans$rho=t.rho
+  ans$ndonors=ndonors
+  ans$donates=donates
+  ans$donatesl=donatesl
+  ans$donatesr=donatesr
   if (getnoancgfbs)
-  return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
-	      donates=donates, donatesl=donatesl, donatesr=donatesr,noanc_gfbs=noanc_gfbs))
+    ans$noanc_gfbs=noanc_gfbs
+  return(ans)
 }

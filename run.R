@@ -12,7 +12,7 @@ firstind<-as.integer(shargs[4]); # which target individual to start from. If NUM
 NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes 
 MC=as.integer(shargs[6]) # number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
-chrnos=21:22;firstind=1;NUMA=4;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
+chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
 #chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 ffpath="/dev/shm/" # location of fast-files
@@ -27,7 +27,20 @@ dotheta=T # update error / mutation parameters?
 PLOT=F
 
 tmp=setup_data_etc(NUMA,target,nchrno) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
-attach(tmp);rm(tmp)
+# should replace the below with assign() usage
+resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
+mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
+s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS
+eps.lower=tmp$eps.lower;min.bg=tmp$min.bg;max.bg=tmp$max.bg;samp_chrnos=tmp$samp_chrnos;dr=tmp$dr
+FLAT=tmp$FLAT;maxmatch=tmp$maxmatch;maxmiss=tmp$maxmiss;umatch=tmp$umatch;d.w=tmp$d.w
+t.w=tmp$t.w;g.loc=tmp$g.loc;gobs=tmp$gobs;NUMP=tmp$NUMP;NUMI=tmp$NUMI
+label=tmp$label;KNOWN=tmp$KNOWN;kLL=tmp$kLL;NL=tmp$NL;G=tmp$G
+NN=tmp$NN;maxmatchsize=tmp$maxmatchsize;panels=tmp$panels;min.donors=tmp$min.donors;
+theta=tmp$theta;rho=tmp$rho;lambda=tmp$lambda;alpha=tmp$alpha;PI=tmp$PI;Mu=tmp$MU
+transitions=tmp$transitions;total=tmp$total
+o.PI=tmp$o.PI;o.alpha=tmp$o.alpha;o.rho=tmp$o.rho;o.lambda=tmp$o.lambda;o.theta=tmp$o.theta;o.phi.theta=tmp$o.phi.theta 
+flips=tmp$flips;prop.don=tmp$prop.don;max.donors=tmp$max.donors
+rm(tmp)
 old.runtime<-as.numeric(Sys.time())
 o.total=total
 writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to EMlogfile
@@ -48,7 +61,9 @@ if (kLL>L) # otherwise can't cluster kLL things into L clusters
   # use this to get #switches in noanc model w/o writelog
   tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, max.donors, NUMP, G, umatch, maxmatchsize, d.w, 
 		     t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat)
-  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike;noanc_gswitches=tmp$noanc_gswitches
+  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
+  noanc_gswitches=tmp$noanc_gswitches
+  rm(tmp)
   windowed_copying<-window_chunks(nswitches=noanc_gswitches,ww=0.5,verbose=verbose) # similar in the same windows
   rm(noanc_gswitches) 
   tmp<-cluster_windows(windowed_copying,t.L=L,verbose=verbose)
@@ -119,9 +134,13 @@ if (EM)
     }
     if (PHASE) 
     {
-      source("phase_hunt.R") 
-      if (M>0) 
-	source("phase_mcmc.R") # now do MCMC re-phasing w/o output to console (ugly due to txtProgressBar)
+      flips=phase_hunt_all(donates, donatesl, donatesr, ndonors, nchrno, NUMI, flips, eps.lower, 
+			transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
+			initProb, PLOT, min.bg, max.bg, HPC, verbose, LOG) 
+      if (M>0)  # now do MCMC re-phasing w/o output to console (ugly due to txtProgressBar)
+	flips=phase_mcmc_all(donates, donatesl, donatesr, ndonors, nchrno, NUMI, flips, 
+			transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
+			initProb, PLOT, HPC, verbose, LOG) 
     }
   }
   total=o.total # do longer run EM on last rep

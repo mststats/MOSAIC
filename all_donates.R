@@ -170,7 +170,15 @@ all_donates=function(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.thet
       cat(cloglike)
   } else cloglike=NaN
   if (verbose) cat("\n")
-  if (!t.get_switches) return(list(ndonors=ndonors, donates=donates, donatesl=donatesl, donatesr=donatesr, runtime=runtime, cloglike=cloglike)) 
-  if (t.get_switches) return(list(ndonors=ndonors, donates=donates, donatesl=donatesl, donatesr=donatesr, noanc_gswitches=noanc_gswitches, runtime=runtime, cloglike=cloglike)) 
+  ans=list()
+  ans$ndonors=ndonors
+  ans$donates=donates
+  ans$donatesl=donatesl
+  ans$donatesr=donatesr
+  ans$runtime=runtime
+  ans$cloglike=cloglike
+  if (t.get_switches) 
+    ans$noanc_gswitches=noanc_gswitches
+  return(ans)
 }
 
