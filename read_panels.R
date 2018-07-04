@@ -1,5 +1,5 @@
 # function that reads in the data and lays on a grid along recombination rates map
-read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, mask=NULL, S=rep(NaN,t.nchrno)) {
+read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno)) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
@@ -22,7 +22,7 @@ read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, mask=NULL, S=rep(Na
   if (!is.null(ANC) | target=="simulated") # always call this if looking at a simulation and / or if ANC=T
   {
     # example simulations
-    tmp=example_sims(NUMA, L, o.lambda) # note that this may use reduced set of panels
+    tmp=example_sims(NUMA, L, t.o.lambda) # note that this may use reduced set of panels
     ANC=tmp$ANC;mixers=tmp$mixers;panels=tmp$panels;kLL=tmp$kLL;sim.alpha=tmp$sim.alpha;sim.lambda=tmp$sim.lambda
   }
   d.w=list() # map to unique donor  haps at each gridpoint
@@ -137,7 +137,8 @@ read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, mask=NULL, S=rep(Na
     }
     if (target=="simulated")
     {
-      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map)
+      tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, 
+			dr, t.resultsdir)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch

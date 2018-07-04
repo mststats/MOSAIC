@@ -12,6 +12,10 @@ NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes
 
 MC=as.integer(shargs[6]) # optional number of cores to use for parallelized code; will grab half of all available if not supplied
 chrnos=1:22 # which chromosomes to run on
+
+chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
+chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 ffpath="/dev/shm/" # location of fast-files
 
@@ -25,7 +29,6 @@ dorho=T # update recombination w/in same ancestry parameters?
 dotheta=T # update error / mutation parameters?
 PLOT=F
 
-chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-#chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+ans=run_mosaic(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firstind,
+	       L,MC,nchrno,NUMA,PLOT,target,verbose) # this includes saving results to disk
 
-source("run.R")
