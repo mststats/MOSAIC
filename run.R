@@ -175,12 +175,12 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
 
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
-		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, EMlogfile, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
        Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs)
   if (return.res & target!="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,EMlogfile=EMlogfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
   if (return.res & target=="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,EMlogfile=EMlogfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
 }
