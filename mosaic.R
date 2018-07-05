@@ -14,8 +14,8 @@ MC=as.integer(shargs[6]) # optional number of cores to use for parallelized code
 chrnos=1:22 # which chromosomes to run on
 
 # FLAG
-chrnos=21:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-#chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+#chrnos=21:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
+chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
 
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 ffpath="/dev/shm/" # location of fast-files
