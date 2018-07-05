@@ -1,6 +1,6 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
 admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
-		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, prop.missing=0) {
+		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, prop.missing=0) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
@@ -21,7 +21,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
     {
       tmpia<-sample(1:t.L,1,prob=t.sim.alpha[[ind]]) # sample an ancestry 
       chunklengthM=rexp(1,t.sim.lambda[[ind]]) # in Morgans as per HapMix
-      chunklengthM=round(chunklengthM/dr)*dr # to the nearest gridpoint
+      chunklengthM=round(chunklengthM/t.dr)*t.dr # to the nearest gridpoint
       RHS=which.min(abs(t.rates[tmps[length(tmps)]+1]+chunklengthM-t.rates)) # in units of the rates map; match to the genetic loci we have
       # make sure all SNPs later assigned to this gridpoint are switched together by taking rightmost SNP on this gridpoint
       RHS=max(which(t.g.map==t.g.map[RHS]))
@@ -37,7 +37,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
       Y[tmpk,l]<-as.integer(t.multipanels[[tmpil]][tmp2k,l]) 
     }
   }
-  write.table(t(Y),file=paste0(resultsdir,"simulatedgenofile.",t.chrnos[t.ch],sep=""),row.names=F,col.names=F,sep="") # write out admixed individuals
+  write.table(t(Y),file=paste0(t.resultsdir,"simulatedgenofile.",t.chrnos[t.ch],sep=""),row.names=F,col.names=F,sep="") # write out admixed individuals
   # add missing values
   if (prop.missing>0)
   {

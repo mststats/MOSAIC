@@ -82,12 +82,12 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.nchrno, nl, ans$FLAT, ans$dr, mask) 
+  tmp=read_panels(datasource, t.nchrno, nl, ans$FLAT, ans$dr, o.lambda, resultsdir, mask) 
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs
   ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL;ans$G=tmp$G;ans$NN=tmp$NN;
   ans$maxmatchsize=tmp$maxmatchsize;ans$panels=tmp$panels
   if (t.target=="simulated")
-    g.true_anc=tmp$g.true_anc
+    ans$g.true_anc=tmp$g.true_anc
   if (max.donors==ans$NUMP & prop.don<1)
   {
     warning("can't use prop.don<1 and all donors: setting prop.don to 1", immediate.=T)
@@ -108,7 +108,7 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   for (ind in 1:ans$NUMI)
   {
     ans$alpha[[ind]]=rep(1/L,L)
-    ans$lambda[[ind]]<-o.lambda
+    ans$lambda[[ind]]=o.lambda
   }
   mutmat<-fmutmat(ans$theta, L, ans$maxmiss, ans$maxmatch)
   ans$PI<-create_PI(ans$alpha,ans$lambda,L,ans$dr,ans$NUMI)

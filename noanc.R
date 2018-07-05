@@ -1,15 +1,16 @@
 # need to run this otherwise so that have approx. correct parameters to start, else donates usage is very poor
 # just fit noanc on a couple of targets and a couple of chromosomes
-fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.umatch, t.G, t.flips, t.gobs,
+fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.NL, t.NN, t.umatch, t.G, t.flips, t.gobs,
 			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.max.donors, t.maxmatch, t.maxmiss, 
-			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, getnoancgfbs=FALSE, t.LOG=T) {
+			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, HPC, getnoancgfbs=FALSE, t.LOG=T) {
   # subNUMA=t.NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,t.NUMA)
+  ans=list()
   nchrno=length(t.chrnos)
   o.nchrno=nchrno;o.chrnos=t.chrnos;t.chrnos=t.samp_chrnos;nchrno=length(t.samp_chrnos);
   o.NUMA=t.NUMA;t.NUMA=min(o.NUMA,t.subNUMA);t.NUMI=max(t.NUMA/2,1)
-  o.NUMP<-t.NUMP;o.label<-t.label;o.KNOWN<-t.KNOWN;o.NL<-NL;o.NN<-NN
+  o.NUMP<-t.NUMP;o.label<-t.label;o.KNOWN<-t.KNOWN;o.NL<-t.NL;o.NN<-t.NN
   dons<-NULL;for (k in 1:t.kLL) dons<-c(dons,sort(sample(which(t.label==k),min(t.subNL,sum(t.label==k)))))
-  t.NUMP<-length(dons);t.label<-c(t.label[dons],t.label[!t.KNOWN]);NL<-c(table(t.label));NN<-sum(NL);t.KNOWN<-c(t.KNOWN[dons],t.KNOWN[!t.KNOWN])
+  t.NUMP<-length(dons);t.label<-c(t.label[dons],t.label[!t.KNOWN]);t.NL<-c(table(t.label));t.NN<-sum(t.NL);t.KNOWN<-c(t.KNOWN[dons],t.KNOWN[!t.KNOWN])
   # if required, use subset of targets and subset of donors on subset of chromosomes
   if (nchrno!=o.nchrno | t.NUMA!=o.NUMA | t.NUMP!=o.NUMP) 
   {
@@ -51,19 +52,19 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   o.lambda=t.lambda;t.lambda=list();for (ind in 1:t.NUMI) t.lambda[[ind]]=0
   o.prop.don<-t.prop.don;o.max.donors<-t.max.donors
   t.prop.don<-1;t.max.donors<-t.NUMP # use all donor haplotypes here 
-  transitions=list();for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],ind.Mu[[ind]],t.rho,NL)
+  transitions=list();for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],ind.Mu[[ind]],t.rho,t.NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch) # possibly overkill / some redundancy as t.maxmiss and t.maxmatch may have fallen for this subset
   # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
   tmp=all_donates(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches=F, t.max.donors, t.NUMP, t.G, t.umatch, 
 		  maxmatchsize, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, HPC, prethin=F, t.NUMA, nchrno, t.initProb, runtime, len, F, transitions, mutmat)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
-  t.initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,t.label,NL)
+  t.initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,t.label,t.NL)
 
   if(verbose) 
     cat("Fitting no-ancestry model\n") 
   if (t.LOG) 
   {
-    tmp=create_logfile(resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,NN,GpcM)
+    tmp=create_logfile(resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,t.NN,GpcM)
     runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
     noancEMlogfile=tmp$logfile
   }
@@ -88,12 +89,19 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   noanc.Mu<-t.Mu;t.Mu<-NULL; for (l in 1:t.L) t.Mu<-cbind(t.Mu,noanc.Mu)
   noanc.theta=t.theta;t.theta<-rep(noanc.theta,t.L)
   # next line gets called if some groups dropped but it's fast so potential redundancy is ok
-  for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,NL)
+  for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],t.Mu,t.rho,t.NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch)
   if (!getnoancgfbs)
-  return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
-	      donates=donates, donatesl=donatesl, donatesr=donatesr))
+  ans$transitions=transitions
+  ans$mutmat=mutmat
+  ans$Mu=t.Mu
+  ans$theta=t.theta
+  ans$rho=t.rho
+  ans$ndonors=ndonors
+  ans$donates=donates
+  ans$donatesl=donatesl
+  ans$donatesr=donatesr
   if (getnoancgfbs)
-  return(list(transitions=transitions, mutmat=mutmat, Mu=t.Mu, theta=t.theta, rho=t.rho, ndonors=ndonors, 
-	      donates=donates, donatesl=donatesl, donatesr=donatesr,noanc_gfbs=noanc_gfbs))
+    ans$noanc_gfbs=noanc_gfbs
+  return(ans)
 }
