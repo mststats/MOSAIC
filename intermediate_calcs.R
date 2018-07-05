@@ -1,6 +1,6 @@
 # calculations related to EM updates used in EM_updates.R
 # observed number of switches from (ia,il) to (ja,jl) 
-r.calc_E.n<-function(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors,t.donates,t.donatesl,t.donatesr,t.initProb) 
+r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors,t.donates,t.donatesl,t.donatesr,t.initProb,t.label) 
 {
   THIN=ifelse(t.max.donors==t.NUMP,F,T)
   a<-array(0,c(t.L,t.kLL,t.L)) # need to track which groups are switched to for t.Mu updates
@@ -9,12 +9,12 @@ r.calc_E.n<-function(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G,t.transitions,t.flips,t
   n<-matrix(0,t.kLL,t.L) # nothing happens; no anc switch and no hap switch
   # fb calcs moved to here to avoid storing all fors, backs, etc
   t.fors<-rep(0,t.G*t.max.donors*t.L);t.sumfors<-matrix(0,t.G,t.L);t.scalefactor<-rep(0,t.G);
-  cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.initProb[k,],label,
+  cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.initProb[k,],t.label,
 	     t.ndonors,t.donates,t.donatesl,t.flips,t.fors,t.sumfors,t.scalefactor)
   t.backs<-rep(0,t.G*t.max.donors*t.L);t.scalefactorb<-rep(0,t.G);
-  cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,label,
+  cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.label,
 	      t.ndonors,t.donates,t.donatesr,t.flips,t.backs,t.scalefactorb)
-  probs<-cppprobs(k,t.NUMA,t.max.donors,THIN,t.L,t.kLL,NN,t.NUMP,t.G,label,t.fors,t.sumfors,t.backs,t.transitions,t.flips,t.mutmat,t.maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.ndonors,t.donates,t.donatesl)
+  probs<-cppprobs(k,t.NUMA,t.max.donors,THIN,t.L,t.kLL,t.NN,t.NUMP,t.G,t.label,t.fors,t.sumfors,t.backs,t.transitions,t.flips,t.mutmat,t.maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.ndonors,t.donates,t.donatesl)
   for (type in 1:length(probs)) probs[[type]][probs[[type]]<0]=0
   #probs$switches are switches that go from (il,ia) to (jl,ja) but doesn't include same haps i.e. must be a switch to a different hap
   #probs$self are both switches and non-switches that go to same ancestry / hap pair
@@ -40,9 +40,9 @@ r.calc_E.n<-function(ch,k,t.max.donors,t.NUMP,t.NUMA,t.G,t.transitions,t.flips,t
       na[jl,ia]<-na[jl,ia]+sweights[2] # doesn't switch ancestry but switches hap 
       r[jl,ia]<-r[jl,ia]+sweights[2] # doesn't switch ancestry but switches hap
       # now do jk=ik 
-      spsa<-(     psa*t.Mu[jl,ia]/NL[jl])/((psa+psr*npsa)*t.Mu[jl,ia]/NL[jl]+npsr*npsa) # relative contribution of ancestry switches
-      spsr<-(npsa*psr*t.Mu[jl,ia]/NL[jl])/((psa+psr*npsa)*t.Mu[jl,ia]/NL[jl]+npsr*npsa) # relative contribution of recombination switches
-      for (ik in which(label==jl)) # 1 may have switched to same anc 2 may have switched to same hap w/ no anc switch 3 may not have switched
+      spsa<-(     psa*t.Mu[jl,ia]/t.NL[jl])/((psa+psr*npsa)*t.Mu[jl,ia]/t.NL[jl]+npsr*npsa) # relative contribution of ancestry switches
+      spsr<-(npsa*psr*t.Mu[jl,ia]/t.NL[jl])/((psa+psr*npsa)*t.Mu[jl,ia]/t.NL[jl]+npsr*npsa) # relative contribution of recombination switches
+      for (ik in which(t.label==jl)) # 1 may have switched to same anc 2 may have switched to same hap w/ no anc switch 3 may not have switched
       {
 	sweights<-c(spsa, spsr, 1-spsa-spsr)*probs$self[ik,ia] #, no switch prob is {1-spsa}*{1-spsr}) = 1-spsa-spsr
 	a[ia,jl,ia]<-a[ia,jl,ia]+sweights[1] # switches ancestry

@@ -12,14 +12,14 @@ s_trans<-function(t.L,t.kLL,t.PI,t.Mu,t.rho,t.NL)
   ans
 }
 
-get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.G, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, t.initProb, 
-		   t.label, t.ndonors, t.flips)
+get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.G, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, 
+		   t.mutmat, t.maxmiss, t.initProb, t.label, t.ndonors, t.flips, t.HPC)
 {
   ans<-list()
   THIN=ifelse(t.max.donors==t.NUMP, F, T)
   for (ch in 1:nchrno)
   {
-    if (HPC==1)
+    if (t.HPC==1)
     {
       donates_chr=getdonates(t.donates[[ch]],NUMI)
       donatesl_chr=getdonates(t.donatesl[[ch]],NUMI)
@@ -37,7 +37,7 @@ get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NU
 	cppgforback(t.max.donors,THIN,t.kLL,t.NUMP,t.label,t.L,t.G[ch],t.ndonors[[ch]][[ind]],donates_chr[[ind]],t.fors,t.backs)
       }
     }
-    if (HPC==2)
+    if (t.HPC==2)
     {
       ans[[ch]]<-list()
       tmp<-foreach(k=1:t.NUMA) %dopar% 
@@ -57,7 +57,7 @@ get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NU
 	ans
       }
     }
-    if (!HPC)
+    if (!t.HPC)
     {
       ans[[ch]]<-list()
       tmp<-foreach(k=1:t.NUMA) %dopar% 

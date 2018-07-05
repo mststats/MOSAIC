@@ -1,8 +1,8 @@
 # need to run this otherwise so that have approx. correct parameters to start, else donates usage is very poor
 # just fit noanc on a couple of targets and a couple of chromosomes
-fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.NL, t.NN, t.umatch, t.G, t.flips, t.gobs,
-			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.max.donors, t.maxmatch, t.maxmiss, 
-			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, HPC, getnoancgfbs=FALSE, t.LOG=T) {
+fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.NL, t.NN, t.umatch, t.G, t.dr, t.flips, t.gobs,
+			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.min.donors, t.max.donors, t.maxmatchsize, t.maxmatch, t.maxmiss, 
+			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, HPC, t.runtime, t.resultsdir, t.GpcM, t.eps, t.cloglike, getnoancgfbs=FALSE, t.LOG=T, t.HPC=2) {
   # subNUMA=t.NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,t.NUMA)
   ans=list()
   nchrno=length(t.chrnos)
@@ -15,13 +15,13 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   if (nchrno!=o.nchrno | t.NUMA!=o.NUMA | t.NUMP!=o.NUMP) 
   {
     o.umatch=t.umatch
-    o.maxmatchsize=maxmatchsize
+    o.maxmatchsize=t.maxmatchsize
     o.G=t.G;o.flips=t.flips;o.gobs=t.gobs;
     t.G=t.G[match(t.samp_chrnos, o.chrnos)]; t.flips=t.gobs=list()
     for (ch in 1:nchrno)
     {
       t.umatch[[ch]]=t.umatch[[which(t.samp_chrnos[ch]==o.chrnos)]]
-      maxmatchsize[ch]=o.maxmatchsize[which(t.samp_chrnos[ch]==o.chrnos)]
+      t.maxmatchsize[ch]=o.maxmatchsize[which(t.samp_chrnos[ch]==o.chrnos)]
       t.d.w[[ch]]=t.d.w[[which(t.samp_chrnos[ch]==o.chrnos)]]
       t.t.w[[ch]]=t.t.w[[which(t.samp_chrnos[ch]==o.chrnos)]]
       if (t.NUMP!=o.NUMP)
@@ -51,36 +51,37 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   o.alpha=t.alpha;t.alpha=list();for (ind in 1:t.NUMI) t.alpha[[ind]]=1
   o.lambda=t.lambda;t.lambda=list();for (ind in 1:t.NUMI) t.lambda[[ind]]=0
   o.prop.don<-t.prop.don;o.max.donors<-t.max.donors
-  t.prop.don<-1;t.max.donors<-t.NUMP # use all donor haplotypes here 
+  t.prop.don=1;t.max.donors=t.NUMP # use all donor haplotypes here 
   transitions=list();for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],ind.Mu[[ind]],t.rho,t.NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch) # possibly overkill / some redundancy as t.maxmiss and t.maxmatch may have fallen for this subset
   # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
-  tmp=all_donates(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches=F, t.max.donors, t.NUMP, t.G, t.umatch, 
-		  maxmatchsize, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, HPC, prethin=F, t.NUMA, nchrno, t.initProb, runtime, len, F, transitions, mutmat)
-  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
+  tmp=all_donates(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches=F, t.min.donors, t.max.donors, t.prop.don, t.NUMP, t.NL, t.G, 
+		  t.umatch, t.maxmatchsize, t.maxmatch,t.maxmiss,t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, nchrno, t.initProb, 
+		  t.runtime, len, F, transitions, mutmat, NaN, NULL)
+  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=t.runtime=tmp$runtime;cloglike=tmp$cloglike
   t.initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,t.label,t.NL)
 
   if(verbose) 
     cat("Fitting no-ancestry model\n") 
   if (t.LOG) 
   {
-    tmp=create_logfile(resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,t.NN,GpcM)
-    runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
+    tmp=create_logfile(t.resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,t.NN,t.GpcM)
+    t.runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
     noancEMlogfile=tmp$logfile
   }
   total=50 # only estimating some of the parameters, not required to be super accurate
   #stop("wait")
   if (EM) {
     # no anc fit and all donors included; should remove EM output
-    tmp=run_EM(HPC, nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, mutmat, transitions, ndonors, donates, donatesl, donatesr,
-	       t.NUMA, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.gobs, maxmatchsize, t.umatch, t.flips, t.maxmiss, t.d.w, t.t.w,  total, verbose=F, 
-	       len, cloglike, t.LOG, noancEMlogfile, doPI, doMu, dotheta, dorho) 
-    t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta;runtime=tmp$runtime;t.initProb=tmp$initProb;
-    cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
+    tmp=run_EM(t.HPC, nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.label, mutmat, transitions, ndonors, donates, donatesl, donatesr,
+	       t.NUMA, t.NN, t.NL, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.dr, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmatch, t.maxmiss, t.d.w, t.t.w,  
+	       total, verbose=F, len, t.cloglike, t.LOG, noancEMlogfile, doPI, doMu, dotheta, dorho, TRUE, TRUE, TRUE, t.runtime, t.eps) 
+    t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta;t.runtime=tmp$runtime;t.initProb=tmp$initProb;
+    t.cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   } 
   if (getnoancgfbs)
-    noanc_gfbs=get_gfbs(t.NUMP, t.max.donors, donates, donatesl, donatesr, t.NUMA, t.L, t.G, t.kLL, transitions, t.umatch, maxmatchsize, t.d.w, t.t.w, t.gobs, mutmat, t.maxmiss, t.initProb, 
-			t.label, ndonors, t.flips)
+    noanc_gfbs=get_gfbs(t.NUMP, t.max.donors, donates, donatesl, donatesr, t.NUMA, t.L, t.G, t.kLL, transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, mutmat, 
+			t.maxmiss, t.initProb, t.label, ndonors, t.flips, t.HPC)
   t.L<-o.L
   # return parameters, etc to correct sizes
   doMu<-o.doMu;dorho=o.dorho;dotheta=o.dotheta
