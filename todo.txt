@@ -1,5 +1,5 @@
+*) plots by default!
 *) reduce imports() and replace with importFrom calls
-*) functionize run.R
 *) Edit create_package.sh to include DESCRIPTION, etc
 *) shapeit input
 *) flags for command line options e.g. --MC 16 etc
