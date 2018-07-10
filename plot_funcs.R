@@ -1,13 +1,15 @@
 # various functions that create useful plots of MOSAIC model fit
 # such as local ancestry plots, plots of the inferred copying matrix, tables of top donors in selected regions, etc
-if (!exists("colvec")) colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
-happlot<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",cexa=1) { # probs is L*K*length(x) in dimension
+
+happlot<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",cexa=1,
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+  # probs is L*K*length(x) in dimension
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
-  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
+  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=FALSE,ylab=ylab,main=mlab,xlab=xlab)
   upper=lower=rep(0,G)
   for (i in 1:L) 
   {
@@ -17,14 +19,14 @@ happlot<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",cexa=1)
   }
   axis(2)
 }
-dipplot<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual",ind),xlab="",cexa=1) 
-{ # probs is L*K*length(x) in dimension
+dipplot<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual",ind),xlab="",cexa=1,
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,2)
-  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
+  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=FALSE,ylab=ylab,main=mlab,xlab=xlab)
   upper=lower=rep(0,G)
   for (i in 1:L) 
   {
@@ -35,15 +37,15 @@ dipplot<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual",ind),xlab="",cex
   axis(2)
 }
 
-happlot_Mu<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu,pow=4,cexa=1) 
-{ # probs is L*K*length(x) in dimension
+happlot_Mu<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu,pow=4,cexa=1,
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   kLL=nrow(Mu)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
-  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
+  plot(x=range(x),y=c(0,1),xlim=xlim,ylim=ylim,t='n',axes=FALSE,ylab=ylab,main=mlab,xlab=xlab)
   alpha.Mu<-t.Mu^pow
   alpha.Mu<-t(t(alpha.Mu)/apply(alpha.Mu,2,max))
   upper=lower=rep(0,G)
@@ -58,8 +60,8 @@ happlot_Mu<-function(ch,k,x,L,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu
   axis(2)
 }
 
-dipplot_Mu<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual", ind),xlab="",t.Mu,pow=4,cexa=1) 
-{ # probs is L*K*length(x) in dimension
+dipplot_Mu<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual", ind),xlab="",t.Mu,pow=4,cexa=1, 
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
@@ -68,7 +70,7 @@ dipplot_Mu<-function(ch,ind,x,L,probs,ylab,mlab=paste("Individual", ind),xlab=""
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,2)
-  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=F,ylab=ylab,main=mlab,xlab=xlab)
+  plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=FALSE,ylab=ylab,main=mlab,xlab=xlab)
   alpha.Mu<-t.Mu^pow
   alpha.Mu<-t(t(alpha.Mu)/apply(alpha.Mu,2,max))
   upper=lower=rep(0,G)
@@ -118,7 +120,7 @@ report_donors<-function(MODE)
     tmp<-c(ylower[g]-1):yupper[g]
     panels<-rownames(Mu)[ind.indices[tmp[-1]]]
     donprobs<-diff(cprobs[tmp,g])
-    ord<-sort(donprobs,dec=T,index=T)$ix # reorder from high to low contributors
+    ord<-sort(donprobs,dec=TRUE,index=TRUE)$ix # reorder from high to low contributors
     ord<-ord[donprobs[ord]>0] # and drop the non-contributors
     panels<-panels[ord]
     donprobs<-donprobs[ord]
@@ -144,15 +146,15 @@ all_donors<-function(t.gfbs,t.localanc)
   }
   return(donors)
 }
-# fit=apply(donors[[ch]][8898:8909,,],c(2,3),mean);rownames(fit)=rownames(Mu); a=2;head(sort(fit[,a],decreasing=T),2)
+# fit=apply(donors[[ch]][8898:8909,,],c(2,3),mean);rownames(fit)=rownames(Mu); a=2;head(sort(fit[,a],decreasing=TRUE),2)
 plot_panel_dist=function(donors,ch,a)
 {
   m=colMeans(donors[[ch]][,,a]) # note difference from Chromosomal mean rather than genomewide mean
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
-plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F, beside=F, ord=T, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=0,tol=1e-6)
-{
+plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, 
+		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
   if (MODE=="copy")
@@ -174,18 +176,18 @@ plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F
     for (l in 1:L)
     {
       maxforthis<-which(apply(t.Mu,1,which.max)==l)
-      vord<-c(vord,maxforthis[sort(t.Mu[maxforthis,l],index=T)$ix])
+      vord<-c(vord,maxforthis[sort(t.Mu[maxforthis,l],index=TRUE)$ix])
     }
     t.Mu<-as.matrix(t.Mu[vord,])
   }
   if (!beside)
   {
     #t.Mu=t.Mu[rowMeans(t.Mu)>=quantile(rowMeans(t.Mu),cutoff),] # only those above cutoff on the quantiles on average
-    tmp=rep(F,nrow(t.Mu));for (l in 1:L) tmp=(tmp | (t.Mu[,l]>=quantile(t.Mu[,l],cutoff)));t.Mu=t.Mu[tmp,] # only those above cutoff on the quantiles in some anc
+    tmp=rep(FALSE,nrow(t.Mu));for (l in 1:L) tmp=(tmp | (t.Mu[,l]>=quantile(t.Mu[,l],cutoff)));t.Mu=t.Mu[tmp,] # only those above cutoff on the quantiles in some anc
   }
   if (!showgradient & !beside)
   {
-    barplot(t(t.Mu),space=F,col=colvec,horiz=T,las=T,cex.axis=cexa,cex.names=cexa)
+    barplot(t(t.Mu),space=FALSE,col=colvec,horiz=TRUE,las=TRUE,cex.axis=cexa,cex.names=cexa)
     for (i in 1:L)
       mtext(side=3, at=(i)*0.2*max(rowSums(t.Mu)), round(t.alpha[i],3), cex=cexa, col=colvec[i])
   }
@@ -216,10 +218,10 @@ plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F
     xmax=max(unlist(ordMu))
     for (a in 1:L) 
     {
-      if (ord) y=barplot(ordMu[[a]],horiz=T,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
       if (!ord)
       {
-	y=barplot(ordMu[[a]],horiz=T,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
+	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
       }
       text(xmax/4,max(y)+shiftt,all.alpha[a],col=colvec[a],cex=2*cexa)
     }
@@ -244,8 +246,8 @@ plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F
   if (beside)
     return(ordMu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
 }
-plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst))
-{
+plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst),
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Fst)
   if ((!ord) & (cutoff!=t.kLL))
   {
@@ -264,7 +266,7 @@ plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t
   }
   if (ord)
   {
-    allord=apply(t.Fst,2,order,decreasing=T)
+    allord=apply(t.Fst,2,order,decreasing=TRUE)
     ordFst=NULL;for (a in 1:L) ordFst[[a]]=t.Fst[allord[,a],a] 
   } else 
   {
@@ -274,9 +276,9 @@ plot_Fst<-function(t.Fst, ord=T, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t
     ordFst[[a]]=tail(ordFst[[a]],cutoff) # only show those that are below cutoff place
   for (a in 1:L) 
   {
-    if (ord) y=barplot(ordFst[[a]],horiz=T,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+    if (ord) y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
     if (!ord)
-      y=barplot(ordFst[[a]],horiz=T,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])))
+      y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])))
   }
   if (ord) 
     return(ordFst)
@@ -293,11 +295,164 @@ phase_localanc=function(t.localanc,t.flips)
       for (k in haps)
       {
 	otherhap=ifelse((k%%2)==0,1,2) # if even look at previous; if odd look at next
-	kf=t.flips[[ind]][[ch]] # F and T values
+	kf=t.flips[[ind]][[ch]] # FALSE and TRUE values
 	for (l in 1:L)
 	  t.localanc[[ch]][l,k,kf]=ans[l,otherhap,kf]
       }
     }
   return(t.localanc)
+}
+
+# function to plot the local ancestry of each target admixed genome along each chromosome
+plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,t.gfbs=NULL,
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+  if (is.null(t.Mu) & MODE=="GRAD") stop("Please supply a copying matrix Mu for use with this plot")
+  if (is.null(t.gfbs) & MODE=="GRAD") stop("Please supply a full array of posterior probabilities for use with this plot")
+  G=sapply(t.localanc, function(x) dim(x)[3])
+  NUMA=dim(t.localanc[[1]])[2]
+  L=dim(t.localanc[[1]])[1]
+  nchrno=length(t.chrnos)
+  NUMI=NUMA/2
+  if (NCHR==2 & NUMA==1)
+  {
+    warning("changing NCHR to HAP as only on hap in target",immediate.=T)
+    NCHR=1
+  }
+  if (NCHR==1)
+  {
+    expected_r2<-matrix(NaN,nchrno,NUMA)
+    if (!is.null(t.g.true_anc))
+    {
+      perc<-matrix(NaN,nchrno,NUMA)
+      mse<-matrix(NaN,nchrno,NUMA)
+      r2<-matrix(NaN,nchrno,NUMA)
+    }
+    for (ch in 1:nchrno)
+      for (k in 1:NUMA)
+      {
+	ind=as.integer((k+1)/2)
+	expected_r2[ch,k]=hap_expected_fr2_chr_k(t.localanc, ch, k)
+	cat("E[r2]: ", expected_r2[ch,k], "  ", sep="")
+	if (is.null(t.g.true_anc)) par(mfrow=c(1,1),mar=c(4, 5.2, 1, 0)+0.1)
+	if (!is.null(t.g.true_anc)) par(mfrow=c(2,1),mar=c(4, 5.2, 1, 0)+0.1)
+	if (!is.null(t.g.true_anc))
+	{
+	  # how many maximal ancestry predictions are the same as the truth
+	  perc[ch,k]<-round(100*mean(apply(matrix(t.localanc[[ch]][,k,],L),2,which.max)==
+				     apply(matrix(t.g.true_anc[[ch]][,k,],L),2,which.max)),2)
+	  mse[ch,k]<-mean((t.localanc[[ch]][,k,]-t.g.true_anc[[ch]][,k,])^2)
+	  r2[ch,k]=hap_fr2_chr_k(t.localanc, t.g.true_anc, ch, k)
+	  cat("r2: ",r2[ch,k],"  ", sep="")
+	  cat("correct: ", perc[ch,k], "%   ", sep="")
+	  cat("MSE:", mse[ch,k], "  ", sep="")
+	  cat("\n")
+	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+	  if (MODE=="LINE")
+	  {
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	    for (i in 1:L) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
+	    axis(2)
+	  }
+	  if (MODE=="BAR" | MODE=="GRAD")
+	    happlot(ch,k,t.g.loc[[ch]]*1e-6,L,t.g.true_anc[[ch]][,k,],ylab="truth",cexa=cexa)
+	}
+	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+	if (MODE=="LINE")
+	{
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	  for (i in 1:L) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
+	  axis(2)
+	}
+	if (MODE=="BAR")
+	  happlot(ch,k,t.g.loc[[ch]]*1e-6,L,t.localanc[[ch]][,k,],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	if (MODE=="GRAD")
+	  happlot_Mu(ch,k,t.g.loc[[ch]]*1e-6,L,t.gfbs[[ch]],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
+	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
+	axis(1,at=mp,labels=signif(mp,3))
+	if (PAUSE) readline()
+      }
+  }
+  if (NCHR==2)
+  {
+    expected_r2<-matrix(NaN,nchrno,NUMI)
+    if (!is.null(t.g.true_anc))
+    {
+      perc<-matrix(NaN,nchrno,NUMI)
+      mse<-matrix(NaN,nchrno,NUMI)
+      r2<-matrix(NaN,nchrno,NUMI)
+    }
+    for (ch in 1:nchrno)
+      for (ind in 1:(NUMI))
+      {
+	hap<-c(ind*2-1,ind*2)
+	expected_r2[ch,ind]=dip_expected_fr2_chr_ind(t.localanc, ch, ind)
+	cat("E[r2]: ", expected_r2[ch,ind], "  ", sep="")
+	if (is.null(t.g.true_anc)) par(mfrow=c(1,1),mar=c(4, 5.2, 1, 0)+0.1)
+	if (!is.null(t.g.true_anc)) par(mfrow=c(2,1),mar=c(4, 5.2, 1, 0)+0.1)
+	if (!is.null(t.g.true_anc))
+	{
+	  perc[ch,ind]<-0 # how many maximal ancestry counts 0,1,2 are the same as the truth
+	  for (i in 1:L)
+	    perc[ch,ind]<-perc[ch,ind]+mean(as.integer(t.localanc[[ch]][i,hap[1],]+t.localanc[[ch]][i,hap[2],]+0.5)==
+					    as.integer(t.g.true_anc[[ch]][i,hap[1],]+t.g.true_anc[[ch]][i,hap[2],]+0.5)) # push to int required here due to shift to the grid
+	  perc[ch,ind]<-round(100*perc[ch,ind]/L,2)
+	  mse[ch,ind]<-mean((t.localanc[[ch]][,hap[1],]+t.localanc[[ch]][,hap[2],]-t.g.true_anc[[ch]][,hap[1],]-t.g.true_anc[[ch]][,hap[2],])^2)
+	  r2[ch,ind]=dip_fr2_chr_ind(t.localanc, t.g.true_anc, ch, ind)
+	  cat("r2: ",r2[ch,ind],"  ", sep="")
+	  cat("% correct: ", perc[ch,ind], "  ", sep="")
+	  cat("MSE: ", mse[ch,ind], "  ", sep="")
+	  cat("\n")
+	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
+	  if (MODE=="LINE")
+	  {
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	    for (i in 1:L) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,hap[1],]+t.g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
+	    axis(2)
+	  }
+	  if (MODE=="BAR" | MODE=="GRAD")
+	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,L,t.g.true_anc[[ch]][,hap[1],]+t.g.true_anc[[ch]][,hap[2],],xlab=paste("Position on Chromosome",t.chrnos[ch]),
+		    ylab="truth",cexa=cexa)
+	}
+	if (MODE=="LINE")
+	{
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	  for (i in 1:L) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,hap[1],]+t.localanc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
+	  axis(2)
+	}
+	if (MODE=="BAR")
+	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,L,t.localanc[[ch]][,hap[1],]+t.localanc[[ch]][,hap[2],],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	if (MODE=="GRAD")
+	  xy<-dipplot_Mu(ch,ind,t.g.loc[[ch]]*1e-6,L,t.gfbs[[ch]],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
+	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
+	axis(1,at=mp,labels=signif(mp,3))
+	if (PAUSE) readline()
+      }
+  }
+}
+
+# function to plot most useful figures
+plot_all=function(result,pathout) {
+  targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
+		       "_",result$NN,"_",result$GpcM)
+  pdf(file=paste0(pathout,targetdetails,"_","_Mu.pdf"), width=1200, height=1920)
+  ord.Mu=plot_Mu(Mu,alpha,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
+  dev.off()
+  
+  #this_Fst=all_Fst[[which(names(all_Fst)==paste0(target,"_",L,"way_",sum(NL)))]]
+  #pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=1200, height=1920)
+  #ord.Fst=plot_Fst(tmp_Fst$panels,cexa=3,ord=T, shiftl=14, cutoff=10)
+  #dev.off()
+  
+  # dimensions of plots
+  d1=switch(result$L,NaN,1,2,2,3,3) 
+  d2=switch(result$L,NaN,3,3,5,5,7) 
+  pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=320*d2,height=320*d1)
+  this_acoplots=plot_coanccurves(acoancs,dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
+  dev.off()
+
+  EMlog=extract_log(EMlogfile)
+  png(file=paste0(pathout,targetdetails,"_EMlog.png"), width=960,height=960)
+  plot_loglike(EMlog)
+  dev.off()
 }
 
