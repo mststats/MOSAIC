@@ -83,21 +83,16 @@ rdirichlet=function(n, t.alpha) {
 }
 
 # some example simulations of admixture to try out using the HGDP dataset
-example_sims=function(t.NUMA, t.L, t.o.lambda) {
+example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, rep(8,t.L))), fewer_ancs=NULL) {
   sim.alpha<-sim.lambda<-list()
   NUMI<-max(1,t.NUMA/2)
-  if (!exists("mean.sim.alpha")) mean.sim.alpha=c(rdirichlet(1, rep(8,t.L)))
-  #mean.sim.alpha<-c(0.9,0.1) # manual choice for t.L=2
-  #mean.sim.alpha<-c(0.1,0.1,0.8) # manual choice for t.L=3
+  
   for (ind in 1:NUMI)
   {
     sim.alpha[[ind]]=c(rdirichlet(1, mean.sim.alpha*t.L*4))
     #sim.alpha[[ind]]=c(0.2,0.8) # leads to difficulties
     sim.lambda[[ind]]<-t.o.lambda
   }
-  #sim.alpha[[1]]=c(1,0,0);sim.alpha[[2]]=c(0,1,0)#;sim.alpha[[3]]=c(0,0,1); # one pure from each anc=pop; useful when theta and rho not updated
-  #sim.alpha[[1]]=c(1,1,1);sim.alpha[[2]]=c(1,1,1); # two that are equal parts each anc=pop; useful when theta and rho not updated
-  if (!exists("fewer_ancs")) fewer_ancs=NULL
   if (!is.null(fewer_ancs)) 
   {
     for (ind in fewer_ancs)
