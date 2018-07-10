@@ -132,8 +132,8 @@ v_wc_fst=function(freqs1,counts1,freqs2,counts2)
 wc_fst=cmpfun(v_wc_fst,list(optimize=3)) # gives the same as the above
 
 # function to calculate Fst between all pairs of latent ancestries and between each latent ancestry and each donor panel
-Fst_combos=function(target, L, NN, panels) {
-  load(file=paste0("FREQS/", target, "_", L, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
+Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
+  load(file=paste0(pathin, target, "_", L, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
   anc_fst=rep(NaN,choose(L,2))
   Ls=utils::combn(L,2)
   for (l in 1:ncol(Ls))
@@ -145,7 +145,7 @@ Fst_combos=function(target, L, NN, panels) {
   tmp_fst=matrix(NaN,length(panels),L)
   for (l1 in 1:length(panels))
   {
-    load(paste0("FREQS/", panels[l1],"_freqs.rdata"))
+    load(paste0(pathin, panels[l1],"_freqs.rdata"))
     for (l2 in 1:L) 
       tmp_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
   }

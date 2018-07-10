@@ -21,7 +21,7 @@ nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 ffpath="/dev/shm/" # location of fast-files
 
 # the rest are mostly used in debugging, etc
-if (!exists("ANC")) ANC=NULL; # no a-priori knowledge of which panels to use for which ancestries
+#ANC=NULL; # no a-priori knowledge of which panels to use for which ancestries
 verbose=T # print certain statements of progress as algorithm runs?
 EM=T # run EM algorithm?
 doMu=T # update copying matrix parameters?
@@ -29,9 +29,18 @@ doPI=T # update ancestry switching parameters parameters?
 dorho=T # update recombination w/in same ancestry parameters? 
 dotheta=T # update error / mutation parameters?
 PLOT=F
-return.res=FALSE # whether to return results in a list; for use within an interactive R session
+return.res=TRUE # whether to return results in a list; for use within an interactive R session
 
 # this function includes saving results to disk
 mosaic.result=run_mosaic(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firstind,
 			 L,MC,nchrno,NUMA,PLOT,target,verbose,return.res) 
 
+cat("Expected r-squared (genomewide):", dip_expected_fr2(mosaic.result$localanc))
+if (target=="simulated") 
+  cat("Actual r-squared (genomewide):", dip_fr2(mosaic.result$localanc,mosaic.result$g.true_anc))
+
+# get de-phased local ancestry
+#flocalanc=phase_localanc(mosaic.result$localanc,mosaic.result$final.flips)
+#for (panel in rownames(mosaic.result$Mu))
+#  summarise_panels(panel,datasource,mosaic.result$chrnos)
+plot_all(mosaic.result,pathout="PLOTS/","FREQS/")

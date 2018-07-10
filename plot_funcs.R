@@ -431,14 +431,15 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 }
 
 # function to plot most useful figures
-plot_all=function(result,pathout) {
+plot_all=function(result,pathout,pathin) {
   targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
 		       "_",result$NN,"_",result$GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=21, height=28)
   ord.Mu=plot_Mu(Mu,alpha,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
   dev.off()
   
-  #this_Fst=all_Fst[[which(names(all_Fst)==paste0(target,"_",L,"way_",sum(NL)))]]
+  # FLAG: maybe do this but takes a while to calculate frequencies, etc
+  #this_Fst=Fst_combos(result$target, result$L, sum(result$NL), rownames(result$Mu)) 
   #pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
   #ord.Fst=plot_Fst(tmp_Fst$panels,cexa=3,ord=T, shiftl=14, cutoff=10)
   #dev.off()

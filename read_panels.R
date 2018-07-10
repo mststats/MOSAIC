@@ -139,7 +139,7 @@ read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, t.o.lambda, t.resul
     if (target=="simulated")
     {
       tmp=admix_genomes(chrnos, ch, NUMA, NUMP, KNOWN, NN, multipanels, L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, 
-			dr, t.resultsdir)
+			dr, t.resultsdir, panels)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch

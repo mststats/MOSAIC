@@ -1,6 +1,6 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
 admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
-		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, prop.missing=0) {
+		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, t.panels, prop.missing=0) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
@@ -146,27 +146,27 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, re
     { 
       mixers=ANC
       # check that the supplied panels to mix are indeed members of panels and that length(ANC)==t.L
-      refs=sample(panels[!(panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
+      refs=sample(t.panels[!(t.panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
       pops=list()
       for (l in 1:t.L) pops[[l]]=c(ANC[l],refs[tmp==l]) # first panel is always the panel used to simulate the admixed individuals, remaining panels taken at random
     }
   }
   if (is.null(ANC))
   {
-    ANC=mixers=sample(panels,t.L)
+    ANC=mixers=sample(t.panels,t.L)
     if (verbose)
       cat("no ancestral panels specified so using:", ANC, "\n")
-    refs=sample(panels[!(panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
+    refs=sample(t.panels[!(t.panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
     pops=list()
     for (l in 1:t.L) pops[[l]]=c(ANC[l],refs[tmp==l]) # # first panel is always the panel used to simulate the admixed individuals, remaining panels taken at random
   }
   pops[[t.L+1]]="simulated";names(pops)[t.L+1]="target"
-  panels<-unlist(pops)
-  kLL=length(panels)-1 # remove simulated as there is no such panel
-  panels=panels[1:kLL]
+  t.panels<-unlist(pops)
+  kLL=length(t.panels)-1 # remove simulated as there is no such panel
+  t.panels=t.panels[1:kLL]
   if (verbose) cat("Creating ", NUMI, " simulated ", t.L, "-way admixed target individuals with ", kLL, " panels\n", sep="")
   ANC<-NULL
   for (i in 1:t.L)
     ANC[i]=mixers[i] 
-  return(list(ANC=ANC, mixers=mixers, panels=panels, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
+  return(list(ANC=ANC, mixers=mixers, panels=t.panels, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
 }
