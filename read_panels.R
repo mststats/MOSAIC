@@ -1,5 +1,6 @@
 # function that reads in the data and lays on a grid along recombination rates map
-read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno)) {
+read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
+		     firstind=1) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
@@ -67,7 +68,7 @@ read_panels=function(datasource, t.nchrno, t.nl, t.FLAT, dr, t.o.lambda, t.resul
     if (S[ch]==nrow(snps)) locs<-1:S[ch]
     snps<-snps[locs,]
     for (i in 1:length(multipanels)) multipanels[[i]]<-multipanels[[i]][,locs]
-    if (!exists("firstind")) firstind=1
+    
     # start at firstind i.e. remove all before this in target pop. 
     if (firstind!=1)
     {
