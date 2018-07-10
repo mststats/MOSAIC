@@ -35,9 +35,9 @@ return.res=TRUE # whether to return results in a list; for use within an interac
 mosaic.result=run_mosaic(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firstind,
 			 L,MC,nchrno,NUMA,PLOT,target,verbose,return.res) 
 
-cat("Expected r-squared (genomewide):", dip_expected_fr2(mosaic.result$localanc))
+cat("Expected r-squared (genomewide):", dip_expected_fr2(mosaic.result$localanc),"\n")
 if (target=="simulated") 
-  cat("Actual r-squared (genomewide):", dip_fr2(mosaic.result$localanc,mosaic.result$g.true_anc))
+  cat("Actual r-squared (genomewide):", dip_fr2(mosaic.result$localanc,mosaic.result$g.true_anc),"\n")
 
 # get de-phased local ancestry
 #flocalanc=phase_localanc(mosaic.result$localanc,mosaic.result$final.flips)

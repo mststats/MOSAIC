@@ -153,7 +153,7 @@ plot_panel_dist=function(donors,ch,a)
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
-plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, 
+plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, 
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
@@ -201,7 +201,7 @@ plot_Mu<-function(t.Mu=Mu, t.alpha=alpha, t.NL=NL, MODE="scaled", showgradient=F
       plot(c(-cexa,ncol(t.Mu)),c(0.5,nrow(t.Mu)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
       text(x=2,pos=2,y=(1:nrow(t.Mu)),rownames(t.Mu),cex=1.75*cexa)
     }
-    all.alpha=Reduce("+",alpha);all.alpha=all.alpha/sum(all.alpha);all.alpha=round(all.alpha,3)
+    all.alpha=Reduce("+",t.alpha);all.alpha=all.alpha/sum(all.alpha);all.alpha=round(all.alpha,3)
     if (ord)
     {
       allord=apply(t.Mu,2,order)
@@ -431,11 +431,11 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 }
 
 # function to plot most useful figures
-plot_all=function(result,pathout,pathin) {
+plot_all_mosaic=function(result,pathout) { #,pathin) {
   targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
 		       "_",result$NN,"_",result$GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=21, height=28)
-  ord.Mu=plot_Mu(Mu,alpha,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
+  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
   dev.off()
   
   # FLAG: maybe do this but takes a while to calculate frequencies, etc
@@ -448,10 +448,10 @@ plot_all=function(result,pathout,pathin) {
   d1=switch(result$L,NaN,1,2,2,3,3) 
   d2=switch(result$L,NaN,3,3,5,5,7) 
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
-  this_acoplots=plot_coanccurves(acoancs,dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
+  this_acoplots=plot_coanccurves(result$acoancs,result$dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
   dev.off()
 
-  EMlog=extract_log(EMlogfile)
+  EMlog=extract_log(result$EMlogfile)
   pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
   plot_loglike(EMlog)
   dev.off()
