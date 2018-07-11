@@ -6,14 +6,16 @@ fi
 rlib=$1
 rm -rf MOSAIC/ MOSAIC_1.0.tar.gz 
 Rscript create_package.R
-echo "import(parallel)" >> MOSAIC/NAMESPACE
-echo "import(foreach)" >> MOSAIC/NAMESPACE
-echo "import(doParallel)" >> MOSAIC/NAMESPACE
-echo "import(ff)" >> MOSAIC/NAMESPACE
-echo "import(compiler)" >> MOSAIC/NAMESPACE
-echo "importFrom(cluster, fanny)" >> MOSAIC/NAMESPACE
-echo "importFrom(combinat, permn)" >> MOSAIC/NAMESPACE
-#echo "import(bit) " >> MOSAIC/NAMESPACE
+echo "importFrom(parallel,detectCores)" >> MOSAIC/NAMESPACE
+echo "importFrom(doParallel,registerDoParallel)" >> MOSAIC/NAMESPACE
+echo "importFrom(foreach,foreach)" >> MOSAIC/NAMESPACE
+echo "importFrom(foreach,'%dopar%')" >> MOSAIC/NAMESPACE
+echo "importFrom(ff,ff)" >> MOSAIC/NAMESPACE
+echo "importFrom(ff,delete)" >> MOSAIC/NAMESPACE
+echo "importFrom(compiler,cmpfun)" >> MOSAIC/NAMESPACE
+echo "importFrom(cluster,fanny)" >> MOSAIC/NAMESPACE
+echo "importFrom(combinat,permn)" >> MOSAIC/NAMESPACE
+cp DESCRIPTION MOSAIC/DESCRIPTION
 
 rm MOSAIC/Read-and-delete-me
 

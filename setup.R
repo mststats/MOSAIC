@@ -43,7 +43,7 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   prethin=FALSE,
   resultsdir="RESULTS/") # where to store results files
 {
-  #REPS=1 # FLAG remove this line
+  REPS=1 # FLAG remove this line
   ans=list() # build a list to store resulting data, parameters, etc
   S<-rep(NaN,t.nchrno) # if no limit is set
   if (t.NUMA==1 & PHASE)
