@@ -40,8 +40,4 @@ return.res=interactive() # whether to return results in a list; for use within a
 mosaic.result=run_mosaic(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firstind,
 			 L,MC,nchrno,NUMA,PLOT,target,verbose,return.res) 
 
-cat("Expected r-squared (genomewide):", dip_expected_fr2(mosaic.result$localanc),"\n")
-if (target=="simulated") 
-  cat("Actual r-squared (genomewide):", dip_fr2(mosaic.result$localanc,mosaic.result$g.true_anc),"\n")
-
 plot_all_mosaic(mosaic.result,pathout="PLOTS/")

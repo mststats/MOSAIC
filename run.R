@@ -148,6 +148,13 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
   localanc=tmp$localanc
   if (target=="simulated") 
     g.true_anc=tmp$g.true_anc
+
+
+  cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
+  if (target=="simulated") 
+    cat("Actual r-squared (genomewide):", dip_fr2(localanc,g.true_anc),"\n")
+
+
   save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
   if (target=="simulated")
