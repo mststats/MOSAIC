@@ -13,9 +13,7 @@ NUMA=as.integer(shargs[5]) # total number of target admixed haplotypes
 MC=as.integer(shargs[6]) # optional number of cores to use for parallelized code; will grab half of all available if not supplied
 chrnos=1:22 # which chromosomes to run on
 
-# FLAG
-#chrnos=21:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-chrnos=22:22;firstind=1;NUMA=2;L=2;datasource="HGDP/";target="simulated";RPE=0.0;ANC=T;
+#chrnos=20:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
 
 nchrno=length(chrnos) # number of chromosomes for these target haplotypes
 ffpath="/dev/shm/" # location of fast-files
@@ -39,8 +37,4 @@ cat("Expected r-squared (genomewide):", dip_expected_fr2(mosaic.result$localanc)
 if (target=="simulated") 
   cat("Actual r-squared (genomewide):", dip_fr2(mosaic.result$localanc,mosaic.result$g.true_anc),"\n")
 
-# get de-phased local ancestry
-#flocalanc=phase_localanc(mosaic.result$localanc,mosaic.result$final.flips)
-#for (panel in rownames(mosaic.result$Mu))
-#  summarise_panels(panel,datasource,mosaic.result$chrnos)
-plot_all_mosaic(mosaic.result,pathout="PLOTS/")#,"FREQS/")
+plot_all_mosaic(mosaic.result,pathout="PLOTS/")
