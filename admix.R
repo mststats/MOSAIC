@@ -119,9 +119,12 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, re
 	#pops<-list(Eu=c("Iranian", "Lezgin", "Armenian", "Sindhi", "Brahui", "Georgian"),
 	#	   As=c("Hezhen", "HanNchina", "Han", "Tu", "Oroqen", "Daur", "Xibo", "Tujia", "Yakut"))
 	#mixers=c("Pathan","Mongola")
-	pops<-list(Eu=c("Spanish","Norwegian","Polish","English","Welsh","Ireland","Scottish"),
-		   Af=c("Mandenka","Hadza","BantuKenya","BantuSouthAfrica","Sandawe","BiakaPygmy","MbutiPygmy"))
-	mixers=c("French","Yoruba")
+	#pops<-list(Eu=c("Spanish","Norwegian","Polish","English","Welsh","Ireland","Scottish"),
+	#	   Af=c("Mandenka","Hadza","BantuKenya","BantuSouthAfrica","Sandawe","BiakaPygmy","MbutiPygmy"))
+	#mixers=c("French","Yoruba")
+	pops<-list(Eu=c("French","Moroccan"),
+		   Af=c("Yoruba"))
+	mixers=c("English","Mandenka")
       }
       if (t.L==3)
       {
