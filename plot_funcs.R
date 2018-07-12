@@ -168,7 +168,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
   if (MODE=="joint" | MODE=="jointscaled") 
     t.Mu=t(t(t.Mu)*t.alpha) # plot copying matrix times alpha i.e. P(panel,anc)=P(panel|anc)P(anc) 
   L=ncol(t.Mu)
-  par(mar=c(3,4+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
+  par(mar=c(3,4+shiftl,3+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
   t.Mu[t.Mu<tol]<-tol
   if (ord)
   {
@@ -194,14 +194,13 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
   if (!showgradient & beside)
   {
     if (ord) par(mfrow=c(1,L))
+    par(mar=c(3,1.5*shiftl,1,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
     if (!ord) 
     {
-      par(mar=c(3,2,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
-      nf <- layout(matrix(c(1:(L+1)),ncol=L+1), widths=c(1,rep(2,L)), TRUE);layout.show(nf)
-      plot(c(-cexa,ncol(t.Mu)),c(0.5,nrow(t.Mu)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
-      text(x=2,pos=2,y=(1:nrow(t.Mu)),rownames(t.Mu),cex=1.75*cexa)
+      nf <- layout(matrix(c(1:(L+1)),ncol=L+1), widths=c(1,rep(2,L)), TRUE);#layout.show(nf)
+      plot(c(-cexa*2,ncol(t.Mu)),c(1,nrow(t.Mu)+shiftt),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
+      text(x=cexa*2,pos=2,y=0.5+1.2*(1:nrow(t.Mu)),rownames(t.Mu),cex=1.75*cexa)
     }
-    all.alpha=Reduce("+",t.alpha);all.alpha=all.alpha/sum(all.alpha);all.alpha=round(all.alpha,3)
     if (ord)
     {
       allord=apply(t.Mu,2,order)
@@ -218,12 +217,11 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
     xmax=max(unlist(ordMu))
     for (a in 1:L) 
     {
-      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),ylim=c(0,nrow(t.Mu)+shiftt/2),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
       if (!ord)
-      {
-	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
-      }
-      text(xmax/4,max(y)+shiftt,all.alpha[a],col=colvec[a],cex=2*cexa)
+	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,nrow(t.Mu)+shiftt/2),
+		  cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
+      text(xmax/4,(nrow(t.Mu)+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=2*cexa)
     }
   }
   if (showgradient) # overrides beside
@@ -434,8 +432,8 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 plot_all_mosaic=function(result,pathout) { #,pathin) {
   targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
 		       "_",result$NN,"_",result$GpcM)
-  pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=21, height=28)
-  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=2,beside=T,shiftl=7,cutoff=0,ord=F)
+  pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
+  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
   dev.off()
   
   # FLAG: maybe do this but takes a while to calculate frequencies, etc

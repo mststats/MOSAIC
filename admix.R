@@ -147,7 +147,7 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, ANC, t.panels, mean.sim.alpha=c(r
     }
     if (ANC[1]!=T) # something supplied
     { 
-      mixers=strsplit(ANC," ")[[1]]
+      ANC=mixers=strsplit(ANC," ")[[1]]
       # check that the supplied panels to mix are indeed members of panels and that length(ANC)==t.L
       refs=sample(t.panels[!(t.panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
       pops=list()

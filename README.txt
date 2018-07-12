@@ -1,6 +1,7 @@
 ###################################################################################################################
 MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. 
-To run on the command line use Rscript mosaic.R -t target -d example_data/ -a 2 -n 4 -c 18:22
+To run on the command line use 
+> Rscript mosaic.R -t target -d example_data/ -a 2 -n 4 -c 18:22
 In an interactive session first load the required packages
   > require(MOSAIC)
 then use 
@@ -17,12 +18,15 @@ There should be a folder with 4 types of input file:
 example_data contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using this data via:
 > Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 4 -c 18:22
 or equivalently in an interactive R session:
-mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
+> mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
 
 To simulate admixture from the model and real data and then fit (without re-using the panels used to simulate) use
 > Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -k TRUE
 or equivalently in an interactive R session:
-mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,TRUE)
+> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,TRUE)
+
+User defined simulations can also be provided by specifying a vector of populations:
+> Rscript mosaic.R simulated example_data/ -c 21:22 -n 2 -k "English Mandenka"
 
 ###################################################################################################################
 A folder called RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
