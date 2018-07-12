@@ -56,7 +56,6 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, ANC, t.nl, t.F
     snps<-read.table(paste0(datasource,"snpfile.",t.chrnos[ch])) 
     #### inputs #################################
     if (is.nan(S[ch])) S[ch]<-nrow(snps)
-    #if (datasource=="HGDP_PEL/") snps<-cbind(snps[,1],snps[,2],snps[,3]/max(snps[,3])/2,snps[,3],snps[,4],snps[,5])
     if (S[ch]<nrow(snps))
     {
       # only look at S loci

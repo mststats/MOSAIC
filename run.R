@@ -1,5 +1,5 @@
-run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
-		    ANC=NULL,return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=FALSE,verbose=TRUE) {
+run_mosaic=function(target,datasource,chrnos,L,NUMA,ANC=NULL,REPS=0,
+		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=FALSE,verbose=TRUE) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   tmp=setup_data_etc(NUMA,target,chrnos,ANC,L,datasource,EM,MC,REPS=REPS) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG

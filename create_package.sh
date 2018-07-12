@@ -20,6 +20,8 @@ echo "importFrom(cluster,fanny)" >> MOSAIC/NAMESPACE
 echo "importFrom(combinat,permn)" >> MOSAIC/NAMESPACE
 cp DESCRIPTION MOSAIC/DESCRIPTION
 
+cp -r README.txt mosaic.R example_data/ MOSAIC/ 
+
 rm MOSAIC/Read-and-delete-me
 
 R CMD build MOSAIC
