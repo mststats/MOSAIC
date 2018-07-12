@@ -1,7 +1,11 @@
 ###################################################################################################################
 MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. 
-To run on the command line use Rscript mosaic.R -t target -d example_data/ -a 2 -n 2 -c 18:22
-In an interactive session use run_mosaic(target,folder,chromosomes,A,n,NULL)
+To run on the command line use Rscript mosaic.R -t target -d example_data/ -a 2 -n 4 -c 18:22
+In an interactive session first load the required packages
+  > require(MOSAIC)
+then use 
+  > run_mosaic(target,folder,chromosomes,A,n,NULL)
+  > plot_all_mosaic(mosaic.result,pathout="PLOTS/")
 ###################################################################################################################
 There should be a folder with 4 types of input file:
 1. phased haplotypes: "pop.genofile.chr" in the format #snps rows and #haps columns.
@@ -11,14 +15,14 @@ There should be a folder with 4 types of input file:
 ###################################################################################################################
 
 example_data contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using this data via:
-> Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 2 -c 18:22
+> Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 4 -c 18:22
 or equivalently in an interactive R session:
-require(MOSAIC);mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
+mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
 
 To simulate admixture from the model and real data and then fit (without re-using the panels used to simulate) use
-> Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 2 -c 18:22 -k TRUE
+> Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -k TRUE
 or equivalently in an interactive R session:
-require(MOSAIC);mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,TRUE)
+mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,TRUE)
 
 ###################################################################################################################
 A folder called RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
