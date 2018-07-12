@@ -171,6 +171,6 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, ANC, t.panels, mean.sim.alpha=c(r
   ANC<-NULL
   for (i in 1:t.L)
     ANC[i]=mixers[i] 
-  if (verbose) cat("Admixing", mixers, "genomes together\n", sep="")
+  if (verbose) cat("Admixing", paste(mixers), "genomes together\n", sep="")
   return(list(ANC=ANC, mixers=mixers, panels=t.panels, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
 }
