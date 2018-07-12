@@ -435,7 +435,7 @@ plot_all_mosaic=function(result,pathout) { #,pathin) {
   targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
 		       "_",result$NN,"_",result$GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=21, height=28)
-  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=2,beside=T,shiftl=11,cutoff=0,ord=F)
+  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=2,beside=T,shiftl=7,cutoff=0,ord=F)
   dev.off()
   
   # FLAG: maybe do this but takes a while to calculate frequencies, etc

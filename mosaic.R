@@ -1,13 +1,10 @@
 #!/usr/bin/env Rscript
 # script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
-# real example: Rscript mosaic.R Moroccan example_data/ 2 1 2 21:22
-# simulated example: Rscript mosaic.R simulated example_data/ 
-#chrnos=21:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="Moroccan";ANC=NULL
-#comment this out for simulated data demo
-#chrnos=21:22;firstind=1;NUMA=2;L=2;datasource="example_data/";target="simulated";ANC=TRUE
+# real example: Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 4 -c 18:22
+# simulated example: Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -k TRUE
 
 require(MOSAIC)
-require(argparser) # FLAG
+require(argparser) 
 p=arg_parser("run MOSAIC to model admixture and infer local ancestry without knowledge of mixing groups")
 ######################## required arguments ###############################
 p=add_argument(p, "target", help="name of target population", type="character")
