@@ -74,7 +74,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   if (t.nchrno!=22) ans$samp_chrnos=t.chrnos[1:5] # just use first 5
   if (length(ans$samp_chrnos)>t.nchrno) ans$samp_chrnos=t.chrnos # use all if try to use too many
   ans$dr<-1/(ans$GpcM*100) # GpcM is #gridpoints per centiMorgan cM
-  if (t.target!="simulated") o.lambda=20 else o.lambda=50 # this is less important now for phasing steps as we get o.lambda from init_Mu 
+  if (t.target!="simulated") o.lambda=10 else o.lambda=50 # this is less important now for phasing steps as we get o.lambda from init_Mu 
   if (MC==0) {
     MC=as.integer(detectCores()/2)
     if (is.na(MC)) {MC=2;warning("using 2 cores as detectCores() has failed",immediate.=T)} # use 2 if can't use detectCores() 
