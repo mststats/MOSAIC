@@ -160,6 +160,7 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
 		t.d.w, t.t.w,  t.total, verbose=F, t.len, t.cloglike, t.LOG, t.EMlogfile, t.doPI, t.doMu, t.dotheta, t.dorho, t.commonrho, t.commontheta, t.absorbrho,
 		t.old.runtime, t.eps) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
+  runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime # required in case of break below
   for (ITER in 1:t.total)
   {
     old.Mu<-t.Mu; old.PI<-t.PI; old.lambda<-t.lambda; old.alpha<-t.alpha; old.rho<-t.rho; old.theta<-t.theta
@@ -184,11 +185,9 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
       if ((t.cloglike - old.cloglike)< t.eps) 
 	{cat("EM iterations have converged\n");break;}
     }
+    runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime
     if (t.LOG) 
-    {
-      runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime
       writelog(t.EMlogfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) 
-    }
     if (verbose) setTxtProgressBar(pb, m)
   }
   if (verbose) close(pb)

@@ -64,10 +64,11 @@ fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL,
 
   if(verbose) 
     cat("Fitting no-ancestry model\n") 
+  t.runtime=old.runtime=tmp$rtime;diff.time=0
   if (t.LOG) 
   {
     tmp=create_logfile(t.resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,t.NN,t.GpcM)
-    t.runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
+    len=tmp$len
     noancEMlogfile=tmp$logfile
   }
   total=50 # only estimating some of the parameters, not required to be super accurate
@@ -81,7 +82,7 @@ fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL,
     t.cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   } 
   if (getnoancgfbs)
-    noanc_gfbs=get_gfbs(t.NUMP, t.max.donors, donates, donatesl, donatesr, t.NUMA, t.L, t.G, t.kLL, transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, mutmat, 
+    noanc_gfbs=get_gfbs(t.NUMP, nchrno, t.max.donors, donates, donatesl, donatesr, t.NUMA, t.L, t.G, t.kLL, transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, mutmat, 
 			t.maxmiss, t.initProb, t.label, ndonors, t.flips, t.HPC)
   t.L<-o.L
   # return parameters, etc to correct sizes

@@ -12,12 +12,12 @@ s_trans<-function(t.L,t.kLL,t.PI,t.Mu,t.rho,t.NL)
   ans
 }
 
-get_gfbs<-function(t.NUMP, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.G, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, 
+get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.donatesr, t.NUMA, t.L, t.G, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, 
 		   t.mutmat, t.maxmiss, t.initProb, t.label, t.ndonors, t.flips, t.HPC)
 {
   ans<-list()
   THIN=ifelse(t.max.donors==t.NUMP, F, T)
-  for (ch in 1:nchrno)
+  for (ch in 1:t.nchrno)
   {
     if (t.HPC==1)
     {

@@ -1,6 +1,6 @@
 ###################################################################################################################
 MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. 
-To run on the command line use Rscript mosaic.R -t target -d example_data/ -A 2 -i 1 -n 2 -c 21:22
+To run on the command line use Rscript mosaic.R -t target -d example_data/ -a 2 -n 2 -c 21:22
 In an interactive session use run_mosaic(target,folder,chromosomes,A,n,NULL)
 ###################################################################################################################
 There should be a folder with 4 types of input file:
@@ -8,10 +8,15 @@ There should be a folder with 4 types of input file:
 2. pop names: "sample.names" format unimportant apart from first column should have all the population names.
 3. snp files: "snpfile.chr" #snps rowns and 6 columns of rsID, chr, position, distance, allele ?, allele ?. 
 4. recombination map: "rates.chr" 3 rows of #sites, position, recombination rate. 
-example_data contains example data for chromosomes 21 to 22 and an example run of mosaic can be done using this data via:
-> Rscript mosaic.R Moroccan example_data/ 2 1 2 2 21:22
 ###################################################################################################################
 
+example_data contains example data for chromosomes 21 to 22 and a real-data example run of mosaic can be done using this data via:
+> Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 2 -c 21:22
+or equivalently in an interactive R session:
+require(MOSAIC);mosaic.result=run_mosaic("Moroccan","example_data/",21:22,2,2)
+
+To simulate admixture from the model and real data and then fit (without re-using the panels used to simulate) use
+> Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 2 -c 21:22
 
 ###################################################################################################################
 A folder called RESULTS is required to hold log-files (foo.out) and results (foo.RData).  

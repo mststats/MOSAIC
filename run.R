@@ -1,5 +1,5 @@
 run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
-		    ANC=NULL,return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=TRUE,verbose=TRUE) {
+		    ANC=NULL,return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=FALSE,verbose=TRUE) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   tmp=setup_data_etc(NUMA,target,chrnos,ANC,L,datasource,EM,MC,REPS=REPS) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
@@ -111,7 +111,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
       {
 	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, L, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
 			     transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
-			     initProb, label, PLOT, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
+			     initProb, label, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
 	flips=tmp$flips
 	runtime=tmp$runtime
 	cloglike=tmp$cloglike
@@ -120,7 +120,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
 	{
 	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, L, max.donors, nchrno, NUMI, kLL, flips, 
 			       transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
-			       initProb, label, PLOT, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
+			       initProb, label, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
 	flips=tmp$flips
 	runtime=tmp$runtime
 	cloglike=tmp$cloglike
@@ -138,13 +138,13 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   }
   final.flips=flips
-  EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;PLOT=F;
+  EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;
   a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
   a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
   samp_chrnos=chrnos;
 
   ######### fully Mosaic curves with Mosaic phasing ############
-  gfbs=get_gfbs(NUMP, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
+  gfbs=get_gfbs(NUMP, nchrno, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
 		label, ndonors, flips, HPC)
   if (verbose) cat("saving localanc results to file\n")
   if (target!="simulated") tmp=get_localanc(gfbs,G,L,kLL,NUMA,NUMI)

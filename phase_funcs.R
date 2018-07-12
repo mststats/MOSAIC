@@ -53,8 +53,7 @@ rephaser<-function(t.ch, t.G, t.L, hap, g, t.NUMP, t.NUMA, t.kLL, t.transitions,
 }
 
 r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verbose, t.ndonors, t.NUMP, t.NUMA, t.kLL, t.max.donors, t.donates, t.donatesl, t.donatesr, 
-		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, t.initProb, t.label, lim=10, t.PLOT=FALSE, 
-		       minbg=0.1, maxbg=1, mult=1.5)
+		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, t.initProb, t.label, lim=10, minbg=0.1, maxbg=1, mult=1.5)
 {
   hap<-c(t.ind*2-1,t.ind*2) # t.ind indexes over genotypes, hap the two haplotypes
   # fb calcs moved to here to avoid storing all fors, backs, etc
@@ -79,24 +78,13 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
   t.nflips<-0
   iters=1
   end.eps.lower=t.eps.lower
-  #if (t.PLOT) cat("\n")
-  if (t.PLOT)
-  {
-    plot(g.loc[[t.ch]][c(1,t.G[[t.ch]])]*1e-6,c(1,lim-1),xlab="phase flip sites (Mb)",ylab="pass",t='n',axes=F)#,main="flipped positions")
-    mp<-axTicks(1,round(axp=c(min(g.loc[[t.ch]])*1e-6,max(g.loc[[t.ch]])*1e-6,5)))
-    axis(1,at=mp,labels=signif(mp,3))
-    text(x=g.loc[[t.ch]][1]*1e-6,y=1:(lim-1),1:(lim-1))
-  }
   if (max(ind.c.v)>t.eps.lower)
     while (nflips>0 & iters<lim) {
       #t.eps.lower=end.eps.lower+0.5*log(lim/iters) # fewer flips at the start in phase hunter, down to 2 as lower threshold for a phase flip
       bg=((2*plogis(mult*iters-mult))-1)*(maxbg-minbg)+minbg # smaller band at the start, increasing quickly
       BG=as.integer(bg*t.GpcM) # bg is number of centiMorgans to each side of a proposed phase flip around which don't try more flips
       if (max(ind.c.v)<t.eps.lower) 
-      {
-	if (t.PLOT) cat("Chromosome ", chrnos[t.ch], "individual", t.ind, "none left to flip ")
 	break;
-      }
       old.ll<-ind.c.ll
       cand.l<-(ind.c.v>t.eps.lower) # T for all those that would have log-like change greater than t.eps.lower if flipped
       cand.u<-which(cand.l) # which are candidates
@@ -110,16 +98,10 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
 	  break
       }
       cand<-sort(cand,method="quick") # required?
-      if (t.PLOT) 
-      {
-	points(g.loc[[t.ch]][cand]*1e-6, rep(iters,length(cand)),pch=20) 
-      }
-      #if (t.PLOT) for (i in 1:length(cand)) cat(cand[i], ":", ind.c.v[cand[i]], "\n") 
       nflips<-length(cand)
       t.nflips<-t.nflips+nflips
       if (nflips==0)
       {
-	#if (t.PLOT) cat("\n")
 	break;
       }
       for (g in cand) 
@@ -132,12 +114,8 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
 	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.L,0,t.G[t.ch],t.G[t.ch],t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,t.gobs,t.mutmat,t.maxmiss,t.label,t.ndonors,t.donates,t.donatesr,t.flips,t.backs[[h]],t.scalefactorb[[h]])
       }
       ind.c.ll<- -sum(sum(log(t.scalefactor[[1]])))-sum(sum(log(t.scalefactor[[2]])))
-      #if (t.PLOT) cat("Chromosome ", chrnos[t.ch], "individual", t.ind, " old:", old.ll, "with ", nflips, "flips:", ind.c.ll)  
       if (ind.c.ll==old.ll) # just break
-      {
-	#if (t.PLOT) cat("\n")
 	break;
-      }
       if (ind.c.ll<old.ll) { # only flip max one
 	t.nflips<-t.nflips-nflips+1
 	nflips=1
@@ -155,11 +133,8 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
 	}
 	ind.c.ll<- -sum(sum(log(t.scalefactor[[1]])))-sum(sum(log(t.scalefactor[[2]])))
 	if (is.nan(ind.c.ll)|is.infinite(ind.c.ll)) ind.c.ll=old.ll+ind.c.v[g];
-	#if (t.PLOT) cat (" don't flip all these; only max one: ", ind.c.ll)
-	#if (t.PLOT) cat(" largest flip only:", old.ll, old.ll+ind.c.v[g], ind.c.ll, "\n")
 	#break; # actually we often find more again after a single flip
       } 
-      #if (t.PLOT) cat("\n")
       # if pass above checks then loglikelihood has improved and we try again based on a new proposal
       ind.c.v<-create.proposal(t.ch,t.G,t.L,t.NUMP,t.max.donors,t.fors,t.sumfors,t.backs,t.scalefactor,t.scalefactorb,t.ndonors,ind.c.ll)
       if (max(ind.c.v)<=0)
@@ -167,7 +142,6 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
       if (verbose) cat("iter:", iters, "BG:", BG, "flips:", nflips, ind.c.ll, "\n")
       iters=iters+1
     }
-  #if (t.PLOT) readline() 
   ind.max.ll<-ind.c.ll
   c.probs<-1/(1+exp(-ind.c.v)) # ==exp(v)/(exp(v)+exp(p)) # marginal probabilities for each flip if we Gibbs sampled
   site.c.probs<-c.probs/sum(c.probs) 
@@ -180,7 +154,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.L, t.GpcM, t.ind, t.flips, verb
 #phase_hunt<-cmpfun(r_phase_hunt,list(optimize=3)) # 
 phase_hunt<-r_phase_hunt
 r_phase_mcmc<-function(t.ch, t.G, t.L, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.donors, t.initProb, t.label, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
-		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, t.PLOT=FALSE, mcmcprog, mcmchill=T) 
+		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, mcmcprog, mcmchill=T) 
 {
   M=as.integer(M*t.G[t.ch])
   NNL2=t.max.donors*t.L
@@ -215,11 +189,6 @@ r_phase_mcmc<-function(t.ch, t.G, t.L, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.do
     ind.mcmc.acc<-c(ind.mcmc.acc,0) # default to zero, changes below if accepted
     #if (max(c.probs)==0) cat(range(ind.c.v), range(p.v), "\n") 
     g<-sample(2:t.G[t.ch],1,prob=c.probs[-1]) 
-    if (t.PLOT) 
-    {
-      plot(g.loc[[t.ch]]*1e-6, ind.c.v,t='l')
-      points(g.loc[[t.ch]][g]*1e-6, ind.c.v[g], col=2, lwd=2)
-    }
     # given j, choose to propose to flip or not flip with probability c.probs[j]
     p.flip<-rbinom(1,p=c.probs[g],size=1) # this will be low. flip==1 => flip it
     #cat(ind.c.ll, mean(c.probs), c.probs[g], p.flip, "\n")
@@ -274,12 +243,6 @@ r_phase_mcmc<-function(t.ch, t.G, t.L, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.do
     close(pb)
   if (verbose) 
     cat(100*mean(ind.mcmc.acc), "% accepted: log-likelihood ", ind.orig.ll, " -> ", ind.max.ll, " on Chr ", chrnos[t.ch], " for ind ", t.ind, "\n", sep="")
-  if (t.PLOT)
-  {
-    plot(ind.mcmc.ll, t='l')
-    abline(h=ind.orig.ll,col=2)
-    abline(h=ind.max.ll,col=3)
-  }
   return(list(ind.max.flips=ind.max.flips,ind.mcmc.ll=ind.mcmc.ll,ind.max.ll=ind.max.ll,ind.mcmc.acc=ind.mcmc.acc))
 }
 #phase_mcmc<-cmpfun(r_phase_mcmc,list(optimize=3)) # 
@@ -289,7 +252,7 @@ phase_mcmc<-r_phase_mcmc
 # function to run the fast phase-hunting algorithm to re-phase target genomes using MOSAIC fit
 phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.G, t.L, t.GpcM, t.max.donors, t.nchrno, t.NUMA, t.NUMI, t.kLL, t.flips, t.eps.lower, 
 			t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, 
-			t.initProb, t.label, t.PLOT, t.min.bg, t.max.bg,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,
+			t.initProb, t.label, t.min.bg, t.max.bg,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,
 			t.old.runtime, t.EMlogfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
   orig.ll<-max.ll<-c.ll<-list()
   nflips=0
@@ -308,7 +271,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	  phase_hunt(t.eps.lower,ch,t.G,t.L,t.GpcM,ind,t.flips[[ind]][[ch]], FALSE, t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, donates_chr[[ind]], donatesl_chr[[ind]], donatesr_chr[[ind]], 
 		     t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, 
-		     t.initProb, t.label, t.PLOT=t.PLOT, minbg=t.min.bg, maxbg=t.max.bg)
+		     t.initProb, t.label, minbg=t.min.bg, maxbg=t.max.bg)
       }
       if (!t.HPC)
       {
@@ -316,7 +279,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	  phase_hunt(t.eps.lower,ch,t.G,t.L,t.GpcM,ind,t.flips[[ind]][[ch]], FALSE, t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, t.donates[[ch]][[ind]], t.donatesl[[ch]][[ind]], 
 		     t.donatesr[[ch]][[ind]], t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, 
-		     t.initProb, t.label, t.PLOT=t.PLOT, minbg=t.min.bg, maxbg=t.max.bg)
+		     t.initProb, t.label, minbg=t.min.bg, maxbg=t.max.bg)
       }
       for (ind in 1:(t.NUMI)) 
       {
@@ -339,7 +302,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
       ans=phase_hunt(t.eps.lower,ch,t.G,t.L,t.GpcM,ind,t.flips[[ind]][[ch]], F, t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, 
 		     t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, 
-		     t.initProb, t.label, t.PLOT=t.PLOT, minbg=t.min.bg, maxbg=t.max.bg)
+		     t.initProb, t.label, minbg=t.min.bg, maxbg=t.max.bg)
       ans
     }
       for (ch in 1:t.nchrno)
@@ -360,11 +323,9 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
   cloglike<-sum(unlist(max.ll))
   if (verbose)
     cat(nflips, " phase flips made after an average of ", niters/t.NUMI/t.nchrno, "hunts/ind/chromosome: log-likelihood", sum(unlist(orig.ll)), "-> ", cloglike, "\n")
+  runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
   if (t.LOG) 
-  {
-    runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
     writelog(t.EMlogfile,"phasehunt",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
-  }
   ans=list()
   ans$flips=t.flips
   ans$runtime=runtime
@@ -377,7 +338,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
 # phase-hunter is far more efficient and finds approximate best phasing in practice
 phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.NUMA, t.G, t.L, t.max.donors, t.nchrno, t.NUMI, t.kLL, t.flips, 
 			t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, 
-			t.initProb, t.label,t.PLOT,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.old.runtime, 
+			t.initProb, t.label,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.old.runtime, 
 			t.EMlogfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
   max.ll<-mcmc.ll<-mcmc.acc<-list()
   for (ch in 1:t.nchrno) 
@@ -395,13 +356,13 @@ phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
 	donatesr_chr=getdonates(t.donatesr[[ch]],t.NUMI)
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	  phase_mcmc(ch,t.G,t.L,ind,M,t.max.donors,t.initProb,t.label, t.flips[[ind]][[ch]], verbose,t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, 
-		     donates_chr[[ind]], donatesl_chr[[ind]], donatesr_chr[[ind]], t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, t.PLOT=t.PLOT, mcmcprog)
+		     donates_chr[[ind]], donatesl_chr[[ind]], donatesr_chr[[ind]], t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, mcmcprog)
       }
       if (!t.HPC)
       {
 	tmp<-foreach(ind=1:t.NUMI) %dopar%
 	  phase_mcmc(ch,t.G,t.L,ind,M,t.max.donors,t.initProb,t.label, t.flips[[ind]][[ch]], verbose,t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, 
-		     t.donates[[ch]][[ind]], t.donatesl[[ch]][[ind]], t.donatesr[[ch]][[ind]], t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, t.PLOT=t.PLOT, mcmcprog)
+		     t.donates[[ch]][[ind]], t.donatesl[[ch]][[ind]], t.donatesr[[ch]][[ind]], t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss,  mcmcprog)
       }
       for (ind in 1:t.NUMI)
       {
@@ -425,7 +386,7 @@ phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
       donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
       ans=phase_mcmc(ch,t.G,t.L,ind,M,t.max.donors,t.initProb,t.label,t.flips[[ind]][[ch]], verbose,t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, 
-		     donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, t.PLOT=t.PLOT, mcmcprog)
+		     donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, mcmcprog)
       ans
     }
       for (ch in 1:t.nchrno)
@@ -445,11 +406,9 @@ phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
   }
   rm(tmp)
   cloglike<-sum(unlist((max.ll)))
+  runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
   if (t.LOG) 
-  {
-    runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
     writelog(t.EMlogfile,"phasemcmc",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
-  }
   ans=list()
   ans$flips=t.flips
   ans$runtime=runtime
