@@ -18,7 +18,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 	{
 	  ind<-as.integer((k+1)*0.5)
 	  calc_E.n(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
-		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]],t.initProbs,t.label)
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr[[ind]],donatesl_chr[[ind]],donatesr_chr[[ind]],t.initProbs,t.label,t.doMu)
 	}
       }
       if (!t.HPC)
@@ -27,7 +27,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 	{
 	  ind<-as.integer((k+1)*0.5)
 	  calc_E.n(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
-		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.donatesr[[ch]][[ind]],t.initProbs,t.label)
+		   t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.donatesr[[ch]][[ind]],t.initProbs,t.label,t.doMu)
 	}
       }
     }
@@ -43,7 +43,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
       donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
       ans=calc_E.n(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G[ch],t.transitions[[ind]],t.flips[[ind]][[ch]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],
-		   t.gobs[[ch]][[ind]],t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind,t.initProbs,t.label)
+		   t.gobs[[ch]][[ind]],t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind,t.initProbs,t.label,t.doMu)
       rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
       ans
     }

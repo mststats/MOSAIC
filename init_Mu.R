@@ -58,11 +58,11 @@ zhclust=function(veccounts,k)
 }
 ziffy<-function(veccounts, k) 
 {
-  if (k<(nrow(veccounts)/2)) 
+  if (k<as.integer(nrow(veccounts)/2)) 
   {
     tmp=fanny(veccounts, k, memb.exp=1.05);Mu=tmp$membership;alpha=colSums(Mu)
   }
-  if (k>=(nrow(veccounts)/2)) 
+  if (k>=as.integer(nrow(veccounts)/2)) 
   {
     tmp=zhclust(veccounts, k);Mu=tmp$membership;alpha=colSums(Mu)
   }
@@ -166,7 +166,7 @@ r_EMmult<-function(counts, t.L, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
 EMmult<-r_EMmult
 #EMmult<-cmpfun(r_EMmult,list(optimize=3))
 
-cluster_windows<-function(windows,t.dr,t.kLL,t.L=L,t.NUMI,t.NUMA,t.NL,t.absorbrho,verbose=F)
+cluster_windows<-function(windows,t.dr,t.kLL,t.L,t.NUMI,t.NUMA,t.NL,t.absorbrho,verbose=F)
 {
   nw=ncol(windows$wmat[[1]])
   res<-EMmult(windows$wmat, t.L, t.NUMI, t.NUMA, verbose=verbose) # fit the mixture model
@@ -194,7 +194,7 @@ cluster_windows<-function(windows,t.dr,t.kLL,t.L=L,t.NUMI,t.NUMA,t.NL,t.absorbrh
     tmp=which(is.na(PI[[ind]]),arr.ind=T) 
     for (i in tmp[,1]) for (j in tmp[,2]) PI[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
     trans=PI[[ind]]-diag(rowSums(PI[[ind]])) # strictly speaking this should include an initial condition
-    w=prcomp(t(trans),center=F)$rotation[,L]
+    w=prcomp(t(trans),center=F)$rotation[,t.L]
     alpha[[ind]]=w/sum(w);alpha[[ind]][alpha[[ind]]<0]=0 # very close to the above alpha but now consistent with PI estimates
     lambda[[ind]]=-log(1-PI[[ind]])/t.dr
   }

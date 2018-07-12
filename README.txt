@@ -1,6 +1,7 @@
 ###################################################################################################################
-MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. In this case, 
-the arguments should be overwritten in R e.g. by commenting out line under "#comment this out for demo"
+MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. 
+To run on the command line use Rscript mosaic.R -t target -d example_data/ -A 2 -i 1 -n 2 -c 21:22
+In an interactive session use run_mosaic(target,folder,chromosomes,A,n,NULL)
 ###################################################################################################################
 There should be a folder with 4 types of input file:
 1. phased haplotypes: "pop.genofile.chr" in the format #snps rows and #haps columns.

@@ -1,6 +1,6 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
-admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
-		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, t.panels, prop.missing=0) {
+admix_genomes=function(t.chrnos, t.ch, ANC, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
+		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, t.panels, prop.missing=0,verbose=TRUE) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
@@ -83,7 +83,7 @@ rdirichlet=function(n, t.alpha) {
 }
 
 # some example simulations of admixture to try out using the HGDP dataset
-example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, rep(8,t.L))), fewer_ancs=NULL) {
+example_sims=function(t.NUMA, t.L, t.o.lambda, ANC, t.panels, mean.sim.alpha=c(rdirichlet(1, rep(8,t.L))), fewer_ancs=NULL, verbose=TRUE) {
   sim.alpha<-sim.lambda<-list()
   NUMI<-max(1,t.NUMA/2)
   
@@ -147,7 +147,7 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, re
     }
     if (ANC[1]!=T) # something supplied
     { 
-      mixers=ANC
+      mixers=strsplit(ANC," ")[[1]]
       # check that the supplied panels to mix are indeed members of panels and that length(ANC)==t.L
       refs=sample(t.panels[!(t.panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
       pops=list()
@@ -158,7 +158,7 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, mean.sim.alpha=c(rdirichlet(1, re
   {
     ANC=mixers=sample(t.panels,t.L)
     if (verbose)
-      cat("no ancestral panels specified so using:", ANC, "\n")
+      cat("no ancestral panels specified; using random example of:", ANC, "\n")
     refs=sample(t.panels[!(t.panels%in%mixers)]);tmp=sample(1:t.L, length(refs), replace=T); # random order of unused panels, then split into approx equal groups
     pops=list()
     for (l in 1:t.L) pops[[l]]=c(ANC[l],refs[tmp==l]) # # first panel is always the panel used to simulate the admixed individuals, remaining panels taken at random

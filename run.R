@@ -1,12 +1,13 @@
-run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firstind,L,MC,nchrno,NUMA,PLOT,target,verbose,return.res) {
-  tmp=setup_data_etc(NUMA,target,nchrno) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
-  # should replace the below with assign() usage
+run_mosaic=function(target,datasource,chrnos,L,NUMA,REPS=0,
+		    ANC=NULL,return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=TRUE,verbose=TRUE) {
+  nchrno=length(chrnos) # number of chromosomes for these target haplotypes
+  tmp=setup_data_etc(NUMA,target,chrnos,ANC,L,datasource,EM,MC,REPS=REPS) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
   mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
   s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS
   eps.lower=tmp$eps.lower;min.bg=tmp$min.bg;max.bg=tmp$max.bg;samp_chrnos=tmp$samp_chrnos;dr=tmp$dr
   FLAT=tmp$FLAT;maxmatch=tmp$maxmatch;maxmiss=tmp$maxmiss;umatch=tmp$umatch;d.w=tmp$d.w
-  t.w=tmp$t.w;g.loc=tmp$g.loc;gobs=tmp$gobs;NUMP=tmp$NUMP;NUMI=tmp$NUMI
+  t.w=tmp$t.w;g.loc=tmp$g.loc;gobs=tmp$gobs;NUMP=tmp$NUMP;NUMI=tmp$NUMI;NUMA=tmp$NUMA
   label=tmp$label;KNOWN=tmp$KNOWN;kLL=tmp$kLL;NL=tmp$NL;G=tmp$G
   NN=tmp$NN;maxmatchsize=tmp$maxmatchsize;panels=tmp$panels;min.donors=tmp$min.donors;
   theta=tmp$theta;rho=tmp$rho;lambda=tmp$lambda;alpha=tmp$alpha;PI=tmp$PI;Mu=tmp$MU
@@ -22,8 +23,9 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
   Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
   runtime=NaN
   # always need to run noanc.R b/c need good paras for init_Mu
-  tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, 100, HPC, runtime, resultsdir, GpcM, eps, NaN) 
+  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, 100, HPC, runtime, resultsdir, GpcM, eps, NaN,
+		      doMu, doPI, dorho, dotheta, ffpath, firstind, EM) 
   transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
   initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
@@ -31,14 +33,14 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
   if (kLL>L) # otherwise can't cluster kLL things into L clusters
   {
     # use this to get #switches in noanc model w/o writelog
-    tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize,
-		    maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat,NaN,NULL)
+    tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize,
+		    maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat,NaN,NULL,ffpath)
     ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     noanc_gswitches=tmp$noanc_gswitches
     rm(tmp)
     windowed_copying<-window_chunks(nswitches=noanc_gswitches,dr,G,kLL,NUMA,ww=0.5,verbose=verbose) # similar in the same windows
     rm(noanc_gswitches) 
-    tmp<-cluster_windows(windowed_copying,dr,kLL,t.L=L,NUMI,NUMA,NL,absorbrho,verbose=verbose)
+    tmp<-cluster_windows(windowed_copying,dr,kLL,L,NUMI,NUMA,NL,absorbrho,verbose=verbose)
     Mu<-tmp$Mu
     alpha<-tmp$alpha
     PI<-tmp$PI
@@ -57,8 +59,8 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
     EMlogfile=tmp$logfile
   }
   # decide on donor set using initial parameters
-  tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
-		  maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat,NaN,EMlogfile)
+  tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
+		  maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat,NaN,EMlogfile,ffpath)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
   ############ a few PI only updates first; very useful to do before first re-phasing
@@ -74,8 +76,9 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     if (!absorbrho | !commonrho | !commontheta) 
     {
-      tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
-		      maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, mutmat,cloglike,EMlogfile)
+      tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
+		      maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
+		      mutmat,cloglike,EMlogfile,ffpath)
       ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     }
     doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doPI=o.doPI
@@ -99,13 +102,14 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
       if (max.donors<NUMP & (kLL==old.kLL))
       {
 	# decide on donor set using updated parameters
-	tmp=all_donates(NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
-			maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, mutmat,cloglike,EMlogfile)
+	tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
+			maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
+			mutmat,cloglike,EMlogfile,ffpath)
 	ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
       }
       if (PHASE) 
       {
-	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
+	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, L, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
 			     transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
 			     initProb, label, PLOT, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
 	flips=tmp$flips
@@ -114,7 +118,7 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
 	rm(tmp)
 	if (M>0)  # now do MCMC re-phasing w/o output to console (ugly due to txtProgressBar)
 	{
-	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, max.donors, nchrno, NUMI, kLL, flips, 
+	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, L, max.donors, nchrno, NUMI, kLL, flips, 
 			       transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
 			       initProb, label, PLOT, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
 	flips=tmp$flips
@@ -166,9 +170,9 @@ run_mosaic=function(ANC,chrnos,datasource,doMu,doPI,dorho,dotheta,EM,ffpath,firs
   if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
   ######## GlobeTrotter style curves original phasing ##########
   for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
-  tmp=fit_noanc_model(samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, max(NL), HPC, runtime, resultsdir, 
-		      GpcM, eps, NaN, getnoancgfbs=TRUE) 
+		      GpcM, eps, NaN, doMu, doPI, dorho, dotheta, ffpath, firstind, EM, getnoancgfbs=TRUE) 
   transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
   noanc_gfbs=tmp$noanc_gfbs

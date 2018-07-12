@@ -11,7 +11,7 @@ fmutmat<-function(theta, L, maxmiss, maxmatch)
   mutmat
 }
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-setup_data_etc=function(t.NUMA,t.target,t.nchrno,
+setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   # some default values
   verbose=T,
   HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
@@ -23,7 +23,7 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   s.total=10, # maximum number of EM iterations in each round
   total=200, # maximum number of EM iterations in final round
   PI.total=10, # EM iterations for PI only at start; useful before re-phasing
-  REPS=2*L+1, # maximum number of iterations through thin/phase/EM cycle
+  REPS=0, # maximum number of iterations through thin/phase/EM cycle
   s.M=0.00, # w/in each iteration of thin / phase / EM 
   M=0.00, # MCMC phasing after convergence  
   # above two are multiplied by the #gridpoints in each chromosome to determine how many MCMC iterations are run. No longer really needed
@@ -34,7 +34,6 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   mcmcprog=F, # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
   GpcM=60, # number of gridpoints per centiMorgan
   Ne=9e4, # effective population size
-  MC=NA,
   mask=NULL,
   singlePI=FALSE,
   absorbrho=TRUE, # should ancestry self-switches be included in rho or diag of PI?
@@ -43,6 +42,8 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   prethin=FALSE,
   resultsdir="RESULTS/") # where to store results files
 {
+  if (REPS==0) REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
+  t.nchrno=length(t.chrnos)
   ans=list() # build a list to store resulting data, parameters, etc
   S<-rep(NaN,t.nchrno) # if no limit is set
   if (t.NUMA==1 & PHASE)
@@ -70,20 +71,20 @@ setup_data_etc=function(t.NUMA,t.target,t.nchrno,
   ans$min.bg=min.bg
   ans$max.bg=max.bg
   if (t.nchrno==22) ans$samp_chrnos=c(1,3,7,10,15,17) # indices of chromosomes used in no-ancestry initial fit; swap for contiguous 5Mb blocks of all chromosomes?
-  if (t.nchrno!=22) ans$samp_chrnos=chrnos[1:5] # just use first 5
-  if (length(ans$samp_chrnos)>t.nchrno) ans$samp_chrnos=chrnos # use all if try to use too many
+  if (t.nchrno!=22) ans$samp_chrnos=t.chrnos[1:5] # just use first 5
+  if (length(ans$samp_chrnos)>t.nchrno) ans$samp_chrnos=t.chrnos # use all if try to use too many
   ans$dr<-1/(ans$GpcM*100) # GpcM is #gridpoints per centiMorgan cM
   if (t.target!="simulated") o.lambda=20 else o.lambda=50 # this is less important now for phasing steps as we get o.lambda from init_Mu 
-  if (is.na(MC)) {
+  if (MC==0) {
     MC=as.integer(detectCores()/2)
     if (is.na(MC)) {MC=2;warning("using 2 cores as detectCores() has failed",immediate.=T)} # use 2 if can't use detectCores() 
   }
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.nchrno, nl, ans$FLAT, ans$dr, o.lambda, resultsdir, mask) 
+  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, L, t.ANC, nl, ans$FLAT, ans$dr, o.lambda, resultsdir, mask) 
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs
-  ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL;ans$G=tmp$G;ans$NN=tmp$NN;
+  ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMA=tmp$NUMA;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL;ans$G=tmp$G;ans$NN=tmp$NN;
   ans$maxmatchsize=tmp$maxmatchsize;ans$panels=tmp$panels
   if (t.target=="simulated")
     ans$g.true_anc=tmp$g.true_anc

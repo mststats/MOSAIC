@@ -1,8 +1,9 @@
 # need to run this otherwise so that have approx. correct parameters to start, else donates usage is very poor
 # just fit noanc on a couple of targets and a couple of chromosomes
-fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.NL, t.NN, t.umatch, t.G, t.dr, t.flips, t.gobs,
+fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.KNOWN, t.label, t.NL, t.NN, t.umatch, t.G, t.dr, t.flips, t.gobs,
 			 t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.prop.don, t.min.donors, t.max.donors, t.maxmatchsize, t.maxmatch, t.maxmiss, 
-			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, HPC, t.runtime, t.resultsdir, t.GpcM, t.eps, t.cloglike, getnoancgfbs=FALSE, t.LOG=T, t.HPC=2) {
+			 t.initProb, t.d.w, t.t.w, t.subNUMA, t.subNL, HPC, t.runtime, t.resultsdir, t.GpcM, t.eps, t.cloglike, doMu, doPI, dorho, dotheta, ffpath,
+			 firstind, EM=T, getnoancgfbs=FALSE, t.LOG=T, t.HPC=2, verbose=TRUE) {
   # subNUMA=t.NUMA=>use all; number of target haps used in no-ancestry initial fit; don't use less than min(2,t.NUMA)
   ans=list()
   nchrno=length(t.chrnos)
@@ -55,9 +56,9 @@ fit_noanc_model=function(t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL, t.L, t.
   transitions=list();for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.L,t.kLL,t.PI[[ind]],ind.Mu[[ind]],t.rho,t.NL)
   mutmat<-fmutmat(t.theta, t.L, t.maxmiss, t.maxmatch) # possibly overkill / some redundancy as t.maxmiss and t.maxmatch may have fallen for this subset
   # dummy run; this will return all donors at all gridpoints and is not affected by parameter values
-  tmp=all_donates(t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches=F, t.min.donors, t.max.donors, t.prop.don, t.NUMP, t.NL, t.G, 
+  tmp=all_donates(target, t.L, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=verbose, t.get_switches=F, t.min.donors, t.max.donors, t.prop.don, t.NUMP, t.NL, t.G, 
 		  t.umatch, t.maxmatchsize, t.maxmatch,t.maxmiss,t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, nchrno, t.initProb, 
-		  t.runtime, len, F, transitions, mutmat, NaN, NULL)
+		  t.runtime, len, F, transitions, mutmat, NaN, NULL, ffpath)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=t.runtime=tmp$runtime;cloglike=tmp$cloglike
   t.initProb=initprobs(T,t.NUMA,t.L,t.NUMP,t.kLL,t.PI,t.Mu,t.rho,t.alpha,t.label,t.NL)
 
