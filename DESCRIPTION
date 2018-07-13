@@ -1,0 +1,17 @@
+Package: MOSAIC
+Type: Package
+Title: MOSAIC Organises Segments of Ancestry In Chromosomes.
+Version: 1.0
+Date: 2018-07-12
+Author: Michael Salter-Townshend
+Maintainer: Michael Salter-Townshend <michael.salter-townshend@ucd.ie>
+Description: MOSAIC is a package for inferring ancestry segments and characterizing admixture events from dense genotype data. 
+             Admixture involves a number of genetically differentiated groups coming together; MOSAIC jointly infers the demographic 
+	     history of the samples and properties of the admixing groups. The algorithm employs nested hidden Markov models to obtain 
+	     highly accurate ancestry estimation along the genome for each admixed individual. It does not require any prior knowledge 
+	     of the relationship between sub-groups of donor reference haplotypes and the unseen mixing ancestral populations which 
+	     MOSAIC infers terms of conditional "copying probabilities". 
+URL: https://maths.ucd.ie/~mst/MOSAIC/
+License: GPL (>= 2)
+Imports: Rcpp (>= 0.12.17)
+LinkingTo: Rcpp
