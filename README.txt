@@ -1,19 +1,27 @@
-###################################################################################################################
-MOSAIC is designed to run on the linux command line, however interactive usage within R is also possible. 
-To run on the command line (you will need to install "argparser" and "MOSAIC" first) use 
-> Rscript mosaic.R target example_data/ -a 2 -n 4 -c 18:22
-In an interactive session first load the required packages
+######  OVERVIEW   ###############################################################################################
+MOSAIC is designed to run on the linux command line. 
+You will need to install "argparser" and "MOSAIC" first. Try 
+> Rscript mosaic.R --help 
+to see how to run it. The only two arguments that must be provided is the name of the target population and the folder
+in which the data are stored (see below for details).
+MOSAIC may also be used in an interactive R session. First load the package
   > require(MOSAIC)
 then use 
-  > run_mosaic(target,folder,chromosomes,A,n,NULL)
+  > run_mosaic(target,folder,chromosomes,A,n) 
+# where A is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
+the number of haplotypes in the target file results in running MOSAIC on all of them. A defaults to 2 and n to 1000.
+Run 
   > plot_all_mosaic(mosaic.result,pathout="PLOTS/")
-###################################################################################################################
+to output model plots to the folder "PLOTS/"
+
+#######  INPUTS   #################################################################################################
 There should be a folder with 4 types of input file:
 1. phased haplotypes: "pop.genofile.chr" in the format #snps rows and #haps columns.
 2. pop names: "sample.names" format unimportant apart from first column should have all the population names.
 3. snp files: "snpfile.chr" #snps rowns and 6 columns of rsID, chr, position, distance, allele ?, allele ?. 
 4. recombination map: "rates.chr" 3 rows of #sites, position, recombination rate. 
-###################################################################################################################
+
+#######  EXAMPLES  ################################################################################################
 
 example_data contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using this data via:
 > Rscript mosaic.R Moroccan example_data/ -a 2 -n 4 -c 18:22
@@ -40,34 +48,22 @@ The main work is multiple rounds of EM->phase->thin where:
 	phase does some rephasing (see below).
 	thin finds the useful donor haplotypes at each gridpoint, based on the current EM estimations of parameters (see below).
 
-###################################################################################################################
-Optional parameters:
-	1. GpcM (granularity of grid; higher is finer; #gridpoints on each chromosome=G[chr] will be GpcM*(length of chromosome in centiMorgans))
-	MOSAIC currently uses 60 gidpoints per centiMorgan as a default.
-	2. PHASE (logical indicating whether you want to rephase the data to avoid spurious ancestry switches)
-	3. MC (number of cores to use when parallelized code is running)
-	4. nl (max number of donor haps to use per donor pop)
-	5. max.donors (max #haps to actually copy from at any gridpoint; defaults to #donors when set higher than this)
-	6. prop.don (proportion of probability to cover; setting less than 1 means copy best hap, second best, etc. until max.donors or this is reached at each gridpoint)
-	7. total (number of final EM iterations)
-	8. s.total (number of EM iterations w/in rounds of EM->phase->thin)
-	9. REPS (number of rounds of EM->phase->thin)
-	10. s.M (controls number of MCMC iterations of rephasing to run in each round of EM->phase->thin; s.M*G[chr] is #iterations)
-	11. M (controls number of MCMC iterations of rephasing to run at the end; M*G[chr] is #iterations)
-Note that if you set nl or NUMA greater than available in the data they just revert to using all available. 
-###################################################################################################################
-
-###################################################################################################################
+########  PARAMETERS INFERRED   ###################################################################################
 There are 4 sets of parameters inferred via EM:
 	1. PI (prob. of switching between latent ancestries, including switch to same anc; LxL)
 	2. rho (prob. of switching haps within each ancestry)
 	3. Mu (copying matrix i.e. Mu[i,j] is  prob. of picking a hap from group i given latent ancestry j; dimension is KxL where K is #donorpops) 
 	4. theta (error / mutation vector of length L; prob. of a difference b/w copied and copying haps at a locus)
 
-Note that PI and rho will depend on GpcM; a finer grid means lower prob. of switching as we move from a gridpoint to the next one. 
+Note that PI and rho will depend on grid granularity (GpcM); a finer grid means lower prob. of switching as we move from a gridpoint to the next one. 
 ###################################################################################################################
 
-###################################################################################################################
+#######  CHANGING DEFAULTS   ######################################################################################
+MOSAIC can be tuned to run differently by changing from the default values used. Try
+> Rscript mosaic.R --help 
+to view these arguments and their defaults. For example, turn re-phasing on or off (see below).
+
+########  PHASE  ##################################################################################################
 Phase is by default updated from initial phasing. You can turn this off by setting phase=FALSE
 Re-phasing is done by two algorithms: "phase hunting" and MCMC. The hunting is called in each round of EM->phase->thin. 
 Setting s.M=0 turns off MCMC phasing until after EM convergence and this is the default. 
@@ -78,10 +74,9 @@ thinning is an approximation that greatly speeds the code up when there are a la
 ###################################################################################################################
 
 ############### After running and attaching the results from RESULTS try these plots: ################
-(1) ord.Mu<-plot_Mu(Mu,MODE="copy",cexa=2) # to look at the copying matrix 
-(2) ord.Mu<-plot_Mu(Mu,MODE="scaled",cexa=2) # to look at the copying matrix scaled by #donor haps in each panel. 
-(3) plot_localanc(chrnos,g.loc,localanc) # cycle through all local ancestry plots (one plot per target diploid chromosome)
-(4) plot_coanccurves(ind,acoancs,2,2) # plot some co-ancestry curves
+(1) ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
+(2) plot_localanc(chrnos,g.loc,localanc) # cycle through all local ancestry plots (one plot per target diploid chromosome)
+(3) plot_coanccurves(acoancs,dr,2,2) # plot some co-ancestry curves
 ###################################################################################################################
 
 email michael.salter-townshend@ucd.ie for help

@@ -153,7 +153,7 @@ plot_panel_dist=function(donors,ch,a)
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
-plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1, shiftl=cexa, shiftt=cexa, 
+plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=2, shiftl=cexa, shiftt=cexa, 
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
