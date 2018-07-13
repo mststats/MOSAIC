@@ -4,7 +4,7 @@
 # simulated example: Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -k TRUE
 
 require(MOSAIC)
-require(argparser) 
+require(argparser, quiet=TRUE) 
 m.args=arg_parser("run MOSAIC to model admixture and infer local ancestry without knowledge of mixing groups")
 ######################## required arguments ###############################
 m.args=add_argument(m.args, "target", help="name of target population", type="character")
