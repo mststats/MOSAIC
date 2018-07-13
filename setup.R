@@ -32,7 +32,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   max.bg=1.0, # default cM length of buffer around phase hunting spikes; hunter will start at min.bg and ramp up to max.bg
   LOG=TRUE, # LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
   mcmcprog=F, # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
-  GpcM=60, # number of gridpoints per centiMorgan
+  GpcM, # number of gridpoints per centiMorgan
   Ne=9e4, # effective population size
   mask=NULL,
   singlePI=FALSE,

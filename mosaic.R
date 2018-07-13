@@ -15,6 +15,8 @@ p=add_argument(p, "--index", help="index of first individual in the target data"
 p=add_argument(p, "--number", help="number of target haplotypes (double the number of individuals assuming diploid)", default=1000, type="integer",short="-n")
 p=add_argument(p, "--chromosomes", help="chromosomes as c_start:c_end", default="1:22", type="character",short="-c")
 p=add_argument(p, "--rounds", help="number of inference rounds", default=5, type="integer",short="-r")
+p=add_argument(p, "--GpcM", help="number of gridpoints per centiMorgan", default=60, type="integer",short="-g")
+p=add_argument(p, "--phase", help="whether to re-phase", default=TRUE, type="logical",short="-p")
 p=add_argument(p, "--maxcores", help="maximum number of cores to use (will grab half of all available if set to 0)", default=0, type="integer",short="-m")
 p=add_argument(p, "--fastfiles", help="location of fast-files", default="/dev/shm/", type="character",short="-f")
 p=add_argument(p, "--known", help="a-priori mixing groups", default="NULL", type="character",short="-k")
@@ -34,6 +36,8 @@ chrnos=argv$chromosomes
 MC=argv$maxcores
 ANC=argv$known
 REPS=argv$rounds
+GpcM=argv$GpcM
+PHASE=argv$phase
 ffpath=argv$fastfiles
 if (ANC=="TRUE") ANC=TRUE
 if (ANC=="NULL") ANC=NULL
@@ -49,7 +53,7 @@ dotheta=T # update error / mutation parameters?
 return.res=interactive() # whether to return results in a list; for use within an interactive R session
 
 # this function includes saving results to disk
-mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,ANC,REPS=REPS,
+mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,ANC,REPS=REPS,GpcM=GpcM,PHASE,
 			 return.res=return.res,ffpath=ffpath,doMu=doMU,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,firstind=firstind,MC=MC,verbose=verbose) 
 
 plot_all_mosaic(mosaic.result,pathout="PLOTS/")

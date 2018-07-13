@@ -1,2 +1,3 @@
+*) optional command line arguments
 *) shapeit input
 *) don't grab all memory by default on a cluster: see Busby email.
