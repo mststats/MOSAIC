@@ -56,16 +56,16 @@ A folder called MOSAIC_PLOTS is required to hold the plots created by default by
 The main work is multiple rounds of EM->phase->thin where:
 	EM runs a few iterations of the EM algorithm to update parameters. 
 	phase does some rephasing (see below).
-	thin finds the useful donor haplotypes at each gridpoint, based on the current EM estimations of parameters (see below).
+	thin finds the useful donor haplotypes at each gridpoint, based on the estimations of parameters (see below).
 
 ########  PARAMETERS INFERRED   ##################################################################################
 There are 4 sets of parameters inferred via EM:
-	1. PI (prob. of switching between latent ancestries, including switch to same anc; LxL)
+	1. PI (prob. of switching between latent ancestries, including switch to same anc; AxA)
 	2. rho (prob. of switching haps within each ancestry)
-	3. Mu (copying matrix i.e. Mu[i,j] is  prob. of picking a hap from group i given latent ancestry j; dimension is KxL where K is #donorpops) 
-	4. theta (error / mutation vector of length L; prob. of a difference b/w copied and copying haps at a locus)
+	3. Mu (copying matrix; Mu[i,j] is  prob. of donor from group i given ancestry j; KxA where K is #donorpops) 
+	4. theta (error / mutation; vector length A; prob. of a difference b/w copied and copying haps at a locus)
 
-Note that PI and rho will depend on grid granularity (GpcM); a finer grid means lower prob. of switching as we move from a gridpoint to the next one. 
+Note that PI and rho will depend on grid granularity (GpcM); finer grid => lower prob. of switching between gridpoints.
 ##################################################################################################################
 
 #######  CHANGING DEFAULTS   #####################################################################################
