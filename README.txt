@@ -31,7 +31,7 @@ In R, after loading the results of a MOSAIC run (stored in MOSAIC_RESULTS by def
 to output default plots to the folder "MOSAIC_PLOTS/"
 You can also use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
-(2) > plot_coanccurves(acoancs,dr,2,2) # plot some co-ancestry curves that are used to infer event timings
+(2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
 (3) > plot_localanc(chrnos,g.loc,localanc) # cycles through all local ancestry plots (one plot per target diploid chromosome)
 
 #######  EXAMPLES  ###############################################################################################
