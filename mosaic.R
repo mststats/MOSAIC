@@ -62,4 +62,4 @@ return.res=TRUE #interactive() # whether to return results in a list; for use wi
 mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,ANC,REPS=REPS,GpcM=GpcM,PHASE=PHASE,nl=dpg,max.donors=max.donors,prop.don=prop.don,
 			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,firstind=firstind,MC=MC,verbose=verbose) 
 
-plot_all_mosaic(mosaic.result,pathout="PLOTS/")
+plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/")

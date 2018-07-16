@@ -1,18 +1,25 @@
 ######  OVERVIEW   ###############################################################################################
 MOSAIC is designed to run on the linux command line. 
-You will need to install "argparser" and "MOSAIC" first. Try 
+You will need to install "argparser" and "MOSAIC" first. 
+You can install MOSAIC by running the command
+> R CMD INSTALL -l $rlib MOSAIC_1.0.tar.gz
+
+Try 
 > Rscript mosaic.R --help 
-to see how to run it. The only two arguments that must be provided is the name of the target population and the folder
-in which the data are stored (see below for details).
+to see how to use MOSAIC. The only two arguments that must be provided are:
+  (1) The name of the target admixed population 
+  (2) The folder in which the data are stored (see below for details).
 MOSAIC may also be used in an interactive R session. First load the package
   > require(MOSAIC)
 then use 
   > run_mosaic(target,folder,chromosomes,A,n) 
 # where A is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
 the number of haplotypes in the target file results in running MOSAIC on all of them. A defaults to 2 and n to 1000.
+
 Run 
-  > plot_all_mosaic(mosaic.result,pathout="PLOTS/")
-to output model plots to the folder "PLOTS/"
+  > plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/")
+to output model plots to the folder "MOSAIC_PLOTS/"
+This may also be done in R after loading the results of a MOSAIC run (stored in MOSAIC_RESULTS by default).
 
 #######  INPUTS   #################################################################################################
 There should be a folder with 4 types of input file:
@@ -37,8 +44,8 @@ User defined simulations can also be provided by specifying a vector of populati
 > Rscript mosaic.R simulated example_data/ -c 21:22 -n 2 -k "English Mandenka"
 
 ###################################################################################################################
-A folder called RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
-A folder called PLOTS is required to hold the plots created by default by a MOSAIC run.
+A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
+A folder called MOSAIC_PLOTS is required to hold the plots created by default by a MOSAIC run.
 
 You'll need to install the R package MOSAIC_1.0.tar.gz. This is to once-off compile the C++ code that does the forward-backward, etc. 
 ###################################################################################################################
@@ -73,7 +80,7 @@ Setting s.M=0 turns off MCMC phasing until after EM convergence and this is the 
 thinning is an approximation that greatly speeds the code up when there are a large number of donor haplotypes. 
 ###################################################################################################################
 
-############### After running and attaching the results from RESULTS try these plots: ################
+############### After running and attaching the results from MOSAIC_RESULTS try these plots: ################
 (1) ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) plot_localanc(chrnos,g.loc,localanc) # cycle through all local ancestry plots (one plot per target diploid chromosome)
 (3) plot_coanccurves(acoancs,dr,2,2) # plot some co-ancestry curves

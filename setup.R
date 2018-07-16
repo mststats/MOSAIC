@@ -40,7 +40,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   commonrho=TRUE, # needs to be false if it includes PI[i,i]
   commontheta=TRUE,
   prethin=FALSE,
-  resultsdir="RESULTS/") # where to store results files
+  resultsdir="MOSAIC_RESULTS/") # where to store results files
 {
   if (REPS==0) REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
   t.nchrno=length(t.chrnos)
