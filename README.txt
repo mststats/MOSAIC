@@ -56,7 +56,7 @@ A folder called MOSAIC_PLOTS is required to hold the plots created by default by
 The main work is multiple rounds of EM->phase->thin where:
 	EM runs a few iterations of the EM algorithm to update parameters. 
 	phase does some rephasing (see below).
-	thin finds the useful donor haplotypes at each gridpoint, based on the estimations of parameters (see below).
+	thin finds the useful donor haplotypes at each gridpoint, based on the estimated parameters (see below).
 
 ########  PARAMETERS INFERRED   ##################################################################################
 There are 4 sets of parameters inferred via EM:
