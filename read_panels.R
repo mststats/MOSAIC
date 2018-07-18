@@ -1,6 +1,6 @@
 # function that reads in the data and lays on a grid along recombination rates map
 read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, ANC, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, t.nchrno=length(t.chrnos), S=rep(NaN,t.nchrno),
-		     firstind=1, verbose=TRUE) {
+		     firstind=1) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
@@ -156,8 +156,6 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, ANC, t.nl, t.F
     maxmiss<-max(maxmiss,maxmiss_chr)
     rm(snps,rates) # leave in if planning to re-grid
   }
-
-  if (verbose) cat("Fitting model to ", NUMI, " ", t.target, " ", t.L, "-way admixed target individuals using ", kLL, " panels\n", sep="")
   ans=list(maxmatch=maxmatch, maxmiss=maxmiss,g.loc=g.loc,gobs=gobs,d.w=d.w,t.w=t.w,umatch=umatch,NUMP=NUMP,LL=LL,NUMI=NUMI,NUMA=t.NUMA,
 	   label=label,KNOWN=KNOWN,NN=NN,kLL=kLL,NL=NL,G=G,maxmatchsize=maxmatchsize,panels=panels)
   if (t.target=="simulated") 

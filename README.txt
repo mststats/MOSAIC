@@ -27,13 +27,13 @@ There should be a folder with 4 types of input file:
 
 #######  PLOTS   #################################################################################################
 In R, after loading the results of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
-> plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/")
+> plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/", EM)
 to output default plots to the folder "MOSAIC_PLOTS/"
 You can also use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
 (3) > plot_localanc(chrnos,g.loc,localanc) # cycles through all local ancestry plots (one plot per target diploid chromosome)
-(4) > plot_loglike(extract_log(EMlogfile)) # plots the model fit across iterations of thin/phase/EM
+(4) > plot_loglike(extract_log(EMlogfile)) # plots the model fit across iterations of thin/phase/EM (if EM is on)
 
 #######  EXAMPLES  ###############################################################################################
 The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
@@ -47,7 +47,7 @@ or equivalently in an interactive R session:
 > mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,TRUE)
 
 User defined simulations can also be provided by specifying a vector of populations:
-> Rscript mosaic.R simulated example_data/ -c 21:22 -n 2 -k "English Mandenka"
+> Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -k "English Mandenka"
 
 ##### OUTPUTS ####################################################################################################
 A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  

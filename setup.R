@@ -11,7 +11,7 @@ fmutmat<-function(theta, L, maxmiss, maxmatch)
   mutmat
 }
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
+setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,gens,ratios,MC,
   # some default values
   verbose=T,
   HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
@@ -74,7 +74,21 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   if (t.nchrno!=22) ans$samp_chrnos=t.chrnos[1:5] # just use first 5
   if (length(ans$samp_chrnos)>t.nchrno) ans$samp_chrnos=t.chrnos # use all if try to use too many
   ans$dr<-1/(ans$GpcM*100) # GpcM is #gridpoints per centiMorgan cM
-  if (t.target!="simulated") o.lambda=10 else o.lambda=50 # this is less important now for phasing steps as we get o.lambda from init_Mu 
+  if (gens==0) { # if not provided
+    if (t.target!="simulated") gens=10 else gens=50 # this is less important now for phasing steps as we get lambda from init_Mu 
+  } # note that gens is a single date (not necessarily true for multiway L>2 admixture; EM will correct this quickly if on)
+  if (is.null(ratios)){  # if not provided
+    ratios=rep(1/L,L)
+  } else {
+    if (length(ratios)==L) {ratios=ratios/sum(ratios)} else {
+      cat(ratios, " supplied as vector of mixing group ratios\n")
+      ratios=rep(1/L,L)
+      if (!EM)
+        warning("length of ancestry ratios must be equal to number of mixing groups: using 1/", L, " for each group", immediate.=T)
+    }
+  }
+  if (!EM & L>2)
+    warning("Turning off EM and specifying a single mixing date is not advised", immediate.=T)
   if (MC==0) {
     MC=as.integer(detectCores()/2)
     if (is.na(MC)) {MC=2;warning("using 2 cores as detectCores() has failed",immediate.=T)} # use 2 if can't use detectCores() 
@@ -82,7 +96,9 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, L, t.ANC, nl, ans$FLAT, ans$dr, o.lambda, resultsdir, mask) 
+  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, L, t.ANC, nl, ans$FLAT, ans$dr, gens, resultsdir, mask) 
+  if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", L, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
+  if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs
   ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMA=tmp$NUMA;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL;ans$G=tmp$G;ans$NN=tmp$NN;
   ans$maxmatchsize=tmp$maxmatchsize;ans$panels=tmp$panels
@@ -97,7 +113,6 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   if (min.donors>ans$NUMP) min.donors<-ans$NUMP 
   ans$min.donors=min.donors
   phi.theta<-0.2
-  #ans$theta=o.theta<-rep(phi.theta/(phi.theta+ans$NUMP/L), L) # as per Hapmix
   ans$theta=o.theta<-rep(phi.theta/(phi.theta+max.donors/L), L) # as per Hapmix
   #invsum=1/sum(1/(1:ans$NUMP));o.theta<-rep(0.5*invsum/(ans$NUMP+invsum), L) # Watterson's estimator
   ans$rho=o.rho=rep(1-exp(-Ne/(ans$NUMP/L)*ans$dr),L) # similar to HapMix choice but transformed; 1/L as this will include anc self-switches
@@ -107,8 +122,8 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   ans$alpha=ans$lambda<-list()
   for (ind in 1:ans$NUMI)
   {
-    ans$alpha[[ind]]=rep(1/L,L)
-    ans$lambda[[ind]]=o.lambda
+    ans$alpha[[ind]]=ratios
+    ans$lambda[[ind]]=gens
   }
   mutmat<-fmutmat(ans$theta, L, ans$maxmiss, ans$maxmatch)
   ans$PI<-create_PI(ans$alpha,ans$lambda,L,ans$dr,ans$NUMI)
@@ -120,7 +135,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,MC,
   if (!EM) total=1
   ans$total=total
   # change next two lines perhaps
-  ans$o.PI<-ans$PI;ans$o.alpha<-ans$alpha;ans$o.rho<-ans$rho;ans$o.lambda=o.lambda
+  ans$o.PI<-ans$PI;ans$o.alpha<-ans$alpha;ans$o.rho<-ans$rho;ans$o.lambda=ans$lambda
   ans$o.theta<-ans$theta;ans$o.phi.theta<-phi.theta
   ans$flips<-list()
   for (ind in 1:ans$NUMI) 

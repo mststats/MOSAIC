@@ -1,7 +1,8 @@
 run_mosaic=function(target,datasource,chrnos,L,NUMA,ANC=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
-		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,firstind=1,MC=0,PLOT=FALSE,verbose=TRUE) {
+		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
+		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
-  tmp=setup_data_etc(NUMA,target,chrnos,ANC,L,datasource,EM,MC,REPS=REPS,GpcM=GpcM,nl=nl) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
+  tmp=setup_data_etc(NUMA,target,chrnos,ANC,L,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl) # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
   mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
   s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS
@@ -53,6 +54,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,ANC=NULL,REPS=0,GpcM=60,PHAS
   o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
   mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
   o.M<-M;M<-s.M
+  EMlogfile=NULL
   if (EM) {
     tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
     runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len

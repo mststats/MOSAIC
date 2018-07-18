@@ -1,3 +1,4 @@
-*) optional command line arguments
+*) help file for run_mosaic only; re-use README.txt
+*) remove --known TRUE usage and replace with example vector format --pops
 *) shapeit input
 *) don't grab all memory by default on a cluster: see Busby email.

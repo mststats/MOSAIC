@@ -89,7 +89,7 @@ example_sims=function(t.NUMA, t.L, t.o.lambda, ANC, t.panels, mean.sim.alpha=c(r
   
   for (ind in 1:NUMI)
   {
-    sim.alpha[[ind]]=c(rdirichlet(1, mean.sim.alpha*t.L*4))
+    sim.alpha[[ind]]=c(rdirichlet(1, mean.sim.alpha*t.L*4)) # FLAG provide user control of this
     #sim.alpha[[ind]]=c(0.2,0.8) # leads to difficulties
     sim.lambda[[ind]]<-t.o.lambda
   }
