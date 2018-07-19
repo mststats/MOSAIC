@@ -22,13 +22,12 @@ m.args=add_argument(m.args, "--rounds", help="number of inference rounds", defau
 m.args=add_argument(m.args, "--GpcM", help="number of gridpoints per centiMorgan", default=60, type="integer",short="-g")
 m.args=add_argument(m.args, "--donors_per_group", help="maximum number of donors used per panel", default=1000, type="integer",short="-dpg")
 m.args=add_argument(m.args, "--maxdonors", help="maximum number of donors used per gridpoint", default=100, type="integer")
-m.args=add_argument(m.args, "--prop", help="proportion of probability required per gridpoint", default=0.99, type="numeric",short="-p")
+m.args=add_argument(m.args, "--prop", help="proportion of probability required per gridpoint", default=0.99, type="numeric",short="-prop")
 m.args=add_argument(m.args, "--index", help="index of first individual in the target data", default=1, type="integer",short="-i")
 m.args=add_argument(m.args, "--fastfiles", help="location of fast-files", default="/dev/shm/", type="character",short="-f")
-m.args=add_argument(m.args, "--known", help="a-priori mixing groups", default="NULL", type="character",short="-k")
-# known=NULL is no a-priori knowledge of which panels to use for which ancestries and all panels are used
-# known=TRUE will run a pre-programmed simulation 
-# known=c(a,b,c,d,.,.) vector will admix the first A populations and fit using the rest when running MOSAIC on simulated data
+m.args=add_argument(m.args, "--panels", help="listed donor groups to use; if running a simulation first #ancestries are simulated from", default="NULL", type="character",short="-p")
+m.args=add_argument(m.args, "--mask", help="listed groups to remove", default="NULL", type="character",short="-mask")
+# simulated target and panels=c(a,b,c,d,.,.) vector will admix the first A populations and fit using the rest when running MOSAIC on simulated data
 
 # note that flags are flipped from the default (which is FALSE) if included in the command
 
@@ -41,7 +40,8 @@ NUMA=argv$number
 chrnos=argv$chromosomes
 chrnos=strsplit(chrnos,":")[[1]];chrnos=as.integer(chrnos[1]):as.integer(chrnos[2])
 MC=argv$maxcores
-ANC=argv$known
+pops=argv$panels
+mask=argv$mask
 REPS=argv$rounds
 GpcM=argv$GpcM
 EM=!argv$noEM # run EM algorithm?
@@ -52,14 +52,12 @@ dpg=argv$donors_per_group
 max.donors=argv$maxdonors
 prop.don=argv$prop
 ffpath=argv$fastfiles
-if (ANC=="TRUE") ANC=TRUE
-if (ANC=="NULL") ANC=NULL
+if (pops=="NULL") pops=NULL
+if (mask=="NULL") mask=NULL
 if (ratios=="NULL") ratios=NULL
+if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated group names
 if (!is.null(ratios)) {ratios=strsplit(ratios," ")[[1]];ratios=as.numeric(ratios)}
-if (is.null(ANC) & target=="simulated") {
-  warning('use --known TRUE or --known "vector of populations" when running a simulation\n
-	  setting --known TRUE', immediate.=T)
-}
+if (is.null(pops) & target=="simulated") stop("Please provide at least ", A, " named populations to admix for this simulation using the -p flag", "\n")
 
 # the rest are mostly used in debugging, etc
 verbose=T # print certain statements of progress as algorithm runs?
@@ -70,8 +68,8 @@ dotheta=T # update error / mutation parameters?
 return.res=TRUE #interactive() # whether to return results in a list; for use within an interactive R session
 
 # this function includes saving results to disk
-mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,ANC,REPS=REPS,GpcM=GpcM,PHASE=PHASE,nl=dpg,max.donors=max.donors,prop.don=prop.don,
+mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=GpcM,PHASE=PHASE,nl=dpg,max.donors=max.donors,prop.don=prop.don,
 			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,gens=gens,ratios=ratios,
-			 firstind=firstind,MC=MC,verbose=verbose) 
+			 firstind=firstind,MC=MC,verbose=verbose,mask=mask) 
 
 plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/", EM=EM)

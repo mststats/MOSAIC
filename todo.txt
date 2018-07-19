@@ -1,6 +1,7 @@
+*) move if(EM) from outside all REPS
 *) remove --known TRUE usage and replace with example vector format --pops; don't use random examples either
 simulated: --pops and length(pops)=A => use all others as panels
-simulated: --pops and length(pops)>A => use supplied panels but must have length(pops)>=2*A
+simulated: --pops and length(pops)>A => use supplied panels but must have length(pops)>=A + A
 real: --pops first is target and rest are panels and length(panels)>=A
 
 *) help file for run_mosaic only; re-use README.txt

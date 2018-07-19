@@ -11,7 +11,7 @@ fmutmat<-function(theta, L, maxmiss, maxmatch)
   mutmat
 }
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,gens,ratios,MC,
+setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,L,datasource,EM,gens,ratios,MC,
   # some default values
   verbose=T,
   HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
@@ -87,6 +87,17 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,gens,rati
         warning("length of ancestry ratios must be equal to number of mixing groups: using 1/", L, " for each group", immediate.=T)
     }
   }
+  if (!is.null(t.pops)) {
+    if (t.target=="simulated" & length(t.pops)>L & length(t.pops)<(2*L)) {
+      warning("Provide at least (2 X #ancestries) named groups; first #ancestries to simulate from and rest to use as donor groups.
+  Therefore using all other available groups as donors\n", immediate.=T)
+      t.pops=t.pops[1:L]
+    }
+    if (t.target!="simulated" & length(t.pops)<L) {
+      warning("Need at least " , L, " named groups to use as donors; using all available donor groups\n", immediate.=T)
+      t.pops=NULL
+    }
+  }
   if (!EM & L>2)
     warning("Turning off EM and specifying a single mixing date is not advised", immediate.=T)
   if (MC==0) {
@@ -96,7 +107,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.ANC,L,datasource,EM,gens,rati
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, L, t.ANC, nl, ans$FLAT, ans$dr, gens, resultsdir, mask) 
+  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, L, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios) 
   if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", L, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
   if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs

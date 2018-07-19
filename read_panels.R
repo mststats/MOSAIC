@@ -1,30 +1,35 @@
 # function that reads in the data and lays on a grid along recombination rates map
-read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, ANC, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, t.nchrno=length(t.chrnos), S=rep(NaN,t.nchrno),
-		     firstind=1) {
+read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
+		     firstind=1, ratios=NULL) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
+  t.nchrno=length(t.chrnos) 
+  if (!is.null(pops) & length(pops)!=t.L)
+  {
+    usepanels=NULL;for (usepanel in pops) {tmp2=match(usepanel,panels);if (!is.na(tmp2)) usepanels=c(usepanels,tmp2)}
+    panels<-panels[usepanels] # use supplied groups 
+  }
   if (!is.null(mask))
   {
-    maskpanels=NULL;for (maskpanel in mask) {tmp2=match(maskpanel,panels);if (length(tmp2)>0) maskpanels=c(maskpanels,tmp2)}
+    maskpanels=NULL;for (maskpanel in mask) {tmp2=match(maskpanel,panels);if (!is.na(tmp2)) maskpanels=c(maskpanels,tmp2)}
     panels<-panels[-maskpanels] # remove masked groups 
   }
   tmp=match(t.target,panels); if (!is.na(tmp)) panels=panels[-tmp] # remove target panel
   kLL=length(panels)
-  if (is.null(ANC))
+  if (is.null(pops)) # take everything else except the target as a potential donor panel
   {
     tmp<-panels
-    tmp<-tmp[tmp!=t.target] # take everything else except the target as a potential donor panel
+    tmp<-tmp[tmp!=t.target] 
     panels=as.character(tmp)
     kLL=length(panels)
-    if (t.target!="simulated") panels[kLL+1]=t.target
   }
-  if (t.target=="simulated") true_anc<-g.true_anc<-list()
-  if (!is.null(ANC) | t.target=="simulated") # always call this if looking at a simulation and / or if ANC=T
+  if (t.target!="simulated") panels[kLL+1]=t.target
+  if (t.target=="simulated") 
   {
-    # example simulations
-    tmp=example_sims(t.NUMA, t.L, t.o.lambda, ANC, panels) # note that this may use reduced set of panels
-    ANC=tmp$ANC;mixers=tmp$mixers;panels=tmp$panels;kLL=tmp$kLL;sim.alpha=tmp$sim.alpha;sim.lambda=tmp$sim.lambda
+    true_anc<-g.true_anc<-list()
+    tmp=create_sim(t.NUMA, t.L, t.o.lambda, pops[1:t.L], panels, ratios) 
+    mixers=tmp$mixers;panels=tmp$panels;kLL=tmp$kLL;sim.alpha=tmp$sim.alpha;sim.lambda=tmp$sim.lambda
   }
   d.w=list() # map to unique donor  haps at each gridpoint
   t.w=list() # map to unique target haps at each gridpoint
@@ -137,8 +142,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, ANC, t.nl, t.F
     }
     if (t.target=="simulated")
     {
-      tmp=admix_genomes(t.chrnos, ch, ANC, t.NUMA, NUMP, KNOWN, NN, multipanels, t.L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, 
-			dr, t.resultsdir, panels)
+      tmp=admix_genomes(t.chrnos, ch, t.NUMA, NUMP, KNOWN, NN, multipanels, t.L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, dr, t.resultsdir)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch
