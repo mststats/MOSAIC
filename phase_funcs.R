@@ -253,7 +253,7 @@ phase_mcmc<-r_phase_mcmc
 phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.G, t.L, t.GpcM, t.max.donors, t.nchrno, t.NUMA, t.NUMI, t.kLL, t.flips, t.eps.lower, 
 			t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, 
 			t.initProb, t.label, t.min.bg, t.max.bg,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,
-			t.old.runtime, t.EMlogfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
+			t.old.runtime, t.logfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
   orig.ll<-max.ll<-c.ll<-list()
   nflips=0
   niters=0
@@ -325,7 +325,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
     cat(nflips, " phase flips made after an average of ", niters/t.NUMI/t.nchrno, "hunts/ind/chromosome: log-likelihood", sum(unlist(orig.ll)), "-> ", cloglike, "\n")
   runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
   if (t.LOG) 
-    writelog(t.EMlogfile,"phasehunt",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
+    writelog(t.logfile,"phasehunt",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
   ans=list()
   ans$flips=t.flips
   ans$runtime=runtime
@@ -339,7 +339,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
 phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.NUMA, t.G, t.L, t.max.donors, t.nchrno, t.NUMI, t.kLL, t.flips, 
 			t.transitions, t.umatch, t.maxmatchsize, t.d.w, t.t.w, t.gobs, t.mutmat, t.maxmiss, 
 			t.initProb, t.label,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.old.runtime, 
-			t.EMlogfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
+			t.logfile, t.HPC=2, verbose=TRUE, t.LOG=TRUE) {
   max.ll<-mcmc.ll<-mcmc.acc<-list()
   for (ch in 1:t.nchrno) 
   {
@@ -408,7 +408,7 @@ phase_mcmc_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
   cloglike<-sum(unlist((max.ll)))
   runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime;t.old.runtime<-runtime;
   if (t.LOG) 
-    writelog(t.EMlogfile,"phasemcmc",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
+    writelog(t.logfile,"phasemcmc",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
   ans=list()
   ans$flips=t.flips
   ans$runtime=runtime

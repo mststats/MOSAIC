@@ -43,6 +43,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,L,datasource,EM,gens,rat
   resultsdir="MOSAIC_RESULTS/") # where to store results files
 {
   if (REPS==0) REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
+  REPS=ifelse(EM, REPS, 1) # no need for more than 1 if no EM parameter changes
   t.nchrno=length(t.chrnos)
   ans=list() # build a list to store resulting data, parameters, etc
   S<-rep(NaN,t.nchrno) # if no limit is set

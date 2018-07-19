@@ -429,7 +429,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 }
 
 # function to plot most useful figures
-plot_all_mosaic=function(result,pathout, EM) { #,pathin) {
+plot_all_mosaic=function(result,pathout) { #,pathin) {
   targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
 		       "_",result$NN,"_",result$GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
@@ -448,11 +448,9 @@ plot_all_mosaic=function(result,pathout, EM) { #,pathin) {
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
   this_acoplots=plot_coanccurves(result$acoancs,result$dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
   dev.off()
-  if (EM) {
-    EMlog=extract_log(result$EMlogfile)
-    pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
-    plot_loglike(EMlog)
-    dev.off()
-  }
+  EMlog=extract_log(result$logfile)
+  pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
+  plot_loglike(EMlog)
+  dev.off()
 }
 

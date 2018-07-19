@@ -38,7 +38,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   {
     # use this to get #switches in noanc model w/o writelog
     tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize,
-		    maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len,F,transitions,mutmat,NaN,NULL,ffpath)
+		    maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, NULL,F,transitions,mutmat,NaN,NULL,ffpath)
     ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     noanc_gswitches=tmp$noanc_gswitches
     rm(tmp)
@@ -57,15 +57,13 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
   mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
   o.M<-M;M<-s.M
-  EMlogfile=NULL
-  if (EM) {
-    tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
-    runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
-    EMlogfile=tmp$logfile
-  }
+  logfile=NULL
+  tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
+  runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
+  logfile=tmp$logfile
   # decide on donor set using initial parameters
   tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
-		  maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat,NaN,EMlogfile,ffpath)
+		  maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat,NaN,logfile,ffpath)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
   ############ a few PI only updates first; very useful to do before first re-phasing
@@ -75,7 +73,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
     total=PI.total
     tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
-	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, doPI, doMu, 
+	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
 	       dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps)
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
@@ -83,40 +81,39 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     {
       tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
 		      maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
-		      mutmat,cloglike,EMlogfile,ffpath)
+		      mutmat,cloglike,logfile,ffpath)
       ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     }
     doMu=o.doMu;dorho=o.dorho;dotheta=o.dotheta;doPI=o.doPI
   }
 
   total<-s.total # number of EM steps with repeated loop
-  if (EM) 
-  {
     for (reps in 1:REPS) 
     {
       cat("######################## round ", reps, "of ",  REPS, "#######################\n")
       if (reps==REPS) 
 	M=o.M # on last rep do more MCMC phasing
-      # location of this an issue. If above thin&phase, low lambda. If below then first rep has lowered log-like
+  if (EM) {
       tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
-		 NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, doPI, doMu, 
+		 NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
 		 dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
       PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
       cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
+  }
       old.kLL=kLL
       if (max.donors<NUMP & (kLL==old.kLL))
       {
 	# decide on donor set using updated parameters
 	tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
 			maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
-			mutmat,cloglike,EMlogfile,ffpath)
+			mutmat,cloglike,logfile,ffpath)
 	ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
       }
       if (PHASE) 
       {
 	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, L, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
 			     transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
-			     initProb, label, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
+			     initProb, label, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, logfile, HPC, verbose, LOG) 
 	flips=tmp$flips
 	runtime=tmp$runtime
 	cloglike=tmp$cloglike
@@ -125,7 +122,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 	{
 	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, L, max.donors, nchrno, NUMI, kLL, flips, 
 			       transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
-			       initProb, label, len,Mu,rho,PI,alpha,lambda,theta,runtime, EMlogfile, HPC, verbose, LOG) 
+			       initProb, label, len,Mu,rho,PI,alpha,lambda,theta,runtime, logfile, HPC, verbose, LOG) 
 	flips=tmp$flips
 	runtime=tmp$runtime
 	cloglike=tmp$cloglike
@@ -133,11 +130,12 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 	}
       }
     }
+  if (EM) {
     total=o.total # do longer run EM on last rep
     if (verbose)
       cat("run one final round of EM\n")
     tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
-	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, EMlogfile, 
+	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, 
 	       doPI, doMu, dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
@@ -191,12 +189,12 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
-		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, EMlogfile, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
        Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs)
   if (return.res & target!="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,EMlogfile=EMlogfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
   if (return.res & target=="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,EMlogfile=EMlogfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
 }

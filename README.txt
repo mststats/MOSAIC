@@ -33,7 +33,7 @@ You can also use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
 (3) > plot_localanc(chrnos,g.loc,localanc) # cycles through all local ancestry plots (one plot per target diploid chromosome)
-(4) > plot_loglike(extract_log(EMlogfile)) # plots the model fit across iterations of thin/phase/EM (if EM is on)
+(4) > plot_loglike(extract_log(logfile)) # plots the model fit across iterations of thin/phase/EM (if EM is on)
 
 #######  EXAMPLES  ###############################################################################################
 The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:

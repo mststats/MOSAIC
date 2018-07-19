@@ -69,7 +69,7 @@ fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL,
   {
     tmp=create_logfile(t.resultsdir,target,t.kLL,t.L,t.NUMI,firstind,t.chrnos,nchrno,t.NN,t.GpcM)
     len=tmp$len
-    noancEMlogfile=tmp$logfile
+    noanclogfile=tmp$logfile
   }
   total=50 # only estimating some of the parameters, not required to be super accurate
   #stop("wait")
@@ -77,7 +77,7 @@ fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL,
     # no anc fit and all donors included; should remove EM output
     tmp=run_EM(t.HPC, nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.label, mutmat, transitions, ndonors, donates, donatesl, donatesr,
 	       t.NUMA, t.NN, t.NL, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.dr, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmatch, t.maxmiss, t.d.w, t.t.w,  
-	       total, verbose=F, len, t.cloglike, t.LOG, noancEMlogfile, doPI, doMu, dotheta, dorho, TRUE, TRUE, TRUE, t.runtime, t.eps) 
+	       total, verbose=F, len, t.cloglike, t.LOG, noanclogfile, doPI, doMu, dotheta, dorho, TRUE, TRUE, TRUE, t.runtime, t.eps) 
     t.PI=tmp$t.PI;t.alpha=tmp$t.alpha;t.lambda=tmp$t.lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta;t.runtime=tmp$runtime;t.initProb=tmp$initProb;
     t.cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   } 

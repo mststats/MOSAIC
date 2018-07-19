@@ -8,11 +8,11 @@ create_logfile=function(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,G
   for (ind in 1:NUMI) lognames<-c(lognames, paste0("lambda[",ind,"]"))
   for (i in 1:L) lognames<-c(lognames, paste0("theta[",i,"]"))
   lognames<-c(lognames, "loglikelihood")
-  EMlogfile=paste0(resultsdir, target, "_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
+  logfile=paste0(resultsdir, target, "_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
   len=length(lognames) # total number of items to log
-  write(file=EMlogfile, lognames, ncol=length(lognames)) # start the EM log file
+  write(file=logfile, lognames, ncol=length(lognames)) # start the EM log file
   rtime<-as.numeric(Sys.time())
-  return(list(runtime=rtime,logfile=EMlogfile,len=len))
+  return(list(runtime=rtime,logfile=logfile,len=len))
 }
 
 # function to extract parameters from a specified log file
@@ -48,6 +48,6 @@ plot_loglike=function(EMlog,cexa=2.5,
 }
 
 # function to write a row in the log file
-  writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to EMlogfile
+  writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to logfile
     write(file=t.logfile,c(t.alg,signif(t.diff.time,4),signif(t(t.Mu),4),signif(t.rho,4),c(sapply(t.PI, function(x) signif(t(x),4))),
 			   sapply(t.alpha, function(x) signif(x,4)),sapply(t.lambda,function(x) round(x,4)),signif(t.theta,4),round(t.cloglike,4)),ncol=t.len,append=T)

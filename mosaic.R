@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
 # real example: Rscript mosaic.R -t Moroccan -d example_data/ -a 2 -n 4 -c 18:22
-# simulated example: Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -k TRUE
+# simulated example: Rscript mosaic.R -t simulated -d example_data/ -a 2 -n 4 -c 18:22 -p "English Mandenka"
 
 require(MOSAIC)
 require(argparser, quiet=TRUE) 
@@ -21,7 +21,7 @@ m.args=add_argument(m.args, "--chromosomes", help="chromosomes as c_start:c_end"
 m.args=add_argument(m.args, "--rounds", help="number of inference rounds", default=5, type="integer",short="-r")
 m.args=add_argument(m.args, "--GpcM", help="number of gridpoints per centiMorgan", default=60, type="integer",short="-g")
 m.args=add_argument(m.args, "--donors_per_group", help="maximum number of donors used per panel", default=1000, type="integer",short="-dpg")
-m.args=add_argument(m.args, "--maxdonors", help="maximum number of donors used per gridpoint", default=100, type="integer")
+m.args=add_argument(m.args, "--maxdonors", help="maximum number of donors used per gridpoint", default=100, type="integer", short="-k")
 m.args=add_argument(m.args, "--prop", help="proportion of probability required per gridpoint", default=0.99, type="numeric",short="-prop")
 m.args=add_argument(m.args, "--index", help="index of first individual in the target data", default=1, type="integer",short="-i")
 m.args=add_argument(m.args, "--fastfiles", help="location of fast-files", default="/dev/shm/", type="character",short="-f")
@@ -72,4 +72,4 @@ mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=Gpc
 			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,gens=gens,ratios=ratios,
 			 firstind=firstind,MC=MC,verbose=verbose,mask=mask) 
 
-plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/", EM=EM)
+plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/")

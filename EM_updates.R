@@ -157,7 +157,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 # run EM algorithm for total iterations or until convergence
 run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.label, t.mutmat, t.transitions, t.ndonors, t.donates, t.donatesl, 
 		t.donatesr, t.NUMA, t.NN, t.NL, t.NUMP, t.kLL, t.L, t.NUMI, t.max.donors, t.G, t.dr, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmatch, t.maxmiss, 
-		t.d.w, t.t.w,  t.total, verbose=F, t.len, t.cloglike, t.LOG, t.EMlogfile, t.doPI, t.doMu, t.dotheta, t.dorho, t.commonrho, t.commontheta, t.absorbrho,
+		t.d.w, t.t.w,  t.total, verbose=F, t.len, t.cloglike, t.LOG, t.logfile, t.doPI, t.doMu, t.dotheta, t.dorho, t.commonrho, t.commontheta, t.absorbrho,
 		t.old.runtime, t.eps) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
   runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime # required in case of break below
@@ -187,7 +187,7 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
     }
     runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime
     if (t.LOG) 
-      writelog(t.EMlogfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) 
+      writelog(t.logfile,"EM",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) 
     if (verbose) setTxtProgressBar(pb, m)
   }
   if (verbose) close(pb)

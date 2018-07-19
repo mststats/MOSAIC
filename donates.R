@@ -116,7 +116,7 @@ getdonates_ind<-function(t.donates) # note that this is used for donates, donate
 # first compute the no-ancestry equivalent parameters Mu, rho, and theta. One for each ind.
 all_donates=function(target, t.L, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches, t.min.donors, t.max.donors, t.prop.don, t.NUMP, 
 		     t.NL, t.G, t.umatch, t.maxmatchsize, t.maxmatch, t.maxmiss, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, 
-		     t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG, t.transitions, t.mutmat, t.cloglike, t.EMlogfile, ffpath) {
+		     t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG, t.transitions, t.mutmat, t.cloglike, t.logfile, ffpath) {
   ind.Mu=ind.rho=ind.theta=list()
   for (ind in 1:t.NUMI) 
   {
@@ -279,7 +279,7 @@ all_donates=function(target, t.L, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
       cat(": log-likelihood", t.cloglike, "-> ")
     # some overhead in this so only run if asked for i.e. t.LOG==TRUE
     cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.L, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb,t.d.w,t.t.w,t.gobs,t.label, t.HPC)
-    writelog(t.EMlogfile,"thinning",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
+    writelog(t.logfile,"thinning",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(cloglike)
   } else cloglike=NaN
