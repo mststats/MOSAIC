@@ -55,7 +55,7 @@ ffpath=argv$fastfiles
 if (ANC=="TRUE") ANC=TRUE
 if (ANC=="NULL") ANC=NULL
 if (ratios=="NULL") ratios=NULL
-if (ratios!="NULL") {ratios=strsplit(ratios," ")[[1]];ratios=as.numeric(ratios)}
+if (!is.null(ratios)) {ratios=strsplit(ratios," ")[[1]];ratios=as.numeric(ratios)}
 if (is.null(ANC) & target=="simulated") {
   warning('use --known TRUE or --known "vector of populations" when running a simulation\n
 	  setting --known TRUE', immediate.=T)
