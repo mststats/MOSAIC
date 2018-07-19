@@ -19,6 +19,7 @@ echo "importFrom(combinat,permn)" >> MOSAIC/NAMESPACE
 #echo "importFrom(argparser,add_argument)" >> MOSAIC/NAMESPACE
 #echo "importFrom(argparser,parse_args)" >> MOSAIC/NAMESPACE
 cp DESCRIPTION MOSAIC/DESCRIPTION
+cp MOSAIC-package.Rd MOSAIC/man/
 
 cp -r README.txt mosaic.R example_data/ MOSAIC/ 
 
