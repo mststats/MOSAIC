@@ -9,17 +9,13 @@
 MOSAIC is a tool for modelling multi-way admixture events using dense haplotype data. The Hidden Markov Model approach is scalable to thousands of samples and, unlike existing methods, does not require specification of surrogate reference populations for the mixing ancestral groups. Instead, potentially complex relationships between multiple observed reference groups and unseen ancestral groups are inferred wherein the reference groups may also be admixed with respect to the ancestral groups. It automatically infers mixing proportions, timings, and parameters related to recombination rate and mutation. Our method outputs estimates of the model parameters along with measurements of model fit and confidence based on the local ancestry estimates and distribution of ancestral chromosome segment lengths with uncertainty. Phasing errors that can potentially mask ancestry are detected and corrected within the algorithm. 
 }
 \details{
-  MOSAIC is designed to run on the linux command line. 
-  Try 
-  > Rscript mosaic.R --help 
+  MOSAIC is designed to run on the command line. 
+  Try "Rscript mosaic.R --help"
   to see how to use MOSAIC. The only two arguments that must be provided are:
   (1) The name of the target admixed population 
   (2) The folder in which the data are stored (see below for details).
-MOSAIC may also be used in an interactive R session. First load the package
-> require(MOSAIC)
-then use 
-> run_mosaic(target,folder,chromosomes,A,n) 
-# where A is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
+MOSAIC may also be used in an interactive R session. First load the package then use "run_mosaic(target,folder,chromosomes,A,n)"
+where A is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
 the number of haplotypes in the target file results in running MOSAIC on all of them. A defaults to 2 and n to 1000.
 
 There should be a folder with 4 types of input file:
