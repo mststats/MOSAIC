@@ -1,7 +1,12 @@
 ######  OVERVIEW   ###############################################################################################
 MOSAIC is designed to run on the linux command line. 
 You can install MOSAIC by running the command
-> R CMD INSTALL -l $rlib MOSAIC_1.0.tar.gz
+> R CMD INSTALL -l rlib MOSAIC_1.0.tar.gz
+where rlib is the location where you'd like to install the R package (e.g. /usr/lib/R/site-library/)
+or use 
+> install.packages("MOSAIC_1.0.tar.gz")
+within R
+
 This is once-off and compiles all C++ code for the Hidden Markov Models underlying MOSAIC. 
 To run MOSAIC on the command line it is also necessary to install "argparser" (available from CRAN). 
 
