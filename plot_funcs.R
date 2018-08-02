@@ -153,7 +153,7 @@ plot_panel_dist=function(donors,ch,a)
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
-plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=2, shiftl=cexa, shiftt=cexa, 
+plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, shiftl=cexa*2, shiftt=cexa*2, 
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
@@ -221,7 +221,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
       if (!ord)
 	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,nrow(t.Mu)+shiftt/2),
 		  cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
-      text(xmax/4,(nrow(t.Mu)+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=2*cexa)
+      text(xmax/4,(nrow(t.Mu)+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=cexa)
     }
   }
   if (showgradient) # overrides beside
@@ -426,6 +426,22 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	if (PAUSE) readline()
       }
   }
+}
+
+plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localanc[[ch]])[2], cexa=2, lega=FALSE, ret=FALSE,
+		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+  m=list()
+  A=dim(localanc[[ch]])[1]
+  for (a in 1:A)
+    m[[a]]=colMeans(localanc[[ch]][a,whichhaps,]) # mean over target haplotypes
+  plot(c(g.loc[[ch]][1],g.loc[[ch]][length(g.loc[[ch]])]),c(0,1),t='n',
+       ylab="mean ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")  
+  for (a in 1:A)
+    lines(g.loc[[ch]],m[[a]],lwd=cexa,col=colvec[a])
+  if (lega)
+    legend("topright", legend=1:A, col=colvec[1:A], lwd=cexa)
+  if (ret)
+    return(m)
 }
 
 # function to plot most useful figures
