@@ -1,4 +1,3 @@
-*) plot_sel back in again
 *) help file for run_mosaic only; re-use README.txt
-*) shapeit input
+*) shapeit input; link to chromopainter format code
 *) don't grab all memory by default on a cluster: see Busby email.
