@@ -270,13 +270,20 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   {
     ordFst=NULL;for (a in 1:L) ordFst[[a]]=t.Fst[,a] 
   }
-  for (a in 1:L)
+  rangeFst=NULL
+  for (a in 1:L) {
     ordFst[[a]]=tail(ordFst[[a]],cutoff) # only show those that are below cutoff place
+    rangeFst[[a]]=range(1-ordFst[[a]])
+  }
   for (a in 1:L) 
   {
-    if (ord) y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+    if (ord) {
+      plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="",cex.main=cexa*2,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
+      tmp=1-ordFst[[a]]-rangeFst[[a]][1]
+      y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,add=T,offset=rangeFst[[a]][1])
+    }
     if (!ord)
-      y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])))
+      y=barplot(1-ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])))
   }
   if (ord) 
     return(ordFst)
@@ -428,18 +435,21 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
   }
 }
 
-plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localanc[[ch]])[2], cexa=2, lega=FALSE, ret=FALSE,
-		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localanc[[ch]])[2], whicha=1:dim(localanc[[ch]])[1], cexa=2, lega=FALSE, 
+			    ret=FALSE, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   m=list()
   A=dim(localanc[[ch]])[1]
   for (a in 1:A)
     m[[a]]=colMeans(localanc[[ch]][a,whichhaps,]) # mean over target haplotypes
   plot(c(g.loc[[ch]][1],g.loc[[ch]][length(g.loc[[ch]])]),c(0,1),t='n',
        ylab="mean ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")  
-  for (a in 1:A)
+  for (a in whicha)
+  {
     lines(g.loc[[ch]],m[[a]],lwd=cexa,col=colvec[a])
+    abline(h=c(mean(m[[a]])-1.96*sd(m[[a]]),mean(m[[a]])+1.96*sd(m[[a]])),lwd=cexa,lty=2,col=colvec[a])
+  }
   if (lega)
-    legend("topright", legend=1:A, col=colvec[1:A], lwd=cexa)
+    legend("topright", legend=whicha, col=colvec[whicha], lwd=cexa)
   if (ret)
     return(m)
 }
