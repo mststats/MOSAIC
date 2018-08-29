@@ -217,11 +217,11 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
     xmax=max(unlist(ordMu))
     for (a in 1:L) 
     {
-      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),ylim=c(0,nrow(t.Mu)+shiftt/2),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),ylim=c(0,nrow(ordMu[[a]])+shiftt/2),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
       if (!ord)
-	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,nrow(t.Mu)+shiftt/2),
+	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,nrow(ordMu[[a]])+shiftt/2),
 		  cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
-      text(xmax/4,(nrow(t.Mu)+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=cexa)
+      text(xmax/4,(nrow(ordMu[[a]])+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=cexa)
     }
   }
   if (showgradient) # overrides beside
