@@ -5,7 +5,8 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
   gobs=g.loc=list()
   maxmatch=maxmiss=0
   t.nchrno=length(t.chrnos) 
-  if ((!is.null(pops) & length(pops)!=t.L & target=="simulated") | (!is.null(pops) & target!="simulated")
+  if (!is.null(pops))
+    if ((length(pops)!=t.L & t.target=="simulated") | (t.target!="simulated"))
   {
     usepanels=NULL;for (usepanel in pops) {tmp2=match(usepanel,panels);if (!is.na(tmp2)) usepanels=c(usepanels,tmp2)}
     panels<-panels[usepanels] # use supplied groups 
