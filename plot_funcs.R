@@ -253,14 +253,14 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
     cutoff=t.kLL
   }
   L=ncol(t.Fst)
-  par(mar=c(3,4+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
+  par(mar=c(6,4+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
   if (ord) par(mfrow=c(1,L))
   if (!ord) 
   {
-    par(mar=c(3,2,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
+    par(mar=c(6,2,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
     nf <- layout(matrix(c(1:(L+1)),ncol=L+1), widths=c(1,rep(2,L)), TRUE);layout.show(nf)
     plot(c(-cexa,ncol(t.Fst)),c(0.5,nrow(t.Fst)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
-    text(x=2,pos=2,y=(1:nrow(t.Fst)),rownames(t.Fst),cex=1.75*cexa)
+    text(x=2,pos=2,y=(1:nrow(t.Fst)),rownames(t.Fst),cex=cexa)
   }
   if (ord)
   {
@@ -278,13 +278,13 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   for (a in 1:L) 
   {
     if (ord) {
-      plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="",cex.main=cexa*2,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
+      plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="1-Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
       tmp=1-ordFst[[a]]-rangeFst[[a]][1]
-      y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,add=T,offset=rangeFst[[a]][1])
+      y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
     }
     if (!ord)
-      y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",
-		cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])),offset=rangeFst[[a]][1])
+      y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",xlab="1-Fst",
+		cex.main=cexa,names.arg=rep("",length(ordFst[[a]])),offset=rangeFst[[a]][1])
   }
   if (ord) 
     return(ordFst)
