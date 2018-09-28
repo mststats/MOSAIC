@@ -252,6 +252,7 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
     warning("showing all as re-ordering not allowed")
     cutoff=t.kLL
   }
+  if (cutoff>t.kLL) cutoff=t.kLL
   L=ncol(t.Fst)
   par(mar=c(6,4+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
   if (ord) par(mfrow=c(1,L))
@@ -456,26 +457,31 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 }
 
 # function to plot most useful figures
-plot_all_mosaic=function(result,pathout) { #,pathin) {
-  targetdetails=paste0(result$target, "_", result$L, "way_", result$NUMA, "_", paste(result$chrnos[c(1,result$nchrno)],collapse="-"),
-		       "_",result$NN,"_",result$GpcM)
+plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",GpcM=60,doFst=TRUE) {
+  targetdetails=paste0(target, "_", L, "way_", NUMA, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		       "_",sum(NL),"_",GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
-  ord.Mu=plot_Mu(result$Mu,result$alpha,result$NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
+  ord.Mu=plot_Mu(Mu,alpha,NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
   dev.off()
   
-  # FLAG: maybe do this but takes a while to calculate frequencies, etc
-  #this_Fst=Fst_combos(result$target, result$L, sum(result$NL), rownames(result$Mu)) 
-  #pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
-  #ord.Fst=plot_Fst(tmp_Fst$panels,cexa=3,ord=T, shiftl=14, cutoff=10)
-  #dev.off()
+  # note that it takes a while to calculate frequencies, etc
+  if (doFst) {
+    flocalanc=phase_localanc(localanc,final.flips) 
+    write_admixed_summary(simdatasource="MOSAIC_RESULTS/",t.localanc=flocalanc,chrnos=chrnos)
+    write_panel_summaries(panels=rownames(Mu),chrnos=chrnos)
+    all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
+    pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
+    ord.Fst=plot_Fst(all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
+    dev.off()
+  }
   
   # dimensions of plots
-  d1=switch(result$L,NaN,1,2,2,3,3) 
-  d2=switch(result$L,NaN,3,3,5,5,7) 
+  d1=switch(L,NaN,1,2,2,3,3) 
+  d2=switch(L,NaN,3,3,5,5,7) 
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
-  this_acoplots=plot_coanccurves(result$acoancs,result$dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
+  this_acoplots=plot_coanccurves(acoancs,dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
   dev.off()
-  EMlog=extract_log(result$logfile)
+  EMlog=extract_log(logfile)
   pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
   plot_loglike(EMlog)
   dev.off()

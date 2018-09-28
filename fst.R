@@ -134,6 +134,14 @@ Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
   return(list("ancs"=anc_fst,"panels"=tmp_fst))
 }
 
+Fst_panels=function(panel1,panel2, pathin="FREQS/") {
+  load(paste0(pathin, panel1,"_freqs.rdata"))
+  tmp1=pdata
+  load(paste0(pathin, panel2,"_freqs.rdata"))
+  tmp2=pdata
+  return(wc_fst(tmp1$freqs,tmp1$counts,tmp2$freqs,tmp2$counts))
+}
+
 R_Fst=function(x) 
 { # quotient of Fst i.e. (p-q)^2/(0.5*(p+q))
   laa=length(x$ancs)
