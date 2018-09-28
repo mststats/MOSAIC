@@ -168,28 +168,23 @@ dip_fr2_chr_ind<-function(x,y,ch,ind)
 {
   return(cor(c(dip_chr_ind(x[[ch]],ind)), c(dip_chr_ind(y[[ch]],ind)))^2)
 }
-dip_fr2_chr<-function(x,y,ch) 
+dip_fr2_ind<-function(x,y,ind) # correlation across all chromosomes, not average correlation across each chromosome
 {
-  ans=0
-  for (ind in 1:NUMI)
-    ans=ans+dip_fr2_chr_ind(x,y,ch,ind)
-  return(ans/NUMI)
+  hap<-c(ind*2-1,ind*2)
+  return(cor(c(unlist(lapply(x,function(xchr) dip_chr(xchr[,hap,])))),c(unlist(lapply(y,function(ychr) dip_chr(ychr[,hap,])))))^2)
 }
 dip_fr2<-function(x,y) 
 {
   return(cor(c(unlist(lapply(x,dip_chr))),c(unlist(lapply(y,dip_chr))))^2)
 }
 
-hap_fr2_chr_k<-function(x,y,ch,k) 
+hap_fr2_chr_k<-function(x,y,ch,k) # mainly for debugging purposes. MOSAIC doesn't claim to be able to infer haplotypic local ancestry
 {
   return(cor(c(x[[ch]][,k,]), c(y[[ch]][,k,]))^2)
 }
-hap_fr2_chr<-function(x,y,ch) 
+hap_fr2_k<-function(x,y,k) # mainly for debugging purposes. MOSAIC doesn't claim to be able to infer haplotypic local ancestry
 {
-  ans=0
-  for (k in 1:NUMA)
-    ans=ans+hap_fr2_chr_k(x,y,ch,k)
-  return(ans/NUMA)
+  return(cor(c(unlist(lapply(x,function(xchr) xchr[,k,]))),c(unlist(lapply(y,function(ychr) ychr[,k,]))))^2)
 }
 hap_fr2<-function(x,y) 
 {
