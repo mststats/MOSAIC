@@ -283,7 +283,8 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
       y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,add=T,offset=rangeFst[[a]][1])
     }
     if (!ord)
-      y=barplot(1-ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])))
+      y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",
+		cex.main=cexa*2,names.arg=rep("",length(ordFst[[a]])),offset=rangeFst[[a]][1])
   }
   if (ord) 
     return(ordFst)

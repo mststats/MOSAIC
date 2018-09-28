@@ -68,25 +68,6 @@ r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8
 }
 maximal_alleles=cmpfun(r_maximal_alleles,list(optimize=3))
 
-summarise_panels=function(panelname, pathin, chrnos)
-{
-  # now read in panel data and summarise as freqs and counts
-  allp=list();alln=list() 
-  for (ch in 1:length(chrnos))
-  {
-    snps=read.table(paste0(pathin,"snpfile.",chrnos[ch]))
-    S=nrow(snps)
-    tmp<-scan(paste0(pathin,panelname,"genofile.",chrnos[ch]),what="character",quiet=T) 
-    tmp<-strsplit(tmp,"")
-    tmpy=matrix(sapply(tmp, as.double), ncol=S)
-    ny=nrow(tmpy)
-    allp[[ch]]=colMeans(tmpy)
-    alln[[ch]]=ny 
-  }
-  return(list("freqs"=allp,"counts"=alln))
-}
-
-
 r_wc_fst=function(freqs1,counts1,freqs2,counts2) 
 {
   Hs=Ht=NULL

@@ -1,4 +1,24 @@
 # Fst calculations computational bottleneck is calculating the frequencies of markers for each population (panel).
+
+# functions to read in panel data and summarise as freqs and counts
+summarise_panels=function(panelname, pathin, chrnos)
+{
+  allp=list();alln=list() 
+  for (ch in 1:length(chrnos))
+  {
+    snps=read.table(paste0(pathin,"snpfile.",chrnos[ch]))
+    S=nrow(snps)
+    tmp<-scan(paste0(pathin,panelname,"genofile.",chrnos[ch]),what="character",quiet=T) 
+    tmp<-strsplit(tmp,"")
+    tmpy=matrix(sapply(tmp, as.double), ncol=S)
+    ny=nrow(tmpy)
+    allp[[ch]]=colMeans(tmpy)
+    alln[[ch]]=ny 
+  }
+  return(list("freqs"=allp,"counts"=alln))
+}
+
+
 # This function will perform these as a one off calculation for each panel and save to file for reuse.
 # if panels=NULL then it will run for all panels in sample.names
 write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22, panels=NULL) {
@@ -10,7 +30,7 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
   for (panel in panels)
   {
     cat("Looking at ", panel, " \n")
-    pdata=summarise_panels(panel, datasource, chrnos)
+    pdata=summarise_panels(panel, datasource, chrnos) 
     save(pdata, file=paste0(pathout, panel, "_", "freqs.rdata"))
   }
   return(NULL)
@@ -18,9 +38,10 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 
 # similar function that uses estimated local ancestry along the admixed genome
 # after loading results from a MOSAIC run target, NL, etc are in global memory
-write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",t.localanc,chrnos=1:22)
+write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",simdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
 {
-  ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,datasource) 
+  cat("Looking at simulated data\n")
+  ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,simdatasource) 
   save(ancestral_freqs, file=paste0(pathout, target, "_", L, "way_", sum(NL), "_freqs.rdata"))
   return(NULL)
 }
