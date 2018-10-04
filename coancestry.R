@@ -379,6 +379,7 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
 {
   NUMA=dim(localanc[[1]])[2]
   NUMI=NUMA/2
+  nchrno=length(localanc)
   kgens=rep(NaN,NUMI)
   for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,dr,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
   G=sapply(localanc,function(x) dim(x)[3])
