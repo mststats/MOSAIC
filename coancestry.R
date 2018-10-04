@@ -373,3 +373,36 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3])) # redundancy here but useful to focus 
 }
 #acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2,targetname=paste0(target,": "))
+
+
+bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+{
+  NUMA=dim(localanc[[1]])[2]
+  NUMI=NUMA/2
+  kgens=rep(NaN,NUMI)
+  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,dr,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  G=sapply(localanc,function(x) dim(x)[3])
+  boot.gens=rep(NaN,nsamps)
+  boot.localanc=list()
+  for (t.ch in 1:nchrno) 
+    boot.localanc[[t.ch]]=array(NaN,c(L,NUMA,G[t.ch]))
+  pb<-txtProgressBar(min=0,max=nsamps,style=3)
+  for (r in 1:nsamps) ## nsamps bootstrap samples
+  {
+    setTxtProgressBar(pb, r)
+    #bootstrap chromosomes; generate NUMI pseudo-individuals using random chromosomes drawn from all inds w/ replacement; see GT S4.4 for details
+    #boot.haps=matrix(sample(1:NUMA,NUMA*nchrno,replace=T),NUMA)
+    boot.inds=matrix(sample(1:NUMI,NUMI*nchrno,replace=T),NUMI)
+    boot.haps=matrix(NaN,NUMA,nchrno);for (t.ch in 1:nchrno) for (ind in 1:NUMI) boot.haps[c(ind*2-1,ind*2),t.ch]=c(boot.inds[ind,t.ch]*2-1,boot.inds[ind,t.ch]*2)
+    for (t.ch in 1:nchrno) 
+      for (l in 1:L) for (hap in 1:NUMA)
+        boot.localanc[[t.ch]][l,hap,]=localanc[[t.ch]][l,boot.haps[hap,t.ch],]
+    boot.coancs=create_coancs(boot.localanc,dr,"DIP",max.cM=max.cM)#*mean(unlist(lambda))/100);
+    boot.gens[r]=mean(plot_coanccurves(boot.coancs,dr,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  }  
+  close(pb)
+  return(list(kgens=kgens,boot.gens=boot.gens))
+}
+
+
+
