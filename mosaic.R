@@ -72,4 +72,8 @@ mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=Gpc
 			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,gens=gens,ratios=ratios,
 			 firstind=firstind,MC=MC,verbose=verbose,mask=mask) 
 
-plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/")
+filename=paste0(target,"_", A, "way_", firstind, "-", firstind+NUMA/2-1, "_", paste(chrnos[c(1,length(chrnos))],collapse="-"),"_",sum(mosaic.result$NL),"_",
+		   GpcM,"_",mosaic.result$prop.don,"_",mosaic.result$max.donors,".RData")
+load(paste0("MOSAIC_RESULTS/",filename))
+load(paste0("MOSAIC_RESULTS/localanc_",filename))
+plot_all_mosaic(pathout="MOSAIC_PLOTS/")

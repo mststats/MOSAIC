@@ -31,8 +31,8 @@ There should be a folder with 4 types of input file:
 4. recombination map: "rates.chr" 3 rows of #sites, position, recombination rate. 
 
 #######  PLOTS   #################################################################################################
-In R, after loading the results of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
-> plot_all_mosaic(mosaic.result,pathout="MOSAIC_PLOTS/", EM)
+In R, after loading the results (including localanc_foo file) of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
+> plot_all_mosaic(pathout="MOSAIC_PLOTS/", EM)
 to output default plots to the folder "MOSAIC_PLOTS/"
 You can also use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
