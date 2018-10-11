@@ -193,8 +193,10 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
        Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs)
   if (return.res & target!="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
-		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
+		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
+		prop.don=prop.don,max.donors=max.donors))
   if (return.res & target=="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
-		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target))
+		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
+		prop.don=prop.don,max.donors=max.donors))
 }
