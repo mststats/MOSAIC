@@ -46,5 +46,8 @@ get_localanc=function(t.gfbs,t.G,t.L,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=N
 grid_to_pos=function(x,pos,glocs) { # arguments are thing-to-map, SNP positions, grid locations
   S=length(pos)
   g.map<-vapply(1:S, function(s) which.min((pos[s]-glocs)^2),0L) # create map from rates to grid
-  ans=x[,g.map]
+  if (length(dim(x))==2)
+    ans=x[,g.map]
+  if (length(dim(x))==3)
+    ans=x[,,g.map]
 }
