@@ -457,7 +457,7 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 }
 
 # function to plot most useful figures
-plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",GpcM=60,doFst=TRUE) {
+plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",pathin="HGDP/",GpcM=60,doFst=TRUE) {
   targetdetails=paste0(target, "_", L, "way_", NUMA, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		       "_",sum(NL),"_",GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
@@ -467,7 +467,10 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",GpcM=60,doFst=TRUE) {
   # note that it takes a while to calculate frequencies, etc
   if (doFst) {
     flocalanc=phase_localanc(localanc,final.flips) 
-    write_admixed_summary(simdatasource="MOSAIC_RESULTS/",t.localanc=flocalanc,chrnos=chrnos)
+    if (target=="simulated")
+      write_admixed_summary(targetdatasource="MOSAIC_RESULTS/",datasource=pathin,t.localanc=flocalanc,chrnos=chrnos)
+    if (target!="simulated")
+      write_admixed_summary(targetdatasource=pathin,datasource=pathin,t.localanc=flocalanc,chrnos=chrnos)
     write_panel_summaries(panels=rownames(Mu),chrnos=chrnos)
     all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
     pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)

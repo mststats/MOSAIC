@@ -38,10 +38,10 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 
 # similar function that uses estimated local ancestry along the admixed genome
 # after loading results from a MOSAIC run target, NL, etc are in global memory
-write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",simdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
+write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
 {
   cat("Looking at simulated data\n")
-  ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,simdatasource) 
+  ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,targetdatasource) 
   save(ancestral_freqs, file=paste0(pathout, target, "_", L, "way_", sum(NL), "_freqs.rdata"))
   return(NULL)
 }

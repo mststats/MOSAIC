@@ -75,4 +75,4 @@ filename=paste0(target,"_", A, "way_", firstind, "-", firstind+NUMA/2-1, "_", pa
 		   GpcM,"_",mosaic.result$prop.don,"_",mosaic.result$max.donors,".RData")
 load(paste0("MOSAIC_RESULTS/",filename))
 load(paste0("MOSAIC_RESULTS/localanc_",filename))
-plot_all_mosaic(pathout="MOSAIC_PLOTS/")
+plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource)
