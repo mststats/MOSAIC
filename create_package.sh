@@ -4,7 +4,7 @@ if [ "$#" -ne 1 ]; then
   exit 1
 fi
 rlib=$1
-rm -rf MOSAIC/ MOSAIC_1.0.tar.gz 
+rm -rf MOSAIC/ MOSAIC_*.tar.gz 
 Rscript create_package.R
 echo "importFrom(parallel,detectCores)" >> MOSAIC/NAMESPACE
 echo "importFrom(doParallel,registerDoParallel)" >> MOSAIC/NAMESPACE
@@ -26,5 +26,5 @@ cp -r README.txt mosaic.R example_data/ MOSAIC/
 rm MOSAIC/Read-and-delete-me
 
 R CMD build MOSAIC
-R CMD INSTALL -l $rlib MOSAIC_1.0.tar.gz
+R CMD INSTALL -l $rlib MOSAIC_1.1.tar.gz
 
