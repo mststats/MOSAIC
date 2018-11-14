@@ -1,5 +1,5 @@
 *) help file for run_mosaic only; re-use README.txt
-*) shapeit input; link to chromopainter format code
+*) shapeit inputs
+*) add citation when MOSAIC is called (once accepted).
 *) don't grab all memory by default on a cluster: see Busby email.
 *) pass indices of individuals to MOSAIC rather than -n and -i
-*) separate out admix_sim code so that MOSAIC can just simulate and fit is then a separate run. 
