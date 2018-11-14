@@ -28,7 +28,7 @@ S=nrow(snps)
 
 # format of .haps files is RSID RSID position ref alt haps
 Y=matrix(NaN,S,5+NN)
-Y[,1]=snps[,1];Y[,2]=snps[,1];Y[,3]=snps[,4];Y[,4]=snps[,5];Y[,5]=snps[,6]
+Y[,1]=chrno;Y[,2]=snps[,1];Y[,3]=snps[,4];Y[,4]=snps[,5];Y[,5]=snps[,6]
 for (i in 1:length(pops)) {
   tmp<-scan(paste0(pathin,pops[i],"genofile.",chrno),what="character",quiet=T)
   tmp<-strsplit(tmp,"")
