@@ -471,7 +471,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",pathin="HGDP/",GpcM=60,doFst=TR
       write_admixed_summary(targetdatasource="MOSAIC_RESULTS/",datasource=pathin,t.localanc=flocalanc,chrnos=chrnos)
     if (target!="simulated")
       write_admixed_summary(targetdatasource=pathin,datasource=pathin,t.localanc=flocalanc,chrnos=chrnos)
-    write_panel_summaries(panels=rownames(Mu),chrnos=chrnos)
+    write_panel_summaries(panels=rownames(Mu),datasource=pathin,,chrnos=chrnos)
     all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
     pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
     ord.Fst=plot_Fst(all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
