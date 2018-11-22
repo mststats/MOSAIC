@@ -1,11 +1,11 @@
 run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
 		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
-		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL) {
+		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   if (target=="simulated" & length(pops)<L)
     stop("Please provide ", L, " groups to simulate from\n")
-  tmp=setup_data_etc(NUMA,target,chrnos,pops,L,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE) 
+  tmp=setup_data_etc(NUMA,target,chrnos,pops,L,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne) 
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
   mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
   s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS

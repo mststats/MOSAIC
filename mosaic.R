@@ -27,6 +27,7 @@ m.args=add_argument(m.args, "--index", help="index of first individual in the ta
 m.args=add_argument(m.args, "--fastfiles", help="location of fast-files", default="/dev/shm/", type="character",short="-f")
 m.args=add_argument(m.args, "--panels", help="listed donor groups to use; if running a simulation first #ancestries are simulated from", default="NULL", type="character",short="-p")
 m.args=add_argument(m.args, "--mask", help="listed groups to remove", default="NULL", type="character",short="-mask")
+m.args=add_argument(m.args, "--Ne", help="Effective Population size", default=90000, type="integer",short="-Ne")
 # simulated target and panels=c(a,b,c,d,.,.) vector will admix the first A populations and fit using the rest when running MOSAIC on simulated data
 
 # note that flags are flipped from the default (which is FALSE) if included in the command
@@ -47,6 +48,7 @@ GpcM=argv$GpcM
 EM=!argv$noEM # run EM algorithm?
 PHASE=!argv$nophase # rephase using local ancestry model?
 gens=argv$gens
+Ne=argv$Ne
 ratios=argv$ratios
 dpg=argv$donors_per_group
 max.donors=argv$maxdonors
@@ -68,7 +70,7 @@ dotheta=T # update error / mutation parameters?
 return.res=TRUE #interactive() # whether to return results in a list; for use within an interactive R session
 
 # this function includes saving results to disk
-mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=GpcM,PHASE=PHASE,nl=dpg,max.donors=max.donors,prop.don=prop.don,
+mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=GpcM,PHASE=PHASE,Ne=Ne,nl=dpg,max.donors=max.donors,prop.don=prop.don,
 			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,gens=gens,ratios=ratios,
 			 firstind=firstind,MC=MC,verbose=verbose,mask=mask) 
 filename=paste0(target,"_", A, "way_", firstind, "-", firstind+NUMA/2-1, "_", paste(chrnos[c(1,length(chrnos))],collapse="-"),"_",sum(mosaic.result$NL),"_",
