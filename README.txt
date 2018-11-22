@@ -28,7 +28,7 @@ There should be a folder with 4 types of input file:
 1. phased haplotypes: "pop.genofile.chr" in the format #snps rows and #haps columns.
 2. pop names: "sample.names" format unimportant apart from first column should have all the population names.
 3. snp files: "snpfile.chr" #snps rowns and 6 columns of rsID, chr, distance, position, allele ?, allele ?. 
-4. recombination map: "rates.chr" 3 rows of #sites, position, recombination rate. 
+4. recombination map: "rates.chr" 3 rows of #sites, position, cumulative recombination rate. 
 
 #######  PLOTS   #################################################################################################
 In R, after loading the results (including localanc_foo file) of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
