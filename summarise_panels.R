@@ -29,7 +29,7 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
   }
   for (panel in panels)
   {
-    cat("Looking at ", panel, " \n")
+    cat("Saving SNP frequencies of", panel, " \n")
     pdata=summarise_panels(panel, datasource, chrnos) 
     save(pdata, file=paste0(pathout, panel, "_", "freqs.rdata"))
   }
@@ -40,7 +40,7 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 # after loading results from a MOSAIC run target, NL, etc are in global memory
 write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
 {
-  cat("Looking at simulated data\n")
+  cat("Saving frequencies of simulated data\n")
   ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,targetdatasource) 
   save(ancestral_freqs, file=paste0(pathout, target, "_", L, "way_", sum(NL), "_freqs.rdata"))
   return(NULL)

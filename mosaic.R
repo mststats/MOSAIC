@@ -28,6 +28,7 @@ m.args=add_argument(m.args, "--fastfiles", help="location of fast-files", defaul
 m.args=add_argument(m.args, "--panels", help="listed donor groups to use; if running a simulation first #ancestries are simulated from", default="NULL", type="character",short="-p")
 m.args=add_argument(m.args, "--mask", help="listed groups to remove", default="NULL", type="character",short="-mask")
 m.args=add_argument(m.args, "--Ne", help="Effective Population size", default=90000, type="integer",short="-Ne")
+m.args=add_argument(m.args, "--plots", help="create summary plots",flag=TRUE,short="-plots")
 # simulated target and panels=c(a,b,c,d,.,.) vector will admix the first A populations and fit using the rest when running MOSAIC on simulated data
 
 # note that flags are flipped from the default (which is FALSE) if included in the command
@@ -47,6 +48,7 @@ REPS=argv$rounds
 GpcM=argv$GpcM
 EM=!argv$noEM # run EM algorithm?
 PHASE=!argv$nophase # rephase using local ancestry model?
+doplots=!argv$plots # create summary plots?
 gens=argv$gens
 Ne=argv$Ne
 ratios=argv$ratios
@@ -77,4 +79,5 @@ filename=paste0(target,"_", A, "way_", firstind, "-", firstind+NUMA/2-1, "_", pa
 		   GpcM,"_",mosaic.result$prop.don,"_",mosaic.result$max.donors,".RData")
 load(paste0("MOSAIC_RESULTS/",filename))
 load(paste0("MOSAIC_RESULTS/localanc_",filename))
-plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource)
+if (doplots)
+  plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource)
