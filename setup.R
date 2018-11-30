@@ -42,6 +42,8 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,L,datasource,EM,gens,rat
   prethin=FALSE,
   resultsdir="MOSAIC_RESULTS/") # where to store results files
 {
+  if (!file.exists(resultsdir))
+    dir.create(file.path(getwd(), resultsdir))
   if (REPS==0) REPS=2*L+1 # maximum number of iterations through thin/phase/EM cycle
   REPS=ifelse(EM, REPS, 1) # no need for more than 1 if no EM parameter changes
   t.nchrno=length(t.chrnos)
