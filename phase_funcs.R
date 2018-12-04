@@ -14,17 +14,34 @@ flip.ll<-function(g, t.ch, t.L, ndonorsg, t.NUMP, NNL2, t.G, t.scalefactor, t.sc
   ans
 }
 
+all.flip.ll<-function(g, t.ch, t.L, ndonorsg, t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
+{
+  tmpvec=1:(ndonorsg*t.L)
+  ans=0
+  for (h in 1:2)
+  {
+    ans=ans+cumsum.log.fors[[h]][g-1]
+    ans=ans+rev.cumsum.log.backs[[h]][t.G[t.ch]-g+2]
+    tmp=sum(t.fors[[h]][(g-2)*NNL2+tmpvec]*t.backs[[3-h]][(g-2)*NNL2+tmpvec])
+    ans=ans+log(tmp)-log(t.NUMP)-log(t.L)
+  }
+  ans
+}
+
+
 r.create.proposal<-function(t.ch,t.G,t.L,t.NUMP,t.max.donors,t.fors,t.sumfors,t.backs,t.scalefactor,t.scalefactorb,t.ndonors,ind.c.ll) 
 {
   NNL2=t.max.donors*t.L
-  g.flip.ll<-function(g) flip.ll(g, t.ch, t.L, t.ndonors[g], t.NUMP, NNL2, t.G, t.scalefactor, t.scalefactorb, t.fors, t.backs)
+  cumsum.log.fors=list(-cumsum(log(t.scalefactor[[1]])),-cumsum(log(t.scalefactor[[2]])))
+  rev.cumsum.log.backs=list(-cumsum(log(rev(t.scalefactorb[[1]]))),-cumsum(log(rev(t.scalefactorb[[2]]))))
+  g.flip.ll<-function(g) all.flip.ll(g, t.ch, t.L, t.ndonors[g], t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
   ll=c(ind.c.ll,vapply(2:t.G[t.ch], g.flip.ll,0))
   ll=ll-ind.c.ll
   ll[is.nan(ll)|is.infinite(ll)]=-1 # can happen if no path through
   ll
 }
-#create.proposal<-cmpfun(r.create.proposal,list(optimize=3)) # 
-create.proposal<-r.create.proposal
+create.proposal<-cmpfun(r.create.proposal,list(optimize=3)) # 
+#create.proposal<-r.create.proposal
 # H1 gets: fors[1] to g, backs[2] from g and new fors from g, new backs to g
 # H2 gets: fors[2] to g, backs[1] from g and new fors from g, new backs to g
 rephaser<-function(t.ch, t.G, t.L, hap, g, t.NUMP, t.NUMA, t.kLL, t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.fors, t.sumfors, t.backs, t.scalefactor, t.scalefactorb, t.flips, t.initProb, 
