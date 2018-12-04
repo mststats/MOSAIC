@@ -67,7 +67,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
   ############ a few PI only updates first; very useful to do before first re-phasing
-  if (PI.total>0 & EM)
+  if (PI.total>0 & EM & doPI)
   {
     o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doPI=doPI;doPI=T;dorho=dotheta=doMu=F;
     if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
