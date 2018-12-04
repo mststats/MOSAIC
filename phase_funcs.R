@@ -297,7 +297,6 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
     {
       ch=as.integer((ch_ind-0.5)/t.NUMI)+1
       ind=(ch_ind-1)%%t.NUMI+1
-      cat(ch,ind,"\n")
       donates_chr_ind=getdonates_ind(t.donates[[ch]][[ind]])
       donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
