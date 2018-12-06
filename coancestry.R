@@ -169,8 +169,8 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
   relprobs[is.na(relprobs)]=1 # remove uninformative ones
   list(relprobs=relprobs,ancprobs=ancprobs,drange=drange)
 }
-#create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
-create_coancs<-r_create_coancs
+create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
+#create_coancs<-r_create_coancs
 
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRUE,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
 			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
@@ -372,7 +372,6 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   }
   return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3])) # redundancy here but useful to focus 
 }
-#acoancs=create_coancs(localanc,dr,"DIP");coplots=plot_coanccurves(acoancs,dr,2,2,targetname=paste0(target,": "))
 
 
 bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
@@ -392,7 +391,6 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
   {
     setTxtProgressBar(pb, r)
     #bootstrap chromosomes; generate NUMI pseudo-individuals using random chromosomes drawn from all inds w/ replacement; see GT S4.4 for details
-    #boot.haps=matrix(sample(1:NUMA,NUMA*nchrno,replace=T),NUMA)
     boot.inds=matrix(sample(1:NUMI,NUMI*nchrno,replace=T),NUMI)
     boot.haps=matrix(NaN,NUMA,nchrno);for (t.ch in 1:nchrno) for (ind in 1:NUMI) boot.haps[c(ind*2-1,ind*2),t.ch]=c(boot.inds[ind,t.ch]*2-1,boot.inds[ind,t.ch]*2)
     for (t.ch in 1:nchrno) 
