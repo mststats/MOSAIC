@@ -382,7 +382,7 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
   kgens=rep(NaN,NUMI)
   for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,dr,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
   G=sapply(localanc,function(x) dim(x)[3])
-  boot.gens=rep(NaN,nsamps)
+  boot.gens=list()
   boot.localanc=list()
   for (t.ch in 1:nchrno) 
     boot.localanc[[t.ch]]=array(NaN,c(L,NUMA,G[t.ch]))
@@ -397,7 +397,7 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
       for (l in 1:L) for (hap in 1:NUMA)
         boot.localanc[[t.ch]][l,hap,]=localanc[[t.ch]][l,boot.haps[hap,t.ch],]
     boot.coancs=create_coancs(boot.localanc,dr,"DIP",max.cM=max.cM)#*mean(unlist(lambda))/100);
-    boot.gens[r]=mean(plot_coanccurves(boot.coancs,dr,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+    boot.gens[[r]]=plot_coanccurves(boot.coancs,dr,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
   }  
   close(pb)
   return(list(kgens=kgens,boot.gens=boot.gens))
