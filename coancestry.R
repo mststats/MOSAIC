@@ -403,5 +403,25 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
   return(list(kgens=kgens,boot.gens=boot.gens))
 }
 
+# this function bootstraps over individuals rather than chromosomes in pseudo-individuals
+fast_bootstrap_coanc_curves=function(coancs,gap,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+{
+  NUMI=dim(acoancs$ancprobs)[2]
+  kgens=rep(NaN,NUMI)
+  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,dr,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  boot.gens=list()
+  pb<-txtProgressBar(min=0,max=nsamps,style=3)
+  for (r in 1:nsamps) ## nsamps bootstrap samples
+  {
+    setTxtProgressBar(pb, r)
+    boot.inds=sample(1:NUMI,replace=T)
+    tmp.coancs=coancs;tmp.coancs$ancprobs=coancs$ancprobs[,boot.inds];tmp.coancs$relprobs=coancs$relprobs[,,boot.inds,]
+    boot.gens[[r]]=plot_coanccurves(tmp.coancs,dr,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
+  }  
+  close(pb)
+  return(list(kgens=kgens,boot.gens=boot.gens))
+}
+
+
 
 
