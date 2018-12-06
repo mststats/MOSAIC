@@ -374,7 +374,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 }
 
 
-bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
 {
   NUMA=dim(localanc[[1]])[2]
   NUMI=NUMA/2
@@ -404,7 +404,7 @@ bootstrap_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.cM=1,max.cM=5
 }
 
 # this function bootstraps over individuals rather than chromosomes in pseudo-individuals
-fast_bootstrap_coanc_curves=function(coancs,gap,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+bootstrap_individuals_coanc_curves=function(coancs,gap,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
 {
   NUMI=dim(acoancs$ancprobs)[2]
   kgens=rep(NaN,NUMI)
