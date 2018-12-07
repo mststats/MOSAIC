@@ -4,3 +4,4 @@
 *) don't grab all memory by default on a cluster: see Busby email.
 *) pass indices of individuals to MOSAIC rather than -n and -i
 *) revert to Fst rather than 1-Fst (easier to interpret)
+*) SNP ancestry calling and plotting in README (using grid_to_pos)
