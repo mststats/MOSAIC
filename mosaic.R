@@ -60,6 +60,7 @@ if (pops=="NULL") pops=NULL
 if (mask=="NULL") mask=NULL
 if (ratios=="NULL") ratios=NULL
 if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated group names
+if (!is.null(mask)) mask=strsplit(mask," ")[[1]] # split the space separated group names
 if (!is.null(ratios)) {ratios=strsplit(ratios," ")[[1]];ratios=as.numeric(ratios)}
 if (is.null(pops) & target=="simulated") stop("Please provide at least ", A, " named populations to admix for this simulation using the -p flag", "\n")
 
