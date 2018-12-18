@@ -55,6 +55,7 @@ Note that additional groups will be used as the donor panels
 ##### OUTPUTS ####################################################################################################
 A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
 A folder called MOSAIC_PLOTS is required to hold the plots created by default by a MOSAIC run.
+A folder called FREQS is required to hold the frequencies used to compute Fst statistics if required.
 ##################################################################################################################
 
 The main work is multiple rounds of EM->phase->thin where:

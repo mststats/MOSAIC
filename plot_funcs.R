@@ -458,6 +458,8 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 
 # function to plot most useful figures
 plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",pathin="HGDP/",GpcM=60,doFst=TRUE) {
+  if (!file.exists(pathout))
+    dir.create(file.path(getwd(), pathout))
   targetdetails=paste0(target, "_", L, "way_", NUMA, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		       "_",sum(NL),"_",GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
