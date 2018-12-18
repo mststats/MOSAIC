@@ -22,6 +22,8 @@ summarise_panels=function(panelname, pathin, chrnos)
 # This function will perform these as a one off calculation for each panel and save to file for reuse.
 # if panels=NULL then it will run for all panels in sample.names
 write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22, panels=NULL) {
+  if (!file.exists(pathout))
+    dir.create(file.path(getwd(), pathout))
   if (is.null(panels)) 
   {
     panels<-read.table(paste(datasource,"sample.names",sep=""), header=F)
@@ -40,6 +42,8 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 # after loading results from a MOSAIC run target, NL, etc are in global memory
 write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
 {
+  if (!file.exists(pathout))
+    dir.create(file.path(getwd(), pathout))
   cat("Saving frequencies of simulated data\n")
   ancestral_freqs=maximal_alleles(target,chrnos,t.localanc,datasource,targetdatasource) 
   save(ancestral_freqs, file=paste0(pathout, target, "_", L, "way_", sum(NL), "_freqs.rdata"))
