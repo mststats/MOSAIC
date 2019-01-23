@@ -39,9 +39,9 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 }
 
 # similar function that uses estimated local ancestry along the admixed genome
-# after loading results from a MOSAIC run target, NL, etc are in global memory
-write_admixed_summary=function(pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
+write_admixed_summary=function(target,NL,pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",t.localanc,chrnos=1:22)
 {
+  L=dim(t.localanc[[1]])[1]
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
   cat("Saving frequencies of simulated data\n")

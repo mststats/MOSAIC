@@ -1,6 +1,6 @@
 run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
 		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
-		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, Ne=9e4) {
+		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, doFst=doFst, Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   if (target=="simulated" & length(pops)<L)
@@ -146,7 +146,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
   samp_chrnos=chrnos;
 
-  ######### fully Mosaic curves with Mosaic phasing ############
+  ######### MOSAIC curves with MOSAIC phasing ############
   gfbs=get_gfbs(NUMP, nchrno, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
 		label, ndonors, flips, HPC)
   if (verbose) cat("saving localanc results to file\n")
@@ -155,12 +155,6 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   localanc=tmp$localanc
   if (target=="simulated") 
     g.true_anc=tmp$g.true_anc
-
-
-  cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
-  if (target=="simulated") 
-    cat("Actual r-squared (genomewide):", dip_fr2(localanc,g.true_anc),"\n")
-
 
   save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
@@ -171,6 +165,18 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), gfbs)
 
   if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
+  all_Fst=NULL
+  if (doFst) {
+    if (verbose) cat("calculating Fst values\n")
+    flocalanc=phase_localanc(localanc,final.flips) 
+    if (target=="simulated")
+      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
+    if (target!="simulated")
+      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
+    write_panel_summaries(panels=rownames(Mu),datasource=datasource,,chrnos=chrnos)
+    all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
+  }
+
   ######## GlobeTrotter style curves original phasing ##########
   for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
   tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
@@ -190,7 +196,17 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
 		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-       Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs)
+       Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst)
+
+  cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
+  if (target=="simulated") 
+    cat("Actual r-squared (genomewide):", dip_fr2(localanc,g.true_anc),"\n")
+  cat("Fst between mixing groups:\n")
+  print(all_Fst$ancs)
+  cat("Rst between mixing groups:\n")
+  print(all_Fst$Rst)
+
+
   if (return.res & target!="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,

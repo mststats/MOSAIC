@@ -112,6 +112,17 @@ v_wc_fst=function(freqs1,counts1,freqs2,counts2)
 #wc_fst=cmpfun(r_wc_fst,list(optimize=3))
 wc_fst=cmpfun(v_wc_fst,list(optimize=3)) # gives the same as the above
 
+R_Fst=function(x) 
+{ # difference quotient of Fst i.e. (p-q)^2/(0.5*(p+q))
+  combn_aa=utils::combn(ncol(x),2)
+  laa=ncol(combn_aa)
+  d_fst=rep(NaN,laa)
+  for (aa in 1:laa) {a1=combn_aa[1,aa]
+  a2=combn_aa[2,aa]
+  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])))}
+  return(d_fst)
+}
+
 # function to calculate Fst between all pairs of latent ancestries and between each latent ancestry and each donor panel
 Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
   load(file=paste0(pathin, target, "_", L, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
@@ -131,7 +142,8 @@ Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
       tmp_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
   }
   rownames(tmp_fst)=panels
-  return(list("ancs"=anc_fst,"panels"=tmp_fst))
+  Rst=R_Fst(tmp_fst);names(Rst)=names(anc_fst)
+  return(list("ancs"=anc_fst, "Rst"=Rst, "panels"=tmp_fst))
 }
 
 Fst_panels=function(panel1,panel2, pathin="FREQS/") {
@@ -142,13 +154,3 @@ Fst_panels=function(panel1,panel2, pathin="FREQS/") {
   return(wc_fst(tmp1$freqs,tmp1$counts,tmp2$freqs,tmp2$counts))
 }
 
-R_Fst=function(x) 
-{ # quotient of Fst i.e. (p-q)^2/(0.5*(p+q))
-  laa=length(x$ancs)
-  d_fst=rep(NaN,laa)
-  combn_aa=utils::combn(ncol(x$panels),2)
-  for (aa in 1:laa) {a1=combn_aa[1,aa]
-  a2=combn_aa[2,aa]
-  d_fst[aa]=mean(((x$panels[,a1]-x$panels[,a2])^2)/(0.5*(x$panels[,a1]+x$panels[,a2])))}
-  return(d_fst)
-}
