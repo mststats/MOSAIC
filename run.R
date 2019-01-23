@@ -1,6 +1,6 @@
 run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
 		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
-		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, doFst=doFst, Ne=9e4) {
+		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, doFst=TRUE, Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   # sets default parameters, sets up some objects required later, reads in data, and initialises model.
   if (target=="simulated" & length(pops)<L)
