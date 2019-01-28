@@ -119,7 +119,7 @@ R_Fst=function(x)
   d_fst=rep(NaN,laa)
   for (aa in 1:laa) {a1=combn_aa[1,aa]
   a2=combn_aa[2,aa]
-  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])))}
+  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])))} # squared diff over average
   return(d_fst)
 }
 
@@ -134,16 +134,17 @@ Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
     anc_fst[l]=wc_fst(ancestral_freqs$freqs[[l1]],ancestral_freqs$counts[[l1]],ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]]) 
     names(anc_fst)[l]=paste0("anc",l1,"x","anc",l2)
   }
-  tmp_fst=matrix(NaN,length(panels),L)
+  panels_fst=matrix(NaN,length(panels),L)
   for (l1 in 1:length(panels))
   {
     load(paste0(pathin, panels[l1],"_freqs.rdata"))
     for (l2 in 1:L) 
-      tmp_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
+      panels_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
   }
-  rownames(tmp_fst)=panels
-  Rst=R_Fst(tmp_fst);names(Rst)=names(anc_fst)
-  return(list("ancs"=anc_fst, "Rst"=Rst, "panels"=tmp_fst))
+  rownames(panels_fst)=panels
+  colnames(panels_fst)=paste("anc",1:L)
+  Rst=R_Fst(panels_fst);names(Rst)=names(anc_fst)
+  return(list("ancs"=anc_fst, "Rst"=Rst, "panels"=panels_fst))
 }
 
 Fst_panels=function(panel1,panel2, pathin="FREQS/") {

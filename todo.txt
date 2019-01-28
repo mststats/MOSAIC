@@ -6,4 +6,3 @@
 *) revert to Fst rather than 1-Fst (easier to interpret)
 *) SNP ancestry calling and plotting in README (using grid_to_pos)
 *) remove or reduce gfbs memory footprint
-*) can gfbs be removed entirely?
