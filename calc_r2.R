@@ -2,9 +2,36 @@
 # and functions for calculating expected r^2 based on inferred local ancestry alone
 # haploid and diploid versions of all functions, for single chromosomes or genome wide
 # checked with:
-#tmp=list(); for (i in 1:1e2){tmp[[i]]=list();for (ch in 1:nchrno) 
-#{tmp[[i]][[ch]]=array(NaN,dim(localanc[[ch]]));for (h in 1:NUMA) {tmp2=rbinom(G[ch],size=1,prob=localanc[[ch]][1,h,]);tmp[[i]][[ch]][1,h,]=tmp2;tmp[[i]][[ch]][2,h,]=1-tmp2};}
-#};hist(sapply(tmp, function(x) dip_fr2(localanc,x)),20);abline(v=dip_expected_fr2(localanc),col=2)
+sim_from_local=function(t.localanc, reps=100) {
+  if (dim(t.localanc[[1]])[1]!=2) 
+    stop("only works for 2-way for now")
+  ans=list(); 
+  for (i in 1:reps){
+    ans[[i]]=list()
+    for (ch in 1:length(t.localanc)) {
+      ans[[i]][[ch]]=array(NaN,dim(t.localanc[[ch]]))
+      for (h in 1:dim(t.localanc[[1]])[2]) {
+        tmp2=rbinom(dim(t.localanc[[ch]])[3],size=1,prob=t.localanc[[ch]][1,h,])
+        ans[[i]][[ch]][1,h,]=tmp2
+        ans[[i]][[ch]][2,h,]=1-tmp2
+      }
+    }
+  }
+  return(ans)
+}
+sim_test_calcs=function(t.localanc, reps=100, XLIM=TRUE) {
+  tmp=sim_from_local(t.localanc,reps)
+  tmp2=sapply(tmp, function(x) dip_fr2(t.localanc,x))
+  #tmp2=sapply(tmp, function(x) cov(unlist(t.localanc),unlist(x))^2)#/(sapply(tmp,var())*var(unlist(lapply(t.localanc,dip_chr))))
+  v=dip_expected_fr2(t.localanc)
+  xlim=range(c(tmp2,v))
+  if (XLIM) 
+    hist(tmp2,20,xlim=xlim)
+  if (!XLIM) 
+    hist(tmp2,20)
+  abline(v=v,col=2,lwd=2)
+}
+
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
   tmpG=dim(x[[ch]])[3]
@@ -87,8 +114,9 @@ dip_expected_fr2<-function(x)
     px=p1+2*p2 # expected number of a alleles out of 2
     varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
-    ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
+    #avarx=(sum(vecx[1,]*(1-vecx[1,])+vecx[2,]*(1-vecx[2,]))+varp) # same as below!
+    avarx=sum(p1*(1-p1)+4*p0*p2)+varp
+    ar2=ifelse(varp<(sumG*1e-1), 1, varp/avarx) # skip over negligible ancestry contributions
     ans=ans+ar2/L
   }
   return(ans)
