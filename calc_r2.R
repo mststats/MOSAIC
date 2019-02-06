@@ -1,36 +1,6 @@
 # functions for calculating r^2 between inferred and true local ancestry (if known i.e. in a simulation setting)
 # and functions for calculating expected r^2 based on inferred local ancestry alone
 # haploid and diploid versions of all functions, for single chromosomes or genome wide
-# checked with:
-sim_from_local=function(t.localanc, reps=100) {
-  if (dim(t.localanc[[1]])[1]!=2) 
-    stop("only works for 2-way for now")
-  ans=list(); 
-  for (i in 1:reps){
-    ans[[i]]=list()
-    for (ch in 1:length(t.localanc)) {
-      ans[[i]][[ch]]=array(NaN,dim(t.localanc[[ch]]))
-      for (h in 1:dim(t.localanc[[1]])[2]) {
-        tmp2=rbinom(dim(t.localanc[[ch]])[3],size=1,prob=t.localanc[[ch]][1,h,])
-        ans[[i]][[ch]][1,h,]=tmp2
-        ans[[i]][[ch]][2,h,]=1-tmp2
-      }
-    }
-  }
-  return(ans)
-}
-sim_test_calcs=function(t.localanc, reps=100, XLIM=TRUE) {
-  tmp=sim_from_local(t.localanc,reps)
-  tmp2=sapply(tmp, function(x) dip_fr2(t.localanc,x))
-  #tmp2=sapply(tmp, function(x) cov(unlist(t.localanc),unlist(x))^2)#/(sapply(tmp,var())*var(unlist(lapply(t.localanc,dip_chr))))
-  v=dip_expected_fr2(t.localanc)
-  xlim=range(c(tmp2,v))
-  if (XLIM) 
-    hist(tmp2,20,xlim=xlim)
-  if (!XLIM) 
-    hist(tmp2,20)
-  abline(v=v,col=2,lwd=2)
-}
 
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
@@ -61,6 +31,7 @@ dip_expected_fr2_ind<-function(x,ind)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
+  nchrno=length(x)
   L=dim(x[[1]])[1]
   ans=0
   for (a in 1:L)
@@ -143,6 +114,7 @@ hap_expected_fr2_hap<-function(x,k)
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
   L=dim(x[[1]])[1]
+  nchrno=length(x)
   ans=0
   for (a in 1:L)
   {
@@ -164,8 +136,10 @@ hap_expected_fr2_hap<-function(x,k)
 }
 hap_expected_fr2<-function(x) 
 {
+  NUMA=dim(x[[1]])[2]
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)*NUMA
+  nchrno=length(x)
   L=dim(x[[1]])[1]
   ans=0
   for (a in 1:L)
@@ -181,7 +155,7 @@ hap_expected_fr2<-function(x)
     px=vecx
     varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx=(sum(px*(1-px))+varp)
+    avarx=sum(px*(1-px))+varp
     #avarx=sum(px)-sum(px)^2/sumG # SM Jan2018; essentially the same as above
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
@@ -219,3 +193,44 @@ hap_fr2<-function(x,y)
   return(cor(c(unlist(x)),c(unlist(y)))^2)
 }
 
+# checked with:
+sim_from_local=function(t.localanc, reps=100) {
+  if (dim(t.localanc[[1]])[1]!=2) 
+    stop("only works for 2-way for now")
+  ans=list(); 
+  for (i in 1:reps){
+    ans[[i]]=list()
+    for (ch in 1:length(t.localanc)) {
+      ans[[i]][[ch]]=array(NaN,dim(t.localanc[[ch]]))
+      for (h in 1:dim(t.localanc[[1]])[2]) {
+        tmp2=rbinom(dim(t.localanc[[ch]])[3],size=1,prob=t.localanc[[ch]][1,h,])
+        ans[[i]][[ch]][1,h,]=tmp2
+        ans[[i]][[ch]][2,h,]=1-tmp2
+      }
+    }
+  }
+  return(ans)
+}
+sim_test_calcs=function(t.localanc, reps=100, XLIM=TRUE) {
+  tmp=sim_from_local(t.localanc,reps)
+  tmp1=sapply(tmp, function(x) hap_fr2(t.localanc,x))
+  tmp2=sapply(tmp, function(x) dip_fr2(t.localanc,x))
+  #tmp2=sapply(tmp, function(x) cov(unlist(t.localanc),unlist(x))^2)#/(sapply(tmp,var())*var(unlist(lapply(t.localanc,dip_chr))))
+  v1=hap_expected_fr2(t.localanc)
+  v2=dip_expected_fr2(t.localanc)
+  xlim1=range(c(tmp1,v1))
+  xlim2=range(c(tmp2,v2))
+  par(mfrow=c(1,2))
+  if (XLIM) {
+    hist(tmp1,20,xlim=xlim1,main="haploid")
+    abline(v=v1,col=2,lwd=2)
+    hist(tmp2,20,xlim=xlim2,main="diploid")
+    abline(v=v2,col=2,lwd=2)
+  }
+  if (!XLIM){
+    hist(tmp1,20,main="haploid")
+    abline(v=v1,col=2,lwd=2)
+    hist(tmp2,20,main="diploid")
+    abline(v=v2,col=2,lwd=2)
+  }
+}
