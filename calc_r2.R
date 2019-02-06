@@ -155,8 +155,8 @@ hap_expected_fr2<-function(x)
     px=vecx
     varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx=sum(px*(1-px))+varp
-    #avarx=sum(px)-sum(px)^2/sumG # SM Jan2018; essentially the same as above
+    avarx=sum(px*(1-px))+varp # = sum(px*(1-px)) + sum(px^2)-sum(px)^2/sumG
+    #avarx=sum(px)-sum(px)^2/sumG-sum(px*(1-px))/sumG # SM Feb2019; essentially the same as above
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
