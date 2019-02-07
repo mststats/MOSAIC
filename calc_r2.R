@@ -79,14 +79,17 @@ dip_expected_fr2<-function(x)
       }
       OFFSET=OFFSET+vecG[ch]*NUMI
     }
-    p0<-(1-vecx[1,])*(1-vecx[2,]) # prob hom of not anc a
-    p1<-vecx[1,]*(1-vecx[2,])+(1-vecx[1,])*vecx[2,] # prob het anc a
-    p2<-vecx[1,]*vecx[2,] # prob hom of anc a
-    px=p1+2*p2 # expected number of a alleles out of 2
+    #p0<-(1-vecx[1,])*(1-vecx[2,]) # prob hom of not anc a
+    #p1<-vecx[1,]*(1-vecx[2,])+(1-vecx[1,])*vecx[2,] # prob het anc a
+    #p2<-vecx[1,]*vecx[2,] # prob hom of anc a
+    #px=p1+2*p2 # expected number of a alleles out of 2
+    px=vecx[1,]+vecx[2,]
     varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     #avarx=(sum(vecx[1,]*(1-vecx[1,])+vecx[2,]*(1-vecx[2,]))+varp) # same as below!
-    avarx=sum(p1*(1-p1)+4*p0*p2)+varp
+    #avarx=sum(p1*(1-p1)+4*p0*p2)+varp
+    #avarx=sum(px-px^2+2*vecx[1,]*vecx[2,])+varp # MST Feb2019
+    avarx=sum(px+2*vecx[1,]*vecx[2,])-sum(px)^2/sumG # MST Feb2019
     ar2=ifelse(varp<(sumG*1e-1), 1, varp/avarx) # skip over negligible ancestry contributions
     ans=ans+ar2/L
   }
@@ -155,8 +158,8 @@ hap_expected_fr2<-function(x)
     px=vecx
     varp=sum(px^2)-sum(px)^2/sumG
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
-    avarx=sum(px*(1-px))+varp # = sum(px*(1-px)) + sum(px^2)-sum(px)^2/sumG
-    #avarx=sum(px)-sum(px)^2/sumG-sum(px*(1-px))/sumG # SM Feb2019; essentially the same as above
+    avarx=sum(px*(1-px))+varp # = sum(px*(1-px)) + sum(px^2)-sum(px)^2/sumG = sum(px)-sum(px)^2/sumG
+    #avarx=sum(px)-sum(px)^2/sumG-sum(px*(1-px))/sumG # SM Feb2019; same as above but with extra 3rd term
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
     ans=ans+ar2/L
   }
