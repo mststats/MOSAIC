@@ -9,3 +9,4 @@
 *) chromosomes greater than 22. Can replicate with copying #22 to fake #23
 *) if position of first rate is less than first SNP get error
 *) Fst and Mu map plots
+*) remove o.Mu, o.alpha, etc from final save
