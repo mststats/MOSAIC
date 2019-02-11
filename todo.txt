@@ -6,3 +6,5 @@
 *) revert to Fst rather than 1-Fst (easier to interpret)
 *) SNP ancestry calling and plotting in README (using grid_to_pos)
 *) remove or reduce gfbs memory footprint
+*) chromosomes greater than 22. Can replicate with copying #22 to fake #23
+*) if position of first rate is less than first SNP get error
