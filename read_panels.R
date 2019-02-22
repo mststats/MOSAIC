@@ -58,7 +58,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
 	multipanels[[kLL+i]]<-matrix(sapply(tmp, as.double), N2, allS)
 	if ((t.NUMA*2)>N2) {
 	  warning("Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel",immediate.=T)
-	  t.NUMA=floor(N2/2)
+	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
 	  cat("Reducing the number of simulated individuals to", t.NUMA/2,"\n")
 	}
       }
