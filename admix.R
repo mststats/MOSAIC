@@ -113,7 +113,6 @@ create_sim=function(t.NUMA, t.L, t.o.lambda, mixers, t.panels, ratios=c(rdirichl
   # check that the supplied panels to mix are indeed members of panels 
   refs=t.panels[!(t.panels%in%mixers)]
   kLL=length(refs)
-  if (verbose) cat("Creating ", NUMI, " simulated ", t.L, "-way admixed target individuals with ", kLL, " panels\n", sep="")
-  if (verbose) cat("Admixing ", paste(mixers, collapse=" and "),  " genomes\n", sep="")
+  if (verbose) cat("Admixing ", NUMI,  " individuals from ", paste(mixers, collapse=" and "),  " genomes ", sim.lambda, " generations ago\n", sep="")
   return(list(mixers=mixers, panels=refs, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
 }
