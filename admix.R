@@ -89,9 +89,8 @@ create_sim=function(t.NUMA, t.L, t.o.lambda, mixers, t.panels, ratios=c(rdirichl
   
   for (ind in 1:NUMI)
   {
-    sim.alpha[[ind]]=c(rdirichlet(1, ratios*t.L*4)) # FLAG provide user control of this
-    #sim.alpha[[ind]]=c(0.2,0.8) # leads to difficulties
-    sim.lambda[[ind]]<-t.o.lambda
+    sim.alpha[[ind]]=c(rdirichlet(1, ratios*t.L*4)) # should provide user control of this
+    sim.lambda[[ind]]<-t.o.lambda # should allow varying lambdas aka generations since admixture
   }
   if (!is.null(fewer_ancs)) 
   {
@@ -113,6 +112,6 @@ create_sim=function(t.NUMA, t.L, t.o.lambda, mixers, t.panels, ratios=c(rdirichl
   # check that the supplied panels to mix are indeed members of panels 
   refs=t.panels[!(t.panels%in%mixers)]
   kLL=length(refs)
-  if (verbose) cat("Admixing ", NUMI,  " individuals from ", paste(mixers, collapse=" and "),  " genomes ", sim.lambda, " generations ago\n", sep="")
+  if (verbose) cat("Admixing ", NUMI,  " individuals from ", paste(mixers, collapse=" and "),  " genomes ", t.o.lambda, " generations ago\n", sep="")
   return(list(mixers=mixers, panels=refs, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
 }
