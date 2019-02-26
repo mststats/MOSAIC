@@ -189,9 +189,10 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   if (!is.null(max.cM))
   {
     max.cM=which(coancs$drange>(max.cM/gap/100))
-    coancs$drange=coancs$drange[-max.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
-    coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
-							dim(coancs$relprobs)[4]-length(max.cM)))
+    if (length(max.cM)>0) {
+      coancs$drange=coancs$drange[-max.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
+      coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
+    }
   }
   lpop<-dim(coancs$relprobs)[1]
   if (samedates& lpop>2)
