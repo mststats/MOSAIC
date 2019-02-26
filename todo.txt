@@ -10,3 +10,4 @@
 *) if position of first rate is less than first SNP get error
 *) Fst and Mu map plots
 *) remove o.Mu, o.alpha, etc from final save
+*) rates assumed linear between SNP loci; can do better (line 113 of read_panels.R)
