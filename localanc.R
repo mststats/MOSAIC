@@ -54,3 +54,4 @@ grid_to_pos=function(x,pos,glocs) { # arguments are thing-to-map, SNP positions,
 
 # calculate proportions from local ancestry information
 alpha_from_local=function(y) {ans=apply(sapply(y, function(x) apply(x,1,sum)),1,sum);return(ans/sum(ans))}
+alpha_from_local_ind=function(y,ind) {haps=c(ind*2-1,ind*2);ans=apply(sapply(y, function(x) apply(x[,haps,],1,sum)),1,sum);return(ans/sum(ans))}
