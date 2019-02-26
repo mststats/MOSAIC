@@ -192,7 +192,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
     if (length(max.cM)>0) {
       coancs$drange=coancs$drange[-max.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
       coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
-    }
+							dim(coancs$relprobs)[4]-length(max.cM)))
+    } else (warning(paste("cannot select this distance (you would need to recompute the coancestry curves); using max distance of", max(acoancs$drange)*100*dr)))
   }
   lpop<-dim(coancs$relprobs)[1]
   if (samedates& lpop>2)
