@@ -195,7 +195,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
-		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
        Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst)
 
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")

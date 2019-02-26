@@ -19,9 +19,9 @@ to see how to use MOSAIC. The only two arguments that must be provided are:
 MOSAIC may also be used in an interactive R session. First load the package
 > require(MOSAIC)
 then use 
-> run_mosaic(target,folder,chromosomes,A,n) 
-# where A is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
-the number of haplotypes in the target file results in running MOSAIC on all of them. A defaults to 2 and n to 1000.
+> run_mosaic(target,folder,chromosomes,a,n) 
+# where "a" is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
+the number of haplotypes in the target file results in running MOSAIC on all of them. a defaults to 2 and n to 1000.
 
 #######  INPUTS   ################################################################################################
 There should be a folder with 4 types of input file:
@@ -32,13 +32,20 @@ There should be a folder with 4 types of input file:
 
 #######  PLOTS   #################################################################################################
 In R, after loading the results (including localanc_foo file) of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
-> plot_all_mosaic(pathout="MOSAIC_PLOTS/", EM)
+> plot_all_mosaic(pathout="MOSAIC_PLOTS/", EM) # this is run automatically by default
 to output default plots to the folder "MOSAIC_PLOTS/"
 You can also use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
 (3) > plot_localanc(chrnos,g.loc,localanc) # cycles through all local ancestry plots (one plot per target diploid chromosome)
 (4) > plot_loglike(extract_log(logfile)) # plots the model fit across iterations of thin/phase/EM (if EM is on)
+
+#######  converting local ancestry to SNP positions ##############################################################
+MOSAIC outputs local ancestry estimates along the genome to a file called localanc_$target_$a-way_$indfirst-$indlast_$chr1-$chrlast_etc.RData 
+in the folder MOSAIC_RESULTS/ (by default). Once you load this file and the file of the same name but without the localanc_ prefix in R you
+can convert to local ancestry at your SNP positions on the first chromosome you analysed using:
+> ans=grid_to_pos(localanc[[1]],loci,g.loc[[1]]) # where loci are the SNP positions you'd like to map back to.
+
 
 #######  EXAMPLES  ###############################################################################################
 The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
@@ -68,7 +75,7 @@ There are 4 sets of parameters inferred via EM:
 	1. PI (prob. of switching between latent ancestries, including switch to same anc; AxA)
 	2. rho (prob. of switching haps within each ancestry)
 	3. Mu (copying matrix; Mu[i,j] is  prob. of donor from group i given ancestry j; KxA where K is #donorpops) 
-	4. theta (error / mutation; vector length A; prob. of a difference b/w copied and copying haps at a locus)
+	4. theta (error / mutation; vector length a; prob. of a difference b/w copied and copying haps at a locus)
 
 Note that PI and rho will depend on grid granularity (GpcM); finer grid => lower prob. of switching between gridpoints.
 ##################################################################################################################
