@@ -3,7 +3,6 @@
 *) add citation when MOSAIC is called (once accepted).
 *) don't grab all memory by default on a cluster: see Busby email.
 *) pass indices of individuals to MOSAIC rather than -n and -i
-*) SNP ancestry calling and plotting in README (using grid_to_pos)
 *) remove or reduce gfbs memory footprint
 *) chromosomes greater than 22. Can replicate with copying #22 to fake #23
 *) rates:
