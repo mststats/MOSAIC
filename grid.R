@@ -4,9 +4,8 @@ create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.u
 		     verbose=TRUE){
   if (verbose) cat("mapping chr", t.chrno, "to a grid...\n")
   # need to evenly spread total gridpoints across chromosomes s.t. each gap is the same #morgans
-  # create a map of observed loci to gridded loci; grid is even on t.rates not distances
+  # create a map of observed loci to gridded loci; grid is even on rates not physical distances
   if (verbose) cat("Finding new positions on chr", t.chrno, "...\n")
-  # the above is lazy. Should use all_rates rather than thinned to SNPs rates. 
   if (verbose) cat("Finding number at each location on chr", t.chrno, "...\n")
   #g.loc_chr gives physical locus of each gridpoint; average if more than 1 or more obs; else average of nearest two obs
   g.loc_chr<-rep(0L,t.G_chr); for (s in 1:t.S_chr) g.loc_chr[t.g.map[s]]<-g.loc_chr[t.g.map[s]]+t.locs[s]/sum(t.g.map==t.g.map[s]) 

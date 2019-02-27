@@ -26,7 +26,7 @@ r_calc_freqs=function(s,t.L,t.populations,t.y,t.g.map)
 wc_ests=cmpfun(r_wc_ests,list(optimize=3))
 calc_freqs=cmpfun(r_calc_freqs,list(optimize=3))
 which.max.thresh=function(x,thresh) {ans=which.max(x); if (x[ans]<thresh) ans=NaN; ans}
-r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
+r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,g.map,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
 {
   t.L=dim(t.localanc[[1]])[1]
   G=sapply(t.localanc,function(x) dim(x)[3])
@@ -41,15 +41,6 @@ r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8
     tmp<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
     tmp<-strsplit(tmp,"")
     y=matrix(sapply(tmp, as.double), ncol=S)[1:NUMA,]
-    all_rates<-matrix(scan(paste0(pathin1,"rates.",chrnos[ch]),skip=1,quiet=T),ncol=2)
-    locs<-as.integer(snps[,4])
-    tmp=match(locs, all_rates[,1])
-    rates=all_rates[tmp,2] # use ones with hap data; some may be nmissing if in snps file but not in rates file
-    # rates are flat in sections so use rate to the left if missing
-    for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
-    rates<-rates/100 # /100 to move to morgans from centimorgans 
-    g.rates<-seq(rates[1],rates[S],l=G[ch]) # even grid across recombination rates
-    g.map<-sapply(1:S, function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
     populations=matrix(NaN,NUMA,G[ch])
     k=0
     for (ind in 1:(NUMA/2))

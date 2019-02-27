@@ -114,8 +114,8 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,L,datasource,EM,gens,rat
   if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", L, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
   if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs
-  ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMA=tmp$NUMA;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL;ans$G=tmp$G;ans$NN=tmp$NN;
-  ans$maxmatchsize=tmp$maxmatchsize;ans$panels=tmp$panels
+  ans$NUMP=tmp$NUMP;LL=tmp$LL;ans$NUMA=tmp$NUMA;ans$NUMI=tmp$NUMI;ans$label=tmp$label;ans$KNOWN=tmp$KNOWN;ans$kLL=tmp$kLL;ans$NL=tmp$NL
+  ans$G=tmp$G;ans$NN=tmp$NN;ans$g.map=tmp$g.map;ans$maxmatchsize=tmp$maxmatchsize;ans$panels=tmp$panels
   if (t.target=="simulated")
     ans$g.true_anc=tmp$g.true_anc
   if (max.donors==ans$NUMP & prop.don<1)
