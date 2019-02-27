@@ -170,9 +170,9 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     if (verbose) cat("calculating Fst values\n")
     flocalanc=phase_localanc(localanc,final.flips) 
     if (target=="simulated")
-      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
+      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
     if (target!="simulated")
-      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
+      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
     write_panel_summaries(panels=rownames(Mu),datasource=datasource,,chrnos=chrnos)
     all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
   }
