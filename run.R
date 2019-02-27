@@ -12,7 +12,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   eps.lower=tmp$eps.lower;min.bg=tmp$min.bg;max.bg=tmp$max.bg;samp_chrnos=tmp$samp_chrnos;dr=tmp$dr
   FLAT=tmp$FLAT;maxmatch=tmp$maxmatch;maxmiss=tmp$maxmiss;umatch=tmp$umatch;d.w=tmp$d.w
   t.w=tmp$t.w;g.loc=tmp$g.loc;gobs=tmp$gobs;NUMP=tmp$NUMP;NUMI=tmp$NUMI;NUMA=tmp$NUMA
-  label=tmp$label;KNOWN=tmp$KNOWN;kLL=tmp$kLL;NL=tmp$NL;G=tmp$G;g.map=tmp$g.map
+  label=tmp$label;KNOWN=tmp$KNOWN;kLL=tmp$kLL;NL=tmp$NL;G=tmp$G;
   NN=tmp$NN;maxmatchsize=tmp$maxmatchsize;panels=tmp$panels;min.donors=tmp$min.donors;
   theta=tmp$theta;rho=tmp$rho;lambda=tmp$lambda;alpha=tmp$alpha;PI=tmp$PI;Mu=tmp$MU
   transitions=tmp$transitions;total=tmp$total
@@ -170,9 +170,9 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     if (verbose) cat("calculating Fst values\n")
     flocalanc=phase_localanc(localanc,final.flips) 
     if (target=="simulated")
-      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,t.localanc=flocalanc,g.map=g.map,chrnos=chrnos)
+      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
     if (target!="simulated")
-      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,t.localanc=flocalanc,g.map=g.map,chrnos=chrnos)
+      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,t.localanc=flocalanc,chrnos=chrnos)
     write_panel_summaries(panels=rownames(Mu),datasource=datasource,,chrnos=chrnos)
     all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
   }

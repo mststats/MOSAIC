@@ -26,7 +26,7 @@ r_calc_freqs=function(s,t.L,t.populations,t.y,t.g.map)
 wc_ests=cmpfun(r_wc_ests,list(optimize=3))
 calc_freqs=cmpfun(r_calc_freqs,list(optimize=3))
 which.max.thresh=function(x,thresh) {ans=which.max(x); if (x[ans]<thresh) ans=NaN; ans}
-r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,g.map,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
+r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
 {
   t.L=dim(t.localanc[[1]])[1]
   G=sapply(t.localanc,function(x) dim(x)[3])
@@ -49,6 +49,21 @@ r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,g.map,thre
 	k=(ind-1)*2+h
 	populations[k,]=apply(t.localanc[[ch]][,k,],2,which.max.thresh,thresh)
       }
+    all_rates<-matrix(scan(paste0(pathin1,"rates.",chrnos[ch]),skip=1,quiet=T),ncol=2)
+    locs<-as.integer(snps[,4])
+    if (all_rates[1,1]>locs[1]) {
+      all_rates=rbind(c(locs[1],0),all_rates)
+      tmp=paste("You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left")
+      warning(tmp,immediate.=T)
+    }
+    tmp=match(locs, all_rates[,1])
+    rates=all_rates[tmp,2] # use ones with hap data; some may be nmissing if in snps file but not in rates file
+    # rates are flat in sections so use rate to the left if missing
+    for (l in which(is.na(tmp))) rates[l]=all_rates[which.max(all_rates[all_rates[,1]<locs[l],1]-locs[l]),2]
+    rates<-rates/100 # /100 to move to morgans from centimorgans 
+    g.rates<-seq(rates[1],rates[S],l=G[ch]) # even grid across recombination rates
+    g.map<-sapply(1:S, function(s) which.min((rates[s]-g.rates)^2)) # create map from rates to grid
+    populations=matrix(NaN,NUMA,G[ch])
     tmp=lapply(1:S,calc_freqs,t.L,populations,y,g.map)
     freqs_mat=matrix(sapply(tmp,function(x) x[[1]]),t.L) 
     for (l in 1:t.L) allp[[l]][[ch]]=freqs_mat[l,] # allele freqs for ancs (rows) along chromosome (cols)
