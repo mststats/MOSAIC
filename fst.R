@@ -53,7 +53,7 @@ r_maximal_alleles=function(t.target,chrnos,t.localanc,pathin1,pathin2,thresh=0.8
     locs<-as.integer(snps[,4])
     if (all_rates[1,1]>locs[1]) {
       all_rates=rbind(c(locs[1],0),all_rates)
-      tmp=paste("You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left")
+      tmp=paste("You have used a rates file that starts above the lowest SNP locus on chromosome ", chrnos[ch], "; adding zeros to the left")
       warning(tmp,immediate.=T)
     }
     tmp=match(locs, all_rates[,1])
