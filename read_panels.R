@@ -106,6 +106,11 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
 
     all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=T),ncol=2)
     locs<-as.integer(snps[,4])
+    if (all_rates[1,1]>locs[1]) {
+      all_rates=rbind(c(locs[1],0),all_rates)
+      tmp=paste("You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left")
+      warning(tmp,immediate.=T)
+    }
     tmp=match(locs, all_rates[,1])
     rates=all_rates[tmp,2] # use ones with hap data; some may be missing if in snps file but not in rates file
     # rates are flat in sections so use rate to the left if missing
