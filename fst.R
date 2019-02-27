@@ -11,12 +11,12 @@ r_wc_ests=function(p,n) # best comparison b/w Mu and 1/Fst values
   return(c(numer,denom))
 }
 
-r_calc_freqs=function(s,t.L,t.populations,t.y,t.g.map) 
+r_calc_freqs=function(s,t.L,t.populations,t.y) 
 {
   n=p=rep(0,t.L)
   for (l in 1:t.L) 
   {
-    tmppops=which(t.populations[,t.g.map[s]]==l)
+    tmppops=which(t.populations[,s]==l)
     n[l]=sum(!is.nan(tmppops))
     p[l]=mean(t.y[tmppops,s],na.rm=TRUE)
   }
@@ -41,16 +41,16 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
     tmp<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
     tmp<-strsplit(tmp,"")
     y=matrix(sapply(tmp, as.double), ncol=S)[1:NUMA,]
-    populations=matrix(NaN,NUMA,G[ch])
+    populations=matrix(NaN,NUMA,S)
+    tmp=grid_to_pos(t.localanc[[ch]],snps[,4],glocs[[ch]])
     k=0
     for (ind in 1:(NUMA/2))
       for (h in 1:2)
       {
 	k=(ind-1)*2+h
-	populations[k,]=apply(t.localanc[[ch]][,k,],2,which.max.thresh,thresh)
+	populations[k,]=apply(tmp[,k,],2,which.max.thresh,thresh)
       }
-    g.map<-vapply(1:S, function(s) which.min((snps[s,4]-glocs[[ch]])^2),0L) # create map from loci to grid
-    tmp=lapply(1:S,calc_freqs,t.L,populations,y,g.map)
+    tmp=lapply(1:S,calc_freqs,t.L,populations,y)
     freqs_mat=matrix(sapply(tmp,function(x) x[[1]]),t.L) 
     for (l in 1:t.L) allp[[l]][[ch]]=freqs_mat[l,] # allele freqs for ancs (rows) along chromosome (cols)
     counts_mat=matrix(sapply(tmp,function(x) x[[2]]),t.L) 
