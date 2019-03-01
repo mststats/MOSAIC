@@ -125,7 +125,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
     rm(all_rates)
     # G will be correct / consistent w/in 0.5 and is large so almost exactly the same dr across chromosomes
     G[ch]<-as.integer((rates[S[ch]]-rates[1])/dr+1)
-    g.rates<-seq(rates[1],rates[S[ch]],l=G[ch])
+    g.rates<-seq(rates[1],rates[S[ch]],l=G[ch]) # even grid from lowest to highest SNP loci rates
     g.map<-vapply(1:S[ch], function(s) which.min((rates[s]-g.rates)^2),0L) # create map from rates to grid
     if (t.target!="simulated")
     {
