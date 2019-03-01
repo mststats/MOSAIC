@@ -4,5 +4,4 @@
 *) don't grab all memory by default on a cluster: see Busby email.
 *) pass indices of individuals to MOSAIC rather than -n and -i
 *) remove or reduce gfbs memory footprint
-*) chromosomes greater than 22. Can replicate with copying #22 to fake #23
 *) Fst and Mu map plots?
