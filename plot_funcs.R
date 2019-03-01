@@ -488,3 +488,61 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",pathin="HGDP/",GpcM=60,all_Fst=
   dev.off()
 }
 
+# create a map showing closest populations to mixing groups based on MOSAIC output
+# sources should be a matrix NxA where N is #sources and A is #ancestries
+# geolocs is matrix with each row a name/Longitude/Latitude trio. Must contain same population names as sources matrix.
+# cexa scaling factor for pie chart sizes
+# byFst specifies if we're using Fst or copying matrix values to plot
+plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) { 
+  sourcelocs=matrix(NaN,nrow(sources),2);
+  for (i in 1:nrow(sources)) {
+    k=which(geolocs[,1]==(rownames(sources)[i]))
+    sourcelocs[i,1]=as.numeric(geolocs[k,2])
+    sourcelocs[i,2]=as.numeric(geolocs[k,3])
+  }
+  if (byFst) {
+    sources[sources<0]=0 # negative estimates are really zeros
+    sources=1/sources # get 1-Fst
+    sources=t(t(sources)/apply(sources,2,max)) # rescale as a ratio to closest population to each ancestry
+  }
+  sources=cexa*sources*ncol(sources)/sum(sources) # rescale to sum to A
+  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
+  drawpie=function(center,radius,probs,n=50,colours=colvec[1:length(probs)],bord=FALSE,...)
+  {
+    x <- c(0,cumsum(probs)/sum(probs))
+    dx <- diff(x)
+    np <- length(probs)
+    for (i in 1:np)
+    {
+      t2p <- 2 * pi * seq(x[i], x[i + 1], length = n)
+      xc <- center[1] + c(cos(t2p), 0) * radius
+      yc <- center[2] + c(sin(t2p), 0) * radius
+      polygon(xc, yc, border = bord, col = colours[i],...)
+    }
+  }  
+
+  require(maps)
+  ii=which(geolocs[,1]==target)
+  par(bg="lightblue",mar=c(0,0,0,0))
+  plot(sourcelocs,t='n',xlab="",ylab="",xaxt='n',yaxt='n',xlim=c(-125,155),ylim=c(-46,63))
+  map(col="lightgray",add=T,fill=T,border="darkgray")
+  showsource=rep(FALSE,nrow(sources))
+  tmax=0 # will be as 1.5 times big as biggest source pie chart
+  for (i in 1:nrow(sources)) 
+    if (any(tapply(1:L,1:L,function(l) (rank(-sources[,l])[i])<=5))) {  # take top 5 in each side
+      tmax=max(tmax,sum(sources[i,]))
+      drawpie(sourcelocs[i,],sum(sources[i,])*10,sources[i,],col=colvec[1:L])
+      showsource[i]=TRUE
+    }
+  # add in target pie chart with border
+  rad=1.5*tmax*10
+  drawpie(as.numeric(geolocs[ii,2:3]),rad,Reduce("+",alpha)/NUMA*2,col=colvec[1:L],bord=TRUE,lwd=2)
+  for (i in 1:nrow(sources)) {
+    if (showsource[i]) {
+      xy=c(geolocs[ii,2]-sourcelocs[i,1],geolocs[ii,3]-sourcelocs[i,2])
+      theta=atan2(xy[2],xy[1]) # tan(theta)=y/x
+      endp=c(geolocs[ii,2]-rad*cos(theta),geolocs[ii,3]-rad*sin(theta))
+      arrows(sourcelocs[i,1],sourcelocs[i,2],endp[1],endp[2],lwd=2,length=0.1)
+    }
+  }
+}
