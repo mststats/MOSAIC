@@ -74,7 +74,7 @@ List cpp_unique_haps(IntegerVector Y, int k, int S, int G, IntegerVector gmap, i
       }
       if (nobs>0)
       {
-	for (l=0;l<size[g];l++)
+	for (l=0;l<size[g];l++) // look at all other unique haps already stored at this gridpoint
 	{
 	  gdu=0;
 	  for (s=0;s<nobs;s++)
@@ -123,7 +123,7 @@ List cpp_unique_haps(IntegerVector Y, int k, int S, int G, IntegerVector gmap, i
   List ret;
   ret["w"] = w;
   ret["u"] = u;
-  ret["du"] = du;
+  ret["du"] = du; // have to return this for checking against when adding in subsequent individuals
   ret["size"] = size;
   return wrap(ret);
 }
