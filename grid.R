@@ -75,20 +75,16 @@ create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.u
 # given unique donor and unique target haplotype lists (from compressed_grid.cpp) calculate the number of matches between them along the genome
 r_create_umatch=function(ch.d.w,ch.t.w,g.map,t.G)
 {
-  ans=list()
-  for (g in 1:t.G)
-  {
+  create_umatch_g=function(g,ch.dw,ch.tw,gmap) {
     gm=which(g.map==g)
     if (length(gm)>0)
     {
       tmp=matrix(0,length(ch.d.w$u[[g]]), length(ch.t.w$u[[g]]))
       for (i in 1:nrow(tmp)) for (j in 1:ncol(tmp)) tmp[i,j]=sum(ch.d.w$u[[g]][[i]]==ch.t.w$u[[g]][[j]],na.rm=T) # note the na.rm=T for missing data compatibility
-      ans[[g]]=tmp
-    }
-    if (length(gm)==0)
-      ans[[g]]=matrix(0)
+      return(tmp)
+    } else return (matrix(0))
   }
-  ans
+  ans=sapply(1:t.G, function(g) create_umatch_g(g,ch.d.w,ch.t.w,g.map))
 }
 create_umatch=cmpfun(r_create_umatch,list(optimize=3))
 
