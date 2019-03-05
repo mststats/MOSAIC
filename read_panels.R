@@ -172,7 +172,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
     rm(snps,rates) # leave in if planning to re-grid
   }
   ans=list(maxmatch=maxmatch, maxmiss=maxmiss,g.loc=g.loc,gobs=gobs,d.w=d.w,t.w=t.w,umatch=umatch,NUMP=NUMP,LL=LL,NUMI=NUMI,NUMA=t.NUMA,
-	   label=label,KNOWN=KNOWN,NN=NN,kLL=kLL,NL=NL,G=G,maxmatchsize=maxmatchsize,panels=panels,g.map=g.map)
+	   label=label,KNOWN=KNOWN,NN=NN,kLL=kLL,NL=NL,G=G,maxmatchsize=maxmatchsize,panels=panels)
   if (t.target=="simulated") 
     ans$g.true_anc=g.true_anc
     return(ans)
