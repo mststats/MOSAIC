@@ -3,6 +3,6 @@
 *) read in one SNP at a time for all individuals to reduce memory usage and speed up gridding
 *) add citation when MOSAIC is called (once accepted).
 *) don't grab all memory by default on a cluster: see Busby email.
+	*) remove or reduce gfbs memory footprint
 *) pass indices of individuals to MOSAIC rather than -n and -i
-*) remove or reduce gfbs memory footprint
 *) Fst and Mu map plots?
