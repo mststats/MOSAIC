@@ -1,3 +1,4 @@
+*) parallelise compressed_grid.cpp?
 *) help file for run_mosaic only; re-use README.txt
 *) shapeit inputs OR a conversion tool packaged with MOSAIC
 *) read in one SNP at a time for all individuals to reduce memory usage and speed up gridding
