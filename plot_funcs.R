@@ -153,7 +153,9 @@ plot_panel_dist=function(donors,ch,a)
   d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
-plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, shiftl=cexa*2, shiftt=cexa*2, 
+
+plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=TRUE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, 
+		      shiftl=ifelse(showgradient,0,max(sapply(rownames(t.Mu),nchar))/2*cexa), shiftt=ifelse(!showgradient,cexa,cexa*2),
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
@@ -168,7 +170,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
   if (MODE=="joint" | MODE=="jointscaled") 
     t.Mu=t(t(t.Mu)*t.alpha) # plot copying matrix times alpha i.e. P(panel,anc)=P(panel|anc)P(anc) 
   L=ncol(t.Mu)
-  par(mar=c(3,4+shiftl,3+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
+  par(mar=c(3,1+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
   t.Mu[t.Mu<tol]<-tol
   if (ord)
   {
@@ -189,12 +191,12 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
   {
     barplot(t(t.Mu),space=FALSE,col=colvec,horiz=TRUE,las=TRUE,cex.axis=cexa,cex.names=cexa)
     for (i in 1:L)
-      mtext(side=3, at=(i)*0.2*max(rowSums(t.Mu)), round(t.alpha[i],3), cex=cexa, col=colvec[i])
+      text(x=(i)*0.2*max(rowSums(t.Mu)), y=0.5+1.2*(nrow(Mu)+1), round(t.alpha[i],3), cex=cexa, col=colvec[i])
   }
   if (!showgradient & beside)
   {
     if (ord) par(mfrow=c(1,L))
-    par(mar=c(3,1.5*shiftl,1,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
+    par(mar=c(3,1+shiftl,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
     if (!ord) 
     {
       nf <- layout(matrix(c(1:(L+1)),ncol=L+1), widths=c(1,rep(2,L)), TRUE);#layout.show(nf)
@@ -217,11 +219,11 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
     xmax=max(unlist(ordMu))
     for (a in 1:L) 
     {
-      if (ord) y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),ylim=c(0,length(ordMu[[a]])+shiftt/2),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
+      tmpMu=c(ordMu[[a]],NaN);names(tmpMu)[length(ordMu[[a]])+1]=round(t.alpha[a],3)
+      if (ord) y=barplot(tmpMu,horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),ylim=c(0,1+length(tmpMu)),cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa*2)
       if (!ord)
-	y=barplot(ordMu[[a]],horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,length(ordMu[[a]])+shiftt/2),
-		  cex.main=cexa*2,names.arg=rep("",length(ordMu[[a]])))
-      text(xmax/4,(length(ordMu[[a]])+shiftt/2),round(t.alpha[a],3),col=colvec[a],cex=cexa)
+	y=barplot(tmpMu,horiz=TRUE,las=1,col=colvec[a],xlim=c(0,xmax),cex.names=cexa,cex.axis=cexa,main="",ylim=c(0,1+length(tmpMu)),
+		  cex.main=cexa*2,names.arg=rep("",length(tmpMu)))
     }
   }
   if (showgradient) # overrides beside
@@ -238,6 +240,8 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
       }
     text(x=0,pos=2,y=(1:nrow(t.Mu)),rownames(t.Mu),cex=0.75*cexa)
   }
+  if (showgradient) 
+    return(NULL)
   if (ord) 
     if (!beside)
       return(t.Mu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
