@@ -83,4 +83,4 @@ filename=paste0(target,"_", A, "way_", firstind, "-", firstind+mosaic.result$NUM
 load(paste0("MOSAIC_RESULTS/",filename))
 load(paste0("MOSAIC_RESULTS/localanc_",filename))
 if (doplots)
-  plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource, all_Fst=all_Fst)
+  plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource, mosaic.result$all_Fst=mosaic.result$all_Fst)

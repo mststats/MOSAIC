@@ -210,9 +210,9 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   if (return.res & target!="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
-		prop.don=prop.don,max.donors=max.donors))
+		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
   if (return.res & target=="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
-		prop.don=prop.don,max.donors=max.donors))
+		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
 }
