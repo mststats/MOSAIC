@@ -221,7 +221,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
     if (is.null(k))
     { 
       ###only individuals with some of ancestry pair i,j
-      #print(coancs$ancprobs) # L X (NUMA or NUMI) marginal probs of being each anc for each target
+      #print(coancs$ancprobs) # A X (NUMA or NUMI) marginal probs of being each anc for each target
       zzi=coancs$ancprobs[i,]
       zzj=coancs$ancprobs[j,]
       zzi=zzi^2;zzj=zzj^2
@@ -387,7 +387,7 @@ bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.c
   boot.gens=list()
   boot.localanc=list()
   for (t.ch in 1:nchrno) 
-    boot.localanc[[t.ch]]=array(NaN,c(L,NUMA,G[t.ch]))
+    boot.localanc[[t.ch]]=array(NaN,c(A,NUMA,G[t.ch]))
   pb<-txtProgressBar(min=0,max=nsamps,style=3)
   for (r in 1:nsamps) ## nsamps bootstrap samples
   {
@@ -396,7 +396,7 @@ bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,nsamps=100,min.c
     boot.inds=matrix(sample(1:NUMI,NUMI*nchrno,replace=T),NUMI)
     boot.haps=matrix(NaN,NUMA,nchrno);for (t.ch in 1:nchrno) for (ind in 1:NUMI) boot.haps[c(ind*2-1,ind*2),t.ch]=c(boot.inds[ind,t.ch]*2-1,boot.inds[ind,t.ch]*2)
     for (t.ch in 1:nchrno) 
-      for (l in 1:L) for (hap in 1:NUMA)
+      for (l in 1:A) for (hap in 1:NUMA)
         boot.localanc[[t.ch]][l,hap,]=localanc[[t.ch]][l,boot.haps[hap,t.ch],]
     boot.coancs=create_coancs(boot.localanc,dr,"DIP",max.cM=max.cM)#*mean(unlist(lambda))/100);
     boot.gens[[r]]=plot_coanccurves(boot.coancs,dr,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix

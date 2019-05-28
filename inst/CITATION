@@ -1,0 +1,21 @@
+citHeader("To cite 'MOSAIC' in publications use:")
+     
+     citEntry(entry="Article",
+              title = "Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups",
+              author = personList(as.person("Michael Salter-Townshend"),
+                                  as.person("Simon Myers")),
+              year = "2019",
+              journal = "Genetics",     
+              volume = "214",
+              number = "",
+              pages = "",
+	      doi = "10.1534/genetics.119.302139",
+	      issn = "0016-6731",
+	      URL = "https://www.genetics.org/content/early/2019/05/23/genetics.119.302139",
+	      eprint = "https://www.genetics.org/content/early/2019/05/23/genetics.119.302139.full.pdf",
+              textVersion =
+              paste("Michael Salter-Townshend and Simon Myers (2019)",
+              "Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups",
+            "Genetics", 
+             "",  sep=" "))
+

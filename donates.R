@@ -18,14 +18,14 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   probmass<-matrix(0,t.G_ch,t.NUMP)
   switches<-list() # returns empty list if not needed; serves as placeholder
   # fit a HMM with no latent ancestry
-  L<-1;tmpPI<-matrix(0,1,1);
+  A<-1;tmpPI<-matrix(0,1,1);
   noanc_initProb<-matrix(0,H,t.kLL); for (h in 1:H) noanc_initProb[h,]<-t.Mu/t.NL[1:t.kLL]
-  noanc_mutmat<-fmutmat(t.theta, L, t.maxmiss, t.maxmatch)
-  noanc_transitions<-s_trans(L,t.kLL,tmpPI,t.Mu,t.rho,t.NL)
+  noanc_mutmat<-fmutmat(t.theta, A, t.maxmiss, t.maxmatch)
+  noanc_transitions<-s_trans(A,t.kLL,tmpPI,t.Mu,t.rho,t.NL)
   noanc_fors<-noanc_sumfors<-noanc_backs<-noanc_scalefactor<-noanc_scalefactorb<-list()
   for (h in 1:H) { 
     noanc_fors[[h]]<-rep(0,t.G_ch*t.NUMP)
-    noanc_sumfors[[h]]<-matrix(0,t.G_ch,L)
+    noanc_sumfors[[h]]<-matrix(0,t.G_ch,A)
     noanc_backs[[h]]<-rep(0,t.G_ch*t.NUMP)
     noanc_scalefactor[[h]]<-rep(0,t.G_ch)
     noanc_scalefactorb[[h]]<-rep(0,t.G_ch)
@@ -48,11 +48,11 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   for (h in 1:H)
   {
     k=hap[h]
-    cppforward(k,t.NUMA,t.NUMP,THIN,t.NUMP,t.kLL,L,0,t.G_ch,t.G_ch,noanc_transitions,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,noanc_mutmat,t.maxmiss,noanc_initProb[h,],
+    cppforward(k,t.NUMA,t.NUMP,THIN,t.NUMP,t.kLL,A,0,t.G_ch,t.G_ch,noanc_transitions,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,noanc_mutmat,t.maxmiss,noanc_initProb[h,],
 	       t.label,t.ndonors,t.donates,t.donatesl,t.flips,noanc_fors[[h]],noanc_sumfors[[h]],noanc_scalefactor[[h]])
-    cppbackward(k,t.NUMA,t.NUMP,THIN,t.NUMP,L,0,t.G_ch,t.G_ch,noanc_transitions,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,noanc_mutmat,t.maxmiss,
+    cppbackward(k,t.NUMA,t.NUMP,THIN,t.NUMP,A,0,t.G_ch,t.G_ch,noanc_transitions,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,noanc_mutmat,t.maxmiss,
 		t.label,t.ndonors,t.donates,t.donatesr,t.flips,noanc_backs[[h]],noanc_scalefactorb[[h]])
-    probmass<-probmass+cppforback(t.NUMP,THIN,t.NUMP,L,t.G_ch,t.ndonors,t.donates,noanc_fors[[h]],noanc_backs[[h]]) # 1 as first argument b/c using all now
+    probmass<-probmass+cppforback(t.NUMP,THIN,t.NUMP,A,t.G_ch,t.ndonors,t.donates,noanc_fors[[h]],noanc_backs[[h]]) # 1 as first argument b/c using all now
     if (getswitches) 
       switches[[h]]<-t(matrix(cppswitches(h,t.NUMA,t.NUMP,THIN,t.NUMP,t.G_ch,t.NL,t.label,noanc_sumfors[[h]],noanc_backs[[h]],
 					  noanc_transitions,t.flips,noanc_mutmat,t.maxmiss,t.umatch,t.maxmatchsize,t.d.w,t.t.w,t.gobs,t.ndonors,t.donates)$switches,t.NUMP))
@@ -63,7 +63,7 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   # next lines tested and absolutely required
   if (t.NUMA>1)
     for (h in 1:2) # both haps fors and backs must be calculated before the next line is called
-      probmass<-probmass+cppforback(t.NUMP,THIN,t.NUMP,L,t.G_ch,t.ndonors,t.donates,noanc_fors[[h]],noanc_backs[[h+ifelse(h%%2,1,-1)]]) # 1 as first argument b/c using all now
+      probmass<-probmass+cppforback(t.NUMP,THIN,t.NUMP,A,t.G_ch,t.ndonors,t.donates,noanc_fors[[h]],noanc_backs[[h+ifelse(h%%2,1,-1)]]) # 1 as first argument b/c using all now
   # if t.NUMA==1 probmass is now f[1]*b[1] 
   # if t.NUMA>1 probmass is now f[1]*b[1], f[2]*b[2], f[1]*b[2], f[2]*b[1]
   probmass<-t(t(probmass)/rowSums(probmass))
@@ -114,7 +114,7 @@ getdonates_ind<-function(t.donates) # note that this is used for donates, donate
 # function to estimate the most useful donors for all target admixed genomes; other donors will not be used in the HMM
 # note that this is done locally to each gridpoint allowing for changing top donors along each target genome
 # first compute the no-ancestry equivalent parameters Mu, rho, and theta. One for each ind.
-all_donates=function(target, t.L, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches, t.min.donors, t.max.donors, t.prop.don, t.NUMP, 
+all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches, t.min.donors, t.max.donors, t.prop.don, t.NUMP, 
 		     t.NL, t.G, t.umatch, t.maxmatchsize, t.maxmatch, t.maxmiss, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, 
 		     t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG, t.transitions, t.mutmat, t.cloglike, t.logfile, ffpath) {
   ind.Mu=ind.rho=ind.theta=list()
@@ -278,7 +278,7 @@ all_donates=function(target, t.L, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(": log-likelihood", t.cloglike, "-> ")
     # some overhead in this so only run if asked for i.e. t.LOG==TRUE
-    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.L, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb,t.d.w,t.t.w,t.gobs,t.label, t.HPC)
+    cloglike=get_loglike(t.NUMA, t.nchrno, t.G, t.A, t.kLL, t.max.donors, t.NUMP, ndonors, donates, donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips, t.mutmat, t.maxmiss, t.initProb,t.d.w,t.t.w,t.gobs,t.label, t.HPC)
     writelog(t.logfile,"thinning",diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,cloglike) 
     if (verbose & !t.get_switches & t.max.donors<t.NUMP) 
       cat(cloglike)

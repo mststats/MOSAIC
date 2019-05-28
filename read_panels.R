@@ -1,12 +1,12 @@
 # function that reads in the data and lays on a grid along recombination rates map
-read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
+read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.A, pops, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
 		     firstind=1, ratios=NULL) {
   panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
   t.nchrno=length(t.chrnos) 
   if (!is.null(pops))
-    if ((length(pops)!=t.L & t.target=="simulated") | (t.target!="simulated"))
+    if ((length(pops)!=t.A & t.target=="simulated") | (t.target!="simulated"))
   {
     usepanels=NULL;for (usepanel in pops) {tmp2=match(usepanel,panels);if (!is.na(tmp2)) usepanels=c(usepanels,tmp2)}
     panels<-panels[usepanels] # use supplied groups 
@@ -29,7 +29,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
   if (t.target=="simulated") 
   {
     true_anc<-g.true_anc<-list()
-    tmp=create_sim(t.NUMA, t.L, t.o.lambda, pops[1:t.L], panels, ratios) 
+    tmp=create_sim(t.NUMA, t.A, t.o.lambda, pops[1:t.A], panels, ratios) 
     mixers=tmp$mixers;panels=tmp$panels;kLL=tmp$kLL;sim.alpha=tmp$sim.alpha;sim.lambda=tmp$sim.lambda
   }
   d.w=list() # map to unique donor  haps at each gridpoint
@@ -49,7 +49,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
       multipanels[[i]]<-matrix(sapply(tmp, as.double), N2, allS)
     }
     if (t.target=="simulated")
-      for (i in 1:t.L)
+      for (i in 1:t.A)
       {
 	tmp<-scan(paste0(datasource,mixers[i],"genofile.",t.chrnos[ch]),what="character",quiet=T)
 	tmp<-strsplit(tmp,"")
@@ -153,7 +153,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
     }
     if (t.target=="simulated")
     {
-      tmp=admix_genomes(t.chrnos, ch, t.NUMA, NUMP, KNOWN, NN, multipanels, t.L, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, dr, t.resultsdir)
+      tmp=admix_genomes(t.chrnos, ch, t.NUMA, NUMP, KNOWN, NN, multipanels, t.A, S, G, t.nl, kLL, NL, sim.alpha, sim.lambda, rates, g.map, dr, t.resultsdir)
       d.w[[ch]]=tmp$d.w.ch
       t.w[[ch]]=tmp$t.w.ch
       true_anc[[ch]]=tmp$true_anc.ch
@@ -164,7 +164,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMA, t.L, pops, t.nl, t.
     d.w[[ch]]$u=NULL;d.w[[ch]]$du=NULL
     t.w[[ch]]$u=NULL;t.w[[ch]]$du=NULL
     rm(multipanels)
-    tmp=create_grid(t.target,G[ch],S[ch],g.map, t.chrnos[ch], t.NUMA, t.L, umatch[[ch]], t.w[[ch]], true_anc[[ch]], locs, NUMI)
+    tmp=create_grid(t.target,G[ch],S[ch],g.map, t.chrnos[ch], t.NUMA, t.A, umatch[[ch]], t.w[[ch]], true_anc[[ch]], locs, NUMI)
     g.loc[[ch]]=tmp$g.loc;gobs[[ch]]=tmp$gobs;maxmatch_chr=tmp$maxmatch_chr;maxmiss_chr=tmp$maxmiss_chr 
     if (t.target=="simulated") g.true_anc[[ch]]=tmp$g.true_anc_chr
     maxmatch<-max(maxmatch,maxmatch_chr)

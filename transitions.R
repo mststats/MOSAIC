@@ -16,6 +16,6 @@ explicit.trans<-function(t.PI,t.Mu,t.rho,t.NL,t.i,t.kequalsn,t.l,t.ll)
 }
 
 # test that these sum to 1
-#trans<-array(0,c(L,NUMP,L,NUMP));for (i in 1:L) for (j in 1:L) for (k in 1:NUMP) for (h in 1:NUMP) trans[i,k,j,h]=explicit.trans(PI[[ind]],Mu,rho,NL,i,(k==h),j,t.label[h])
+#trans<-array(0,c(A,NUMP,A,NUMP));for (i in 1:A) for (j in 1:A) for (k in 1:NUMP) for (h in 1:NUMP) trans[i,k,j,h]=explicit.trans(PI[[ind]],Mu,rho,NL,i,(k==h),j,t.label[h])
 #range(apply(trans,1:2,sum))==1
 

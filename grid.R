@@ -1,6 +1,6 @@
 # function to compute mapping from markers to evenly spaced (in genetic distance) gridpoints
 # t.S_chr is number of observed loci, t.G_chr is number of gridpoints; note this is called for a particular chromosome
-create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.umatch_chr, t.t.w_chr, t.true_anc_chr, t.locs, t.NUMI,
+create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.A, t.umatch_chr, t.t.w_chr, t.true_anc_chr, t.locs, t.NUMI,
 		     verbose=TRUE){
   if (verbose) cat("mapping chr", t.chrno, "to a grid...\n")
   # need to evenly spread total gridpoints across chromosomes s.t. each gap is the same #morgans
@@ -12,8 +12,8 @@ create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.u
   if (t.target=="simulated")
   {
     if (verbose) cat("Mapping true ancestry array for chr", t.chrno, "to the grid\n")
-    g.true_anc_chr<-array(0,c(t.L,t.NUMA,t.G_chr))
-    for (i in 1:t.L)
+    g.true_anc_chr<-array(0,c(t.A,t.NUMA,t.G_chr))
+    for (i in 1:t.A)
       for (k in 1:t.NUMA)
 	for (s in 1:t.S_chr)
 	  g.true_anc_chr[i,k,t.g.map[s]]<-g.true_anc_chr[i,k,t.g.map[s]]+t.true_anc_chr[i,k,s]/sum(t.g.map==t.g.map[s])
@@ -50,7 +50,7 @@ create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.L, t.u
       #a=b # use to the right as per admix.R 
       #b=a # use to the right as per admix.R 
       if (t.target=="simulated") 
-	for (i in 1:t.L)
+	for (i in 1:t.A)
 	  for (k in 1:t.NUMA)
 	    g.true_anc_chr[i,k,g]<-wa*g.true_anc_chr[i,k,a]+wb*g.true_anc_chr[i,k,b] # linear interpolation; sample jump would be more realistic, but no data to see locus
       g.loc_chr[g]<-wa*g.loc_chr[a]+wb*g.loc_chr[b] # weighted average of physical locus of the two nearest gridpoint w/ data

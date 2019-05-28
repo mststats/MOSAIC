@@ -5,10 +5,10 @@
 dip_expected_fr2_chr_ind<-function(x,ch,ind)
 {
   tmpG=dim(x[[ch]])[3]
-  L=dim(x[[ch]])[1]
+  A=dim(x[[ch]])[1]
   hap<-c(ind*2-1,ind*2)
   ans=0
-  for (a in 1:L)
+  for (a in 1:A)
   {
     p0<-(1-x[[ch]][a,hap[1],])*(1-x[[ch]][a,hap[2],]) # prob hom of not anc a
     p1<-x[[ch]][a,hap[1],]*(1-x[[ch]][a,hap[2],])+(1-x[[ch]][a,hap[1],])*x[[ch]][a,hap[2],] # prob het anc a
@@ -23,7 +23,7 @@ dip_expected_fr2_chr_ind<-function(x,ch,ind)
     avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     #acor=sqrt(varp/avarx) # 
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }
@@ -32,9 +32,9 @@ dip_expected_fr2_ind<-function(x,ind)
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
   nchrno=length(x)
-  L=dim(x[[1]])[1]
+  A=dim(x[[1]])[1]
   ans=0
-  for (a in 1:L)
+  for (a in 1:A)
   {
     vecx=matrix(NaN,2,sumG)
     OFFSET=0
@@ -53,7 +53,7 @@ dip_expected_fr2_ind<-function(x,ind)
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     avarx = (sum(p1*(1-p1)+4*p0*p2)+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }
@@ -61,11 +61,11 @@ dip_expected_fr2<-function(x)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   NUMI=dim(x[[1]])[2]/2
-  L=dim(x[[1]])[1]
+  A=dim(x[[1]])[1]
   nchrno=length(x)
   sumG=sum(vecG)*NUMI
   ans=0
-  for (a in 1:L)
+  for (a in 1:A)
   {
     vecx=matrix(NaN,2,sumG)
     OFFSET=0
@@ -91,16 +91,16 @@ dip_expected_fr2<-function(x)
     #avarx=sum(px-px^2+2*vecx[1,]*vecx[2,])+varp # MST Feb2019
     avarx=sum(px+2*vecx[1,]*vecx[2,])-sum(px)^2/sumG # MST Feb2019
     ar2=ifelse(varp<(sumG*1e-1), 1, varp/avarx) # skip over negligible ancestry contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }
 hap_expected_fr2_chr_k<-function(x,ch,k)
 {
   tmpG=dim(x[[ch]])[3]
-  L=dim(x[[ch]])[1]
+  A=dim(x[[ch]])[1]
   ans=0
-  for (a in 1:L) # average over choices of a and hap(ind)
+  for (a in 1:A) # average over choices of a and hap(ind)
   {
     px=x[[ch]][a,k,]
     varp=sum((px)^2)-sum(px)^2/tmpG
@@ -108,7 +108,7 @@ hap_expected_fr2_chr_k<-function(x,ch,k)
     avarx=(sum(px*(1-px))+varp)
     #avarx=sum(px)/tmpG-sum(px^2)/(tmpG)+sum((px)^2)/(tmpG)-sum(px/tmpG)^2 # equivalent to below with extra 1/G^2 terms 
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }
@@ -116,10 +116,10 @@ hap_expected_fr2_hap<-function(x,k)
 {
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)
-  L=dim(x[[1]])[1]
+  A=dim(x[[1]])[1]
   nchrno=length(x)
   ans=0
-  for (a in 1:L)
+  for (a in 1:A)
   {
     vecx=rep(NaN,sumG)
     OFFSET=0
@@ -133,7 +133,7 @@ hap_expected_fr2_hap<-function(x,k)
     varp=ifelse(varp<0,0,varp) # effectively ignore if no contribution due to no or all a ancestry here
     avarx=(sum(px*(1-px))+varp)
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }
@@ -143,9 +143,9 @@ hap_expected_fr2<-function(x)
   vecG=sapply(x,function(y) dim(y)[3])
   sumG=sum(vecG)*NUMA
   nchrno=length(x)
-  L=dim(x[[1]])[1]
+  A=dim(x[[1]])[1]
   ans=0
-  for (a in 1:L)
+  for (a in 1:A)
   {
     vecx=rep(NaN,sumG)
     OFFSET=0
@@ -161,7 +161,7 @@ hap_expected_fr2<-function(x)
     avarx=sum(px*(1-px))+varp # = sum(px*(1-px)) + sum(px^2)-sum(px)^2/sumG = sum(px)-sum(px)^2/sumG
     #avarx=sum(px)-sum(px)^2/sumG-sum(px*(1-px))/sumG # SM Feb2019; same as above but with extra 3rd term
     ar2=ifelse(varp<1e-6, 1, varp/avarx) # leave out negligible contributions
-    ans=ans+ar2/L
+    ans=ans+ar2/A
   }
   return(ans)
 }

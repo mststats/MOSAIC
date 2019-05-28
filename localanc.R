@@ -1,15 +1,15 @@
 # function to calculate the local ancestry estimates based on the gridded forward-backward probabilities gfbs
-get_localanc=function(t.gfbs,t.G,t.L,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=NULL) {
+get_localanc=function(t.gfbs,t.G,t.A,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=NULL) {
   ans=list()
   t.nchrno=length(t.gfbs)
   localanc<-list()
   for (ch in 1:t.nchrno)
   {
-    localanc[[ch]]<-array(1/t.L,c(t.L,t.NUMA,t.G[ch]))
+    localanc[[ch]]<-array(1/t.A,c(t.A,t.NUMA,t.G[ch]))
     for (k in 1:t.NUMA)
     {
       localanc[[ch]][,k,]<-0
-      for (j in 1:t.L) 
+      for (j in 1:t.A) 
 	for (jk in 1:t.kLL) 
 	  localanc[[ch]][j,k,]<-localanc[[ch]][j,k,] + t.gfbs[[ch]][[k]][,(j-1)*t.kLL+jk]
       #localanc[[ch]][,k,]<-round(localanc[[ch]][,k,],3) # Hapmix does this!
@@ -27,7 +27,7 @@ get_localanc=function(t.gfbs,t.G,t.L,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=N
       for (ch in 1:t.nchrno) tmp.anc[[ch]][,,]=t.g.true_anc[[ch]][ord,,]
       return(dip_fr2(tmp.anc,localanc))
     }
-    all.ord<-permn(t.L)
+    all.ord<-permn(t.A)
     best.r<-0
     for (i in 1:length(all.ord))
       if (r.ord(all.ord[[i]])>best.r) 

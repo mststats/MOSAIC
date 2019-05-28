@@ -41,11 +41,11 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 # similar function that uses estimated local ancestry along the admixed genome
 write_admixed_summary=function(target,NL,pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",g.loc,t.localanc,chrnos=1:22)
 {
-  L=dim(t.localanc[[1]])[1]
+  A=dim(t.localanc[[1]])[1]
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
   cat("Saving frequencies of simulated data\n")
   ancestral_freqs=maximal_alleles(target,chrnos,g.loc,t.localanc,datasource,targetdatasource) 
-  save(ancestral_freqs, file=paste0(pathout, target, "_", L, "way_", sum(NL), "_freqs.rdata"))
+  save(ancestral_freqs, file=paste0(pathout, target, "_", A, "way_", sum(NL), "_freqs.rdata"))
   return(NULL)
 }

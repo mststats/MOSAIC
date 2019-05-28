@@ -1,14 +1,14 @@
 # function to create a logfile for a MOSAIC model run
-create_logfile=function(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM) {
+create_logfile=function(resultsdir,target,kLL,A,NUMI,firstind,chrnos,nchrno,NN,GpcM) {
   lognames<-c("mode", "time")
-  for (j in 1:kLL) for (i in 1:L) lognames<-c(lognames, paste0("Mu[",j,",",i,"]"))
-  for (i in 1:L) lognames<-c(lognames, paste0("rho[",i,"]"))
-  for (ind in 1:NUMI) for (i in 1:L) for (j in 1:L) lognames<-c(lognames, paste0("PI[",ind,",",i,",",j,"]"))
-  for (ind in 1:NUMI) for (i in 1:L) lognames<-c(lognames, paste0("alpha[",ind,",",i,"]"))
+  for (j in 1:kLL) for (i in 1:A) lognames<-c(lognames, paste0("Mu[",j,",",i,"]"))
+  for (i in 1:A) lognames<-c(lognames, paste0("rho[",i,"]"))
+  for (ind in 1:NUMI) for (i in 1:A) for (j in 1:A) lognames<-c(lognames, paste0("PI[",ind,",",i,",",j,"]"))
+  for (ind in 1:NUMI) for (i in 1:A) lognames<-c(lognames, paste0("alpha[",ind,",",i,"]"))
   for (ind in 1:NUMI) lognames<-c(lognames, paste0("lambda[",ind,"]"))
-  for (i in 1:L) lognames<-c(lognames, paste0("theta[",i,"]"))
+  for (i in 1:A) lognames<-c(lognames, paste0("theta[",i,"]"))
   lognames<-c(lognames, "loglikelihood")
-  logfile=paste0(resultsdir, target, "_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
+  logfile=paste0(resultsdir, target, "_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
   len=length(lognames) # total number of items to log
   write(file=logfile, lognames, ncol=length(lognames)) # start the EM log file
   rtime<-as.numeric(Sys.time())
@@ -25,13 +25,13 @@ extract_log=function(logfile)
 extract_paras=function(EMlog, iter, panelnames=NULL)
 {
   paras=as.numeric(c(EMlog[iter,-c(1,2,ncol(EMlog))])) # remove mode, time, and log-likelihood
-  t.Mu=t(matrix(paras[1:(L*kLL)],L));paras=paras[-(1:(L*kLL))] 
+  t.Mu=t(matrix(paras[1:(A*kLL)],A));paras=paras[-(1:(A*kLL))] 
   rownames(t.Mu)=panelnames
-  t.rho=paras[1:L];paras=paras[-(1:L)]
-  t.PI=list();for (ind in 1:NUMI) {t.PI[[ind]]=matrix(paras[1:(L*L)],L);paras=paras[-(1:(L*L))]}
-  t.alpha=list();for (ind in 1:NUMI) {t.alpha[[ind]]=paras[1:L];paras=paras[-(1:L)]}
+  t.rho=paras[1:A];paras=paras[-(1:A)]
+  t.PI=list();for (ind in 1:NUMI) {t.PI[[ind]]=matrix(paras[1:(A*A)],A);paras=paras[-(1:(A*A))]}
+  t.alpha=list();for (ind in 1:NUMI) {t.alpha[[ind]]=paras[1:A];paras=paras[-(1:A)]}
   t.lambda=list();for (ind in 1:NUMI) {t.lambda[[ind]]=paras[1];paras=paras[-1]}
-  t.theta=paras[1:L];paras=paras[-(1:L)]
+  t.theta=paras[1:A];paras=paras[-(1:A)]
   return(list(Mu=t.Mu, rho=t.rho, PI=t.PI, alpha=t.alpha, lambda=t.lambda, theta=t.theta))
 }
 # EMlog<-extract_log(logfile)

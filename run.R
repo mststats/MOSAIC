@@ -1,11 +1,11 @@
-run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
+run_mosaic=function(target,datasource,chrnos,A,NUMA,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
 		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
 		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, doFst=TRUE, Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   # sets default parameters, sets up some objects required later, reads in data, and initialises model.
-  if (target=="simulated" & length(pops)<L)
-    stop("Please provide ", L, " groups to simulate from\n")
-  tmp=setup_data_etc(NUMA,target,chrnos,pops,L,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne) 
+  if (target=="simulated" & length(pops)<A)
+    stop("Please provide ", A, " groups to simulate from\n")
+  tmp=setup_data_etc(NUMA,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne) 
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
   mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
   s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS
@@ -24,27 +24,27 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   old.runtime<-as.numeric(Sys.time())
   o.total=total
   eps=log(1.01) # i.e. a 1% increase in relative likelihood
-  Mu<-matrix(rep(1/kLL,L*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/L,L) # flatten out w.r.t. ancestry
+  Mu<-matrix(rep(1/kLL,A*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/A,A) # flatten out w.r.t. ancestry
   runtime=NaN
   # always need to run noanc.R b/c need good paras for init_Mu
-  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, A, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, 100, HPC, runtime, resultsdir, GpcM, eps, NaN,
 		      doMu, doPI, dorho, dotheta, ffpath, firstind, EM) 
   transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
-  initProb=initprobs(T,NUMA,L,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
+  initProb=initprobs(T,NUMA,A,NUMP,kLL,PI,Mu,rho,alpha,label,NL)
   runtime<-as.numeric(Sys.time())
-  if (kLL>L) # otherwise can't cluster kLL things into L clusters
+  if (kLL>A) # otherwise can't cluster kLL things into A clusters
   {
     # use this to get #switches in noanc model w/o writelog
-    tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize,
+    tmp=all_donates(target, A, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=T, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize,
 		    maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, NULL,F,transitions,mutmat,NaN,NULL,ffpath)
     ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
     noanc_gswitches=tmp$noanc_gswitches
     rm(tmp)
     windowed_copying<-window_chunks(nswitches=noanc_gswitches,dr,G,kLL,NUMA,ww=0.5,verbose=verbose) # similar in the same windows
     rm(noanc_gswitches) 
-    tmp<-cluster_windows(windowed_copying,dr,kLL,L,NUMI,NUMA,NL,absorbrho,verbose=verbose)
+    tmp<-cluster_windows(windowed_copying,dr,kLL,A,NUMI,NUMA,NL,absorbrho,verbose=verbose)
     Mu<-tmp$Mu
     alpha<-tmp$alpha
     PI<-tmp$PI
@@ -55,14 +55,14 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   } else {diag(Mu)=10*diag(Mu);Mu=t(t(Mu)/colSums(Mu))}
   rownames(Mu)<-panels[1:kLL]
   o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
-  mutmat<-fmutmat(theta, L, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(L,kLL,PI[[ind]],Mu,rho,NL)
+  mutmat<-fmutmat(theta, A, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(A,kLL,PI[[ind]],Mu,rho,NL)
   o.M<-M;M<-s.M
   logfile=NULL
-  tmp=create_logfile(resultsdir,target,kLL,L,NUMI,firstind,chrnos,nchrno,NN,GpcM)
+  tmp=create_logfile(resultsdir,target,kLL,A,NUMI,firstind,chrnos,nchrno,NN,GpcM)
   runtime=old.runtime=tmp$rtime;diff.time=0;len=tmp$len
   logfile=tmp$logfile
   # decide on donor set using initial parameters
-  tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
+  tmp=all_donates(target, A, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, maxmatchsize, 
 		  maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, F, transitions, mutmat,NaN,logfile,ffpath)
   ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
 
@@ -72,14 +72,14 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     o.doMu=doMu;o.dotheta=dotheta;o.dorho=dorho;o.doPI=doPI;doPI=T;dorho=dotheta=doMu=F;
     if (verbose) cat("Inferring ancestry switching rates holding other parameters fixed\n");
     total=PI.total
-    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
+    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
 	       dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps)
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     if (!absorbrho | !commonrho | !commontheta) 
     {
-      tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
+      tmp=all_donates(target, A, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
 		      maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
 		      mutmat,cloglike,logfile,ffpath)
       ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
@@ -94,7 +94,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
       if (reps==REPS) 
 	M=o.M # on last rep do more MCMC phasing
   if (EM) {
-      tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
+      tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 		 NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
 		 dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
       PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
@@ -104,14 +104,14 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
       if (max.donors<NUMP & (kLL==old.kLL))
       {
 	# decide on donor set using updated parameters
-	tmp=all_donates(target, L, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
+	tmp=all_donates(target, A, NUMI, Mu, alpha, kLL, PI, rho, lambda, theta, verbose=T, t.get_switches=F, min.donors, max.donors, prop.don, NUMP, NL, G, umatch, 
 			maxmatchsize, maxmatch, maxmiss, d.w, t.w, gobs, flips, label, KNOWN, HPC, prethin=F, NUMA, nchrno, initProb, runtime, len, LOG, transitions, 
 			mutmat,cloglike,logfile,ffpath)
 	ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;old.runtime=runtime=tmp$runtime;cloglike=tmp$cloglike
       }
       if (PHASE) 
       {
-	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, L, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
+	tmp=phase_hunt_all(donates, donatesl, donatesr, ndonors, NUMP, G, A, GpcM, max.donors, nchrno, NUMA, NUMI, kLL, flips, eps.lower, 
 			     transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
 			     initProb, label, min.bg, max.bg, len,Mu,rho,PI,alpha,lambda,theta,runtime, logfile, HPC, verbose, LOG) 
 	flips=tmp$flips
@@ -120,7 +120,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 	rm(tmp)
 	if (M>0)  # now do MCMC re-phasing w/o output to console (ugly due to txtProgressBar)
 	{
-	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, L, max.donors, nchrno, NUMI, kLL, flips, 
+	  tmp=phase_mcmc_all(donates, donatesl, donatesr, ndonors, NUMP, NUMA, G, A, max.donors, nchrno, NUMI, kLL, flips, 
 			       transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, 
 			       initProb, label, len,Mu,rho,PI,alpha,lambda,theta,runtime, logfile, HPC, verbose, LOG) 
 	flips=tmp$flips
@@ -134,7 +134,7 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     total=o.total # do longer run EM on last rep
     if (verbose)
       cat("run one final round of EM\n")
-    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, L,
+    tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, 
 	       doPI, doMu, dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
@@ -147,21 +147,21 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   samp_chrnos=chrnos;
 
   ######### MOSAIC curves with MOSAIC phasing ############
-  gfbs=get_gfbs(NUMP, nchrno, max.donors, donates, donatesl, donatesr, NUMA, L, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
+  gfbs=get_gfbs(NUMP, nchrno, max.donors, donates, donatesl, donatesr, NUMA, A, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
 		label, ndonors, flips, HPC)
   if (verbose) cat("saving localanc results to file\n")
-  if (target!="simulated") tmp=get_localanc(gfbs,G,L,kLL,NUMA,NUMI)
-  if (target=="simulated") tmp=get_localanc(gfbs,G,L,kLL,NUMA,NUMI,t.g.true_anc=g.true_anc)
+  if (target!="simulated") tmp=get_localanc(gfbs,G,A,kLL,NUMA,NUMI)
+  if (target=="simulated") tmp=get_localanc(gfbs,G,A,kLL,NUMA,NUMI,t.g.true_anc=g.true_anc)
   localanc=tmp$localanc
   if (target=="simulated") 
     g.true_anc=tmp$g.true_anc
 
-  save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+  save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
   if (target=="simulated")
-    save(file=paste0(resultsdir,"localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+    save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, g.true_anc, final.flips, g.loc)
-  save(file=paste0(resultsdir,"gfbs_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+  save(file=paste0(resultsdir,"gfbs_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), gfbs)
 
   if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
@@ -174,12 +174,12 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
     if (target!="simulated")
       write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
     write_panel_summaries(panels=rownames(Mu),datasource=datasource,,chrnos=chrnos)
-    all_Fst=Fst_combos(target, L, sum(NL), rownames(Mu))
+    all_Fst=Fst_combos(target, A, sum(NL), rownames(Mu))
   }
 
   ######## GlobeTrotter style curves original phasing ##########
   for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
-  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, L, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
+  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, A, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, max(NL), HPC, runtime, resultsdir, 
 		      GpcM, eps, NaN, doMu, doPI, dorho, dotheta, ffpath, firstind, EM, getnoancgfbs=TRUE) 
   transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
@@ -188,15 +188,15 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
   if (HPC) cleanup_ff_files(donates, donatesl, donatesr, nchrno, NUMI, ffpath, FALSE)
   Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
   o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda
-  noanc_unphased_localanc=get_ancunaware_localanc(NUMA,L,G,nchrno,noanc_gfbs,Mu,alpha) # works off noanc_gfbs
-  save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+  noanc_unphased_localanc=get_ancunaware_localanc(NUMA,A,G,nchrno,noanc_gfbs,Mu,alpha) # works off noanc_gfbs
+  save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), noanc_unphased_localanc, flips, g.loc)
   if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n"); coancs=create_coancs(noanc_unphased_localanc,dr,"DIP")
 
   if (verbose) cat("saving final results to file\n")
-  save(file=paste0(resultsdir,"",target,"_", L, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
+  save(file=paste0(resultsdir,"",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
 		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-       Mu, lambda, theta, alpha, PI, rho, L, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst)
+       Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst)
 
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
   if (target=="simulated") 
@@ -208,11 +208,11 @@ run_mosaic=function(target,datasource,chrnos,L,NUMA,pops=NULL,REPS=0,GpcM=60,PHA
 
 
   if (return.res & target!="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,A=A,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
 		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
   if (return.res & target=="simulated")
-    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,L=L,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
+    return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,A=A,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
 		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
 		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
 }

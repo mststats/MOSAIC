@@ -1,11 +1,11 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
-admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.L, t.S, t.G, t.nl, t.kLL, t.NL, 
+admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.A, t.S, t.G, t.nl, t.kLL, t.NL, 
 		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, prop.missing=0,verbose=TRUE) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
   Y<-matrix(NA, t.NUMA, t.S[t.ch])
-  true_anc.ch<-array(0,c(t.L,t.NUMA,t.S[t.ch]))
+  true_anc.ch<-array(0,c(t.A,t.NUMA,t.S[t.ch]))
 
   # or simulate all breakpoints along all target chromosomes; then advance along positions, assigning last used donor to next breakpoint. 
   for (k in (t.NUMP+(1:t.NUMA))) # these are the admixed target haplotypes
@@ -19,7 +19,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
     tmp2k=haps2[1] # start with double the index of the target minus 1
     while (tmps[length(tmps)]<t.S[t.ch]) # while still in this chromosome
     {
-      tmpia<-sample(1:t.L,1,prob=t.sim.alpha[[ind]]) # sample an ancestry 
+      tmpia<-sample(1:t.A,1,prob=t.sim.alpha[[ind]]) # sample an ancestry 
       chunklengthM=rexp(1,t.sim.lambda[[ind]]) # in Morgans as per HapMix
       chunklengthM=round(chunklengthM/t.dr)*t.dr # to the nearest gridpoint
       RHS=which.min(abs(t.rates[tmps[length(tmps)]+1]+chunklengthM-t.rates)) # in units of the rates map; match to the genetic loci we have
@@ -83,22 +83,22 @@ rdirichlet=function(n, t.alpha) {
 }
 
 # some example simulations of admixture to try out using the HGDP dataset
-create_sim=function(t.NUMA, t.L, t.o.lambda, mixers, t.panels, ratios=c(rdirichlet(1, rep(8,t.L))), fewer_ancs=NULL, verbose=TRUE) {
+create_sim=function(t.NUMA, t.A, t.o.lambda, mixers, t.panels, ratios=c(rdirichlet(1, rep(8,t.A))), fewer_ancs=NULL, verbose=TRUE) {
   sim.alpha<-sim.lambda<-list()
   NUMI<-max(1,t.NUMA/2)
   
   for (ind in 1:NUMI)
   {
-    sim.alpha[[ind]]=c(rdirichlet(1, ratios*t.L*4)) # should provide user control of this
+    sim.alpha[[ind]]=c(rdirichlet(1, ratios*t.A*4)) # should provide user control of this
     sim.lambda[[ind]]<-t.o.lambda # should allow varying lambdas aka generations since admixture
   }
   if (!is.null(fewer_ancs)) 
   {
     for (ind in fewer_ancs)
     {
-      remanc=sample(1:t.L)[1:sample(1:(t.L-1),1)] # sample a subset of the t.L to remove from this individual, but never all of them
+      remanc=sample(1:t.A)[1:sample(1:(t.A-1),1)] # sample a subset of the t.A to remove from this individual, but never all of them
       sim.alpha[[ind]][remanc]=0
-      if (t.L>2)
+      if (t.A>2)
       {
 	# never have ancs 1 and 2 both present
 	if (sim.alpha[[ind]][1]) sim.alpha[[ind]][2]=0; if (sim.alpha[[ind]][2]) sim.alpha[[ind]][1]=0 

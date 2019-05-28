@@ -11,16 +11,16 @@ r_wc_ests=function(p,n) # best comparison b/w Mu and 1/Fst values
   return(c(numer,denom))
 }
 
-r_calc_freqs=function(s,t.L,t.populations,t.y) 
+r_calc_freqs=function(s,t.A,t.populations,t.y) 
 {
-  n=p=rep(0,t.L)
-  for (l in 1:t.L) 
+  n=p=rep(0,t.A)
+  for (l in 1:t.A) 
   {
     tmppops=which(t.populations[,s]==l)
     n[l]=sum(!is.nan(tmppops))
     p[l]=mean(t.y[tmppops,s],na.rm=TRUE)
   }
-  return(list(p,n)) # returns two vectors of length t.L; freq and number
+  return(list(p,n)) # returns two vectors of length t.A; freq and number
 }
 
 wc_ests=cmpfun(r_wc_ests,list(optimize=3))
@@ -28,11 +28,11 @@ calc_freqs=cmpfun(r_calc_freqs,list(optimize=3))
 which.max.thresh=function(x,thresh) {ans=which.max(x); if (x[ans]<thresh) ans=NaN; ans}
 r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thresh=0.8) # assign each hap locally to an anc and return "ancestral" haps
 {
-  t.L=dim(t.localanc[[1]])[1]
+  t.A=dim(t.localanc[[1]])[1]
   G=sapply(t.localanc,function(x) dim(x)[3])
   NUMA=dim(t.localanc[[1]])[2]
   allp=alln=list()
-  for (l in 1:t.L)
+  for (l in 1:t.A)
     allp[[l]]=alln[[l]]=list()
   for (ch in 1:length(chrnos))
   {
@@ -50,11 +50,11 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
 	k=(ind-1)*2+h
 	populations[k,]=apply(tmp[,k,],2,which.max.thresh,thresh)
       }
-    tmp=lapply(1:S,calc_freqs,t.L,populations,y)
-    freqs_mat=matrix(sapply(tmp,function(x) x[[1]]),t.L) 
-    for (l in 1:t.L) allp[[l]][[ch]]=freqs_mat[l,] # allele freqs for ancs (rows) along chromosome (cols)
-    counts_mat=matrix(sapply(tmp,function(x) x[[2]]),t.L) 
-    for (l in 1:t.L) alln[[l]][[ch]]=counts_mat[l,] # counts for ancs (rows) along chromosome (cols)
+    tmp=lapply(1:S,calc_freqs,t.A,populations,y)
+    freqs_mat=matrix(sapply(tmp,function(x) x[[1]]),t.A) 
+    for (l in 1:t.A) allp[[l]][[ch]]=freqs_mat[l,] # allele freqs for ancs (rows) along chromosome (cols)
+    counts_mat=matrix(sapply(tmp,function(x) x[[2]]),t.A) 
+    for (l in 1:t.A) alln[[l]][[ch]]=counts_mat[l,] # counts for ancs (rows) along chromosome (cols)
   }
   return(list("freqs"=allp,"counts"=alln))
 }
@@ -116,25 +116,25 @@ R_Fst=function(x)
 }
 
 # function to calculate Fst between all pairs of latent ancestries and between each latent ancestry and each donor panel
-Fst_combos=function(target, L, NN, panels, pathin="FREQS/") {
-  load(file=paste0(pathin, target, "_", L, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
-  anc_fst=rep(NaN,choose(L,2))
-  Ls=utils::combn(L,2)
+Fst_combos=function(target, A, NN, panels, pathin="FREQS/") {
+  load(file=paste0(pathin, target, "_", A, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
+  anc_fst=rep(NaN,choose(A,2))
+  Ls=utils::combn(A,2)
   for (l in 1:ncol(Ls))
   {
     l1=Ls[1,l];l2=Ls[2,l]
     anc_fst[l]=wc_fst(ancestral_freqs$freqs[[l1]],ancestral_freqs$counts[[l1]],ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]]) 
     names(anc_fst)[l]=paste0("anc",l1,"x","anc",l2)
   }
-  panels_fst=matrix(NaN,length(panels),L)
+  panels_fst=matrix(NaN,length(panels),A)
   for (l1 in 1:length(panels))
   {
     load(paste0(pathin, panels[l1],"_freqs.rdata"))
-    for (l2 in 1:L) 
+    for (l2 in 1:A) 
       panels_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
   }
   rownames(panels_fst)=panels
-  colnames(panels_fst)=paste("anc",1:L)
+  colnames(panels_fst)=paste("anc",1:A)
   Rst=R_Fst(panels_fst);names(Rst)=names(anc_fst)
   return(list("ancs"=anc_fst, "Rst"=Rst, "panels"=panels_fst))
 }

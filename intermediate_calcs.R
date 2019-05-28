@@ -1,27 +1,27 @@
 # calculations related to EM updates used in EM_updates.R
 # observed number of switches from (ia,il) to (ja,jl) 
-r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.kLL,t.L,t.PI,t.rho,t.Mu,t.ndonors,t.donates,t.donatesl,t.donatesr,t.initProb,t.label,doMu) 
+r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.kLL,t.A,t.PI,t.rho,t.Mu,t.ndonors,t.donates,t.donatesl,t.donatesr,t.initProb,t.label,doMu) 
 {
   THIN=ifelse(t.max.donors==t.NUMP,F,T)
-  a<-array(0,c(t.L,t.kLL,t.L)) # need to track which groups are switched to for t.Mu updates
-  r<-matrix(0,t.kLL,t.L) # need to track which groups are switched to for t.Mu updates
-  na<-matrix(0,t.kLL,t.L) # no anc switch, may or may not switch hap
-  n<-matrix(0,t.kLL,t.L) # nothing happens; no anc switch and no hap switch
+  a<-array(0,c(t.A,t.kLL,t.A)) # need to track which groups are switched to for t.Mu updates
+  r<-matrix(0,t.kLL,t.A) # need to track which groups are switched to for t.Mu updates
+  na<-matrix(0,t.kLL,t.A) # no anc switch, may or may not switch hap
+  n<-matrix(0,t.kLL,t.A) # nothing happens; no anc switch and no hap switch
   # fb calcs moved to here to avoid storing all fors, backs, etc
-  t.fors<-rep(0,t.G*t.max.donors*t.L);t.sumfors<-matrix(0,t.G,t.L);t.scalefactor<-rep(0,t.G);
-  cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.initProb[k,],t.label,
+  t.fors<-rep(0,t.G*t.max.donors*t.A);t.sumfors<-matrix(0,t.G,t.A);t.scalefactor<-rep(0,t.G);
+  cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.A,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.initProb[k,],t.label,
 	     t.ndonors,t.donates,t.donatesl,t.flips,t.fors,t.sumfors,t.scalefactor)
-  t.backs<-rep(0,t.G*t.max.donors*t.L);t.scalefactorb<-rep(0,t.G);
-  cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.L,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.label,
+  t.backs<-rep(0,t.G*t.max.donors*t.A);t.scalefactorb<-rep(0,t.G);
+  cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G,t.G,t.transitions,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.label,
 	      t.ndonors,t.donates,t.donatesr,t.flips,t.backs,t.scalefactorb)
-  probs<-cppprobs(k,t.NUMA,t.max.donors,THIN,t.L,t.kLL,t.NN,t.NUMP,t.G,t.label,t.fors,t.sumfors,t.backs,t.transitions,t.flips,t.mutmat,t.maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.ndonors,t.donates,t.donatesl)
+  probs<-cppprobs(k,t.NUMA,t.max.donors,THIN,t.A,t.kLL,t.NN,t.NUMP,t.G,t.label,t.fors,t.sumfors,t.backs,t.transitions,t.flips,t.mutmat,t.maxmiss,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.ndonors,t.donates,t.donatesl)
   for (type in 1:length(probs)) probs[[type]][probs[[type]]<0]=0
   #probs$switches are switches that go from (il,ia) to (jl,ja) but doesn't include same haps i.e. must be a switch to a different hap
   #probs$self are both switches and non-switches that go to same ancestry / hap pair
   #sum(probs$switches)+sum(probs$self)=G-1
   ind=as.integer((k+1)/2)
-  for (ia in 1:t.L) {
-    for (ja in {1:t.L}[-ia]) # 1. must have changed ancestry => psa=1
+  for (ia in 1:t.A) {
+    for (ja in {1:t.A}[-ia]) # 1. must have changed ancestry => psa=1
     {
       for (jl in 1:t.kLL)
 	a[ia,jl,ja]<-a[ia,jl,ja]+probs$switches[ia,jl,ja]
@@ -54,8 +54,8 @@ r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions
   }
   initi=NaN
   if (doMu) 
-    initi<-t(matrix(cppforback(t.max.donors,THIN,t.NUMP,t.L,1,t.ndonors,t.donates,t.fors,t.backs),t.NUMP)) # a-posteriori first gridpoint probs
-  l<-apply(probs$switches,3,sum)+apply(probs$self,2,sum) # all switches into anc=1:t.L times the distance from the last locus
+    initi<-t(matrix(cppforback(t.max.donors,THIN,t.NUMP,t.A,1,t.ndonors,t.donates,t.fors,t.backs),t.NUMP)) # a-posteriori first gridpoint probs
+  l<-apply(probs$switches,3,sum)+apply(probs$self,2,sum) # all switches into anc=1:t.A times the distance from the last locus
   loglike=-sum(log(t.scalefactor))
   a[a<0]=0;r[r<0]=0;n[n<0]=0;na[na<0]=0
   a[is.nan(a)]=0;r[is.nan(r)]=0;n[is.nan(n)]=0;na[is.nan(na)]=0
@@ -65,14 +65,14 @@ r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions
 calc_E.n<-r.calc_E.n
 #sum(E.n[[k]]$a)+sum(E.n[[k]]$r)+sum(E.n[[k]]$n)=G-1
 
-create_PI<-function(alpha,lambda,t.L,dr,NUMI)
+create_PI<-function(alpha,lambda,t.A,dr,NUMI)
 {
   t.PI<-list()
   for (ind in 1:NUMI)
   {
-    t.PI[[ind]]<-matrix(0,t.L,t.L)
-    for (i in 1:t.L)
-      for (j in 1:t.L)
+    t.PI[[ind]]<-matrix(0,t.A,t.A)
+    for (i in 1:t.A)
+      for (j in 1:t.A)
 	t.PI[[ind]][i,j]=(1-exp(-dr*lambda[[ind]]))*alpha[[ind]][j] # rate of actual ancestry switching
   }
   t.PI
