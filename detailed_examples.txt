@@ -15,11 +15,6 @@ A folder called MOSAIC_PLOTS is required to hold the plots created by default by
 A folder called FREQS is required to hold the frequencies used to compute Fst statistics if required.
 ##################################################################################################################
 
-The main work is multiple rounds of EM->phase->thin where:
-	EM runs a few iterations of the EM algorithm to update parameters. 
-	phase does some rephasing (see below).
-	thin finds the useful donor haplotypes at each gridpoint, based on the estimated parameters (see below).
-
 ########  PARAMETERS INFERRED   ##################################################################################
 There are 4 sets of parameters inferred via EM:
 	1. PI (prob. of switching between latent ancestries, including switch to same anc; AxA)
