@@ -20,8 +20,8 @@ MOSAIC may also be used in an interactive R session. First load the package
 > require(MOSAIC)
 then use 
 > run_mosaic(target,folder,chromosomes,a,n) 
-# where "a" is the number of unseen mixing groups and n is the number of target haplotypes. Specifying n larger than
-the number of haplotypes in the target file results in running MOSAIC on all of them. a defaults to 2 and n to 1000.
+# where "a" is the number of unseen mixing groups and n is the number of target individuals. Specifying n larger than
+the number of individuals in the target file results in running MOSAIC on all of them. a defaults to 2 and n to 1000.
 
 #######  INPUTS   ################################################################################################
 There should be a folder with 4 types of input file:
@@ -49,14 +49,14 @@ can convert to local ancestry at your SNP positions on the first chromosome you 
 
 #######  EXAMPLES  ###############################################################################################
 The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
-> Rscript mosaic.R Moroccan example_data/ -a 2 -n 4 -c 18:22
+> Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22
 or equivalently in an interactive R session:
-> mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,4)
+> mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
 
 User defined simulations can also be provided by specifying a vector of populations:
-> Rscript mosaic.R simulated example_data/ -c 18:22 -n 4 -p "English Mandenka"
+> Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 or equivalently in an interactive R session:
-> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,4,c("English","Mandenka"))
+> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))
 Note that additional groups will be used as the donor panels
 
 ##### OUTPUTS ####################################################################################################

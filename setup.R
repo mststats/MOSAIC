@@ -11,7 +11,7 @@ fmutmat<-function(theta, A, maxmiss, maxmatch)
   mutmat
 }
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,A,datasource,EM,gens,ratios,MC,
+setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,ratios,MC,
   # some default values
   verbose=T,
   HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
@@ -49,11 +49,6 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   t.nchrno=length(t.chrnos)
   ans=list() # build a list to store resulting data, parameters, etc
   S<-rep(NaN,t.nchrno) # if no limit is set
-  if (t.NUMA==1 & PHASE)
-  {
-    warning("can't do re-phasing on a single haplotype: turning off phasing", immediate.=T)
-    PHASE=FALSE
-  }
   # some defaults will get returned also
   ans$resultsdir=resultsdir
   ans$PHASE=PHASE
@@ -110,7 +105,7 @@ setup_data_etc=function(t.NUMA,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMA, A, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios) 
+  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMI, A, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios) 
   if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", A, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
   if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs

@@ -1,9 +1,10 @@
 # function to simulate admixed genomes at a fixed number of generations ago from different donor genomes
-admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.A, t.S, t.G, t.nl, t.kLL, t.NL, 
+admix_genomes=function(t.chrnos, t.ch, t.NUMI, t.NUMP, t.KNOWN, t.NN, t.multipanels, t.A, t.S, t.G, t.nl, t.kLL, t.NL, 
 		       t.sim.alpha, t.sim.lambda, t.rates, t.g.map, t.dr, t.resultsdir, prop.missing=0,verbose=TRUE) {
   if (verbose) cat("creating admixed Chr ", t.chrnos[t.ch], "\n", sep="")
 
   d.w.ch=t.w.ch=list(u=list(),w=list())
+  t.NUMA=2*t.NUMI
   Y<-matrix(NA, t.NUMA, t.S[t.ch])
   true_anc.ch<-array(0,c(t.A,t.NUMA,t.S[t.ch]))
 
@@ -42,7 +43,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMA, t.NUMP, t.KNOWN, t.NN, t.multipan
   if (prop.missing>0)
   {
     H=ifelse(t.NUMA>1, 2, 1)
-    for (ind in 1:NUMI)
+    for (ind in 1:t.NUMI)
     {
       tmp=sample(1:t.S[t.ch],t.S[t.ch]*prop.missing) # both haps of an ind always missing together
       for (h in 1:H) 
@@ -83,11 +84,10 @@ rdirichlet=function(n, t.alpha) {
 }
 
 # some example simulations of admixture to try out using the HGDP dataset
-create_sim=function(t.NUMA, t.A, t.o.lambda, mixers, t.panels, ratios=c(rdirichlet(1, rep(8,t.A))), fewer_ancs=NULL, verbose=TRUE) {
+create_sim=function(t.NUMI, t.A, t.o.lambda, mixers, t.panels, ratios=c(rdirichlet(1, rep(8,t.A))), fewer_ancs=NULL, verbose=TRUE) {
   sim.alpha<-sim.lambda<-list()
-  NUMI<-max(1,t.NUMA/2)
   
-  for (ind in 1:NUMI)
+  for (ind in 1:t.NUMI)
   {
     sim.alpha[[ind]]=c(rdirichlet(1, ratios*t.A*4)) # should provide user control of this
     sim.lambda[[ind]]<-t.o.lambda # should allow varying lambdas aka generations since admixture
@@ -105,13 +105,13 @@ create_sim=function(t.NUMA, t.A, t.o.lambda, mixers, t.panels, ratios=c(rdirichl
       }
       sim.alpha[[ind]]=sim.alpha[[ind]]/sum(sim.alpha[[ind]])
     } # remove first anc from first ind
-    #for (ind in (1:NUMI)[-fewer_ancs]) # make those with this first anc only have a little
+    #for (ind in (1:t.NUMI)[-fewer_ancs]) # make those with this first anc only have a little
     #  {sim.alpha[[ind]][1]=0.1;sim.alpha[[ind]]=sim.alpha[[ind]]/sum(sim.alpha[[ind]])} # remove first anc from first ind
   }
   # will take in multipanels and simulates admixed individuals using the first panel in each anc
   # check that the supplied panels to mix are indeed members of panels 
   refs=t.panels[!(t.panels%in%mixers)]
   kLL=length(refs)
-  if (verbose) cat("Admixing ", NUMI,  " individuals from ", paste(mixers, collapse=" and "),  " genomes ", t.o.lambda, " generations ago\n", sep="")
+  if (verbose) cat("Admixing ", t.NUMI,  " individuals from ", paste(mixers, collapse=" and "),  " genomes ", t.o.lambda, " generations ago\n", sep="")
   return(list(mixers=mixers, panels=refs, kLL=kLL, sim.alpha=sim.alpha, sim.lambda=sim.lambda))
 }
