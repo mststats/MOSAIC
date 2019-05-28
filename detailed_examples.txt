@@ -1,13 +1,16 @@
-The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
+The "example_data" folder contains example data for chromosomes 18 to 22.
+
+A real-data example run of mosaic can be done using:
 > Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22
-or equivalently in an interactive R session:
+or in an interactive R session:
 > mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
 
 User defined simulations can also be provided by specifying a vector of populations:
 > Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 or equivalently in an interactive R session:
 > mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))
-Note that additional groups will be used as the donor panels
+Note that additional groups will be used as the donor panels but can also be specified manually as follows:
+> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka", "French", "Yoruba"))
 
 ##### OUTPUTS ####################################################################################################
 A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
@@ -24,5 +27,8 @@ There are 4 sets of parameters inferred via EM:
 
 Note that PI and rho will depend on grid granularity (GpcM); finer grid => lower prob. of switching between gridpoints.
 ##################################################################################################################
+
+
+FLAG include plots, extraction of localanc, r2 calcs, localanc on SNP positions. 
 
 email michael.salter-townshend@ucd.ie for help

@@ -1,4 +1,5 @@
-*) help file for run_mosaic only; re-use README.txt + how to doc
+*) activate PLOT argument in run_mosaic
+*) how to doc
 *) shapeit inputs OR a conversion tool packaged with MOSAIC
 *) parallelise compressed_grid.cpp?
 *) read in one SNP at a time for all individuals to reduce memory usage and speed up gridding

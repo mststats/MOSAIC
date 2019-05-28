@@ -11,7 +11,7 @@ m.args=add_argument(m.args, "target", help="name of target population", type="ch
 m.args=add_argument(m.args, "data", help="folder containing data", type="character")
 ######################## optional arguments ###############################
 m.args=add_argument(m.args, "--ancestries", help="number of mixing ancestries", default=2, type="integer",short="-a")
-m.args=add_argument(m.args, "--number", help="number of target haplotypes (double the number of individuals assuming diploid)", default=1000, type="integer",short="-n")
+m.args=add_argument(m.args, "--number", help="number of target individuals", default=1000, type="integer",short="-n")
 m.args=add_argument(m.args, "--maxcores", help="maximum number of cores to use (will grab half of all available if set to 0)", default=0, type="integer",short="-m")
 m.args=add_argument(m.args, "--noEM", help="whether to perform EM inference of model parameters",flag=TRUE,short="-noEM")
 m.args=add_argument(m.args, "--nophase", help="whether to re-phase",flag=TRUE,short="-nophase")
@@ -39,7 +39,7 @@ target=argv$target
 datasource=argv$data
 A=argv$ancestries
 firstind=argv$index
-NUMA=argv$number
+NUMI=argv$number
 chrnos=argv$chromosomes
 chrnos=strsplit(chrnos,":")[[1]];chrnos=as.integer(chrnos[1]):as.integer(chrnos[2])
 MC=argv$maxcores
@@ -75,12 +75,13 @@ dotheta=T # update error / mutation parameters?
 return.res=TRUE #interactive() # whether to return results in a list; for use within an interactive R session
 
 # this function includes saving results to disk
-mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMA,pops,REPS=REPS,GpcM=GpcM,PHASE=PHASE,Ne=Ne,nl=dpg,max.donors=max.donors,prop.don=prop.don,
-			 return.res=return.res,ffpath=ffpath,doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,EM=EM,gens=gens,ratios=ratios,
-			 firstind=firstind,MC=MC,verbose=verbose,mask=mask,doFst=doFst) 
-filename=paste0(target,"_", A, "way_", firstind, "-", firstind+mosaic.result$NUMA/2-1, "_", paste(chrnos[c(1,length(chrnos))],collapse="-"),"_",sum(mosaic.result$NL),"_",
+mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMI,pops,mask=mask,PLOT=doplots,doFst=doFst,PHASE=PHASE,gens=gens,ratios=ratios,EM=EM,
+			 ffpath=ffpath,MC=MC,return.res=return.res,REPS=REPS,GpcM=GpcM,nl=dpg,max.donors=max.donors,prop.don=prop.don,
+			 doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,firstind=firstind,verbose=verbose,Ne=Ne)
+filename=paste0(target,"_", A, "way_", firstind, "-", firstind+mosaic.result$NUMI-1, "_", paste(chrnos[c(1,length(chrnos))],collapse="-"),"_",sum(mosaic.result$NL),"_",
 		   GpcM,"_",mosaic.result$prop.don,"_",mosaic.result$max.donors,".RData")
 load(paste0("MOSAIC_RESULTS/",filename))
 load(paste0("MOSAIC_RESULTS/localanc_",filename))
+# FLAG absorb into run_mosaic
 if (doplots)
   plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource, mosaic.result$all_Fst=mosaic.result$all_Fst)

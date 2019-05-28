@@ -1,8 +1,10 @@
-run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,REPS=0,GpcM=60,PHASE=TRUE,nl=1000,max.donors=100,prop.don=0.99,
-		    return.res=TRUE,ffpath="/dev/shm/",doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,EM=TRUE,gens=0,ratios=NULL,
-		    firstind=1,MC=0,PLOT=FALSE,verbose=TRUE, mask=NULL, doFst=TRUE, Ne=9e4) {
+run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=FALSE,doFst=TRUE,PHASE=TRUE,gens=0,ratios=NULL,EM=TRUE,
+			 ffpath="/dev/shm/",MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
+			 doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
   # sets default parameters, sets up some objects required later, reads in data, and initialises model.
+  if (A<2)
+    stop("need to fit at least a 2-way model\n")
   if (target=="simulated" & length(pops)<A)
     stop("Please provide ", A, " groups to simulate from\n")
   tmp=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne) 

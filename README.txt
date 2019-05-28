@@ -50,14 +50,16 @@ can convert to local ancestry at your SNP positions on the first chromosome you 
 #######  EXAMPLES  ###############################################################################################
 The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
 > Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22
-or equivalently in an interactive R session:
+or in an interactive R session:
 > mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
+Note that the latter does not produce plots by default but can be made to do so by adding the argument PLOT=TRUE. 
 
 User defined simulations can also be provided by specifying a vector of populations:
 > Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 or equivalently in an interactive R session:
 > mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))
-Note that additional groups will be used as the donor panels
+Note that additional groups will be used as the donor panels but can also be specified manually as follows:
+> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka", "French", "Yoruba"))
 
 ##### OUTPUTS ####################################################################################################
 A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
