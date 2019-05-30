@@ -78,10 +78,3 @@ return.res=TRUE #interactive() # whether to return results in a list; for use wi
 mosaic.result=run_mosaic(target,datasource,chrnos,A,NUMI,pops,mask=mask,PLOT=doplots,doFst=doFst,PHASE=PHASE,gens=gens,ratios=ratios,EM=EM,
 			 ffpath=ffpath,MC=MC,return.res=return.res,REPS=REPS,GpcM=GpcM,nl=dpg,max.donors=max.donors,prop.don=prop.don,
 			 doMu=doMu,doPI=doPI,dorho=dorho,dotheta=dotheta,firstind=firstind,verbose=verbose,Ne=Ne)
-filename=paste0(target,"_", A, "way_", firstind, "-", firstind+mosaic.result$NUMI-1, "_", paste(chrnos[c(1,length(chrnos))],collapse="-"),"_",sum(mosaic.result$NL),"_",
-		   GpcM,"_",mosaic.result$prop.don,"_",mosaic.result$max.donors,".RData")
-load(paste0("MOSAIC_RESULTS/",filename))
-load(paste0("MOSAIC_RESULTS/localanc_",filename))
-# FLAG absorb into run_mosaic
-if (doplots)
-  plot_all_mosaic(pathout="MOSAIC_PLOTS/",pathin=datasource, mosaic.result$all_Fst=mosaic.result$all_Fst)

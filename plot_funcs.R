@@ -463,30 +463,32 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
     return(m)
 }
 
-# function to plot most useful figures
-plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",pathin="HGDP/",GpcM=60,all_Fst=NULL) {
+# function to plot most useful figures to PDF. Note defaults are 
+plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile){
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
-  targetdetails=paste0(target, "_", A, "way_", NUMA, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
-		       "_",sum(NL),"_",GpcM)
+  nchrno=length(t.chrnos)
+  targetdetails=paste0(target, "_", t.A, "way_", t.NUMA, "_", paste(t.chrnos[c(1,nchrno)],collapse="-"),
+		       "_",sum(t.NL),"_",t.GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
-  ord.Mu=plot_Mu(Mu,alpha,NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
+  ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
   dev.off()
   
   # note that it takes a while to calculate frequencies, etc
-  if (!is.null(all_Fst)) {
+  if (!is.null(t.all_Fst)) {
     pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
-    ord.Fst=plot_Fst(all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
+    ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
     dev.off()
   }
   
   # dimensions of plots
-  d1=switch(A,NaN,1,2,2,3,3) 
-  d2=switch(A,NaN,3,3,5,5,7) 
+  d1=switch(t.A,NaN,1,2,2,3,3) 
+  d2=switch(t.A,NaN,3,3,5,5,7) 
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
-  this_acoplots=plot_coanccurves(acoancs,dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
+  this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
   dev.off()
-  EMlog=extract_log(logfile)
+  EMlog=extract_log(t.logfile)
   pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
   plot_loglike(EMlog)
   dev.off()

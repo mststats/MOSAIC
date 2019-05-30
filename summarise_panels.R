@@ -21,7 +21,7 @@ summarise_panels=function(panelname, pathin, chrnos)
 
 # This function will perform these as a one off calculation for each panel and save to file for reuse.
 # if panels=NULL then it will run for all panels in sample.names
-write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22, panels=NULL) {
+write_panel_summaries=function(pathout="FREQS/",datasource, chrnos=1:22, panels=NULL) {
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
   if (is.null(panels)) 
@@ -39,7 +39,7 @@ write_panel_summaries=function(pathout="FREQS/",datasource="HGDP/", chrnos=1:22,
 }
 
 # similar function that uses estimated local ancestry along the admixed genome
-write_admixed_summary=function(target,NL,pathout="FREQS/",datasource="HGDP/",targetdatasource="MOSAIC_RESULTS/",g.loc,t.localanc,chrnos=1:22)
+write_admixed_summary=function(target,NL,pathout="FREQS/",datasource,targetdatasource="MOSAIC_RESULTS/",g.loc,t.localanc,chrnos=1:22)
 {
   A=dim(t.localanc[[1]])[1]
   if (!file.exists(pathout))

@@ -83,7 +83,7 @@ rdirichlet=function(n, t.alpha) {
   return(y/rowSums(y))
 }
 
-# some example simulations of admixture to try out using the HGDP dataset
+# some example simulations of admixture to try out
 create_sim=function(t.NUMI, t.A, t.o.lambda, mixers, t.panels, ratios=c(rdirichlet(1, rep(8,t.A))), fewer_ancs=NULL, verbose=TRUE) {
   sim.alpha<-sim.lambda<-list()
   

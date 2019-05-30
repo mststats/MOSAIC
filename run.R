@@ -1,4 +1,4 @@
-run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=FALSE,doFst=TRUE,PHASE=TRUE,gens=0,ratios=NULL,EM=TRUE,
+run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=0,ratios=NULL,EM=TRUE,
 			 ffpath="/dev/shm/",MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
 			 doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4) {
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
@@ -198,7 +198,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=FAL
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
 		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-       Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst)
+       Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst, GpcM)
 
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
   if (target=="simulated") 
@@ -208,6 +208,11 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=FAL
   cat("Rst between mixing groups:\n")
   print(all_Fst$Rst)
 
+  if (PLOT) {
+    if (verbose) cat("saving plots to MOSAIC_PLOTS/ folder\n")
+    plot_all_mosaic("MOSAIC_PLOTS/",target,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile)
+  }
 
   if (return.res & target!="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,A=A,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,

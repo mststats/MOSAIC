@@ -1,4 +1,3 @@
-*) activate PLOT argument in run_mosaic
 *) how to doc
 *) shapeit inputs OR a conversion tool packaged with MOSAIC
 *) parallelise compressed_grid.cpp?

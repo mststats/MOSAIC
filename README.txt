@@ -32,9 +32,9 @@ There should be a folder with 4 types of input file:
 
 #######  PLOTS   #################################################################################################
 In R, after loading the results (including localanc_foo file) of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
-> plot_all_mosaic(pathout="MOSAIC_PLOTS/", EM) # this is run automatically by default
+> plot_all_mosaic(pathout="MOSAIC_PLOTS/",target) # note that this is already run automatically by default in run_mosaic
 to output default plots to the folder "MOSAIC_PLOTS/"
-You can also use:
+You can also individually use:
 (1) > ord.Mu<-plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
 (3) > plot_localanc(chrnos,g.loc,localanc) # cycles through all local ancestry plots (one plot per target diploid chromosome)
@@ -52,7 +52,6 @@ The "example_data" folder contains example data for chromosomes 18 to 22 and a r
 > Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22
 or in an interactive R session:
 > mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
-Note that the latter does not produce plots by default but can be made to do so by adding the argument PLOT=TRUE. 
 
 User defined simulations can also be provided by specifying a vector of populations:
 > Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
