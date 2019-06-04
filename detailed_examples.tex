@@ -1,51 +1,138 @@
 \documentclass{article}
 \usepackage{graphicx}
+\usepackage{url}
 \usepackage{color}
 \usepackage{upquote,textcomp}
 
 \begin{document}
+\newcommand{\Fst}{\textrm{F}_{\textrm{st}}}
+\newcommand{\hFst}{\hat F_{\textrm{st}}}
+\newcommand{\Rst}{\textrm{R}_{\textrm{st}}}
+\newcommand{\bm}[1]{\mbox{\boldmath $ #1 $}}
 
-\title{MOSAIC manual and example run}
+\title{MOSAIC}
 \author{Michael Salter-Townshend}
 
 \maketitle
 
 \section{Introduction}
-Here is the text of your introduction.
+MOSAIC is a tool for modelling multiway admixture using dense genotype data. 
+Given a set of potentially admixed haplotypes (targets) and multiple labelled sets of potentially related haplotypes (panels), 
+MOSAIC will infer the most recent admixture events occurring in the targets in terms of the panels.
 
-\subsection{Subsection Heading Here}
-Write your subsection text here.
+See Salter-Townshend and Myers, 2019 \url{https://doi.org/10.1534/genetics.119.302139} 
+for details on the MOSAIC method. 
+For results on a large set of human populations see \url{https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/}. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=3.0in]{MOSAIC_PLOTS/simulated_2way_4_18-22_146_60_Mu}
-    \caption{Simulation Results}
-    \label{simMu}
-\end{figure}
+It is not necessary that any of the panels are good surrogates for the unseen mixing groups as MOSAIC will infer parameters controlling:
+\begin{enumerate}
+  \item The stochastic relationship between panels and ancestral groups ($\bm\mu$). 
+  \item Timings and ancestry proportions of the admixture events ($\bm\alpha$ and $\bm\lambda$, derived from $\Pi$). 
+  \item Recombination rates before and after admixture ($\rho$ and $\bm\Pi$). 
+  \item Mutation / error rates for the haplotypes ($\theta$).
+\end{enumerate}
 
+Phasing improvements in light of the admixture model are performed and local ancestry along the genome is estimated.
 
+\section{Inputs / Data}
 The ``example\_data'' folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
 
-A real-data example run of mosaic can be done using:\\
-\verb+ Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22+
+As inputs MOSAIC requires:
+\begin{enumerate}
+  \item Phased haplotypes for reference panels and target (admixed) individuals (MOSAIC attempts to detect and correct phasing errors in targets): 
+    these should be named ``pop.genofile.chr'' where pop is the population (panel) name and chr is the chromosome index.  
+    All entries should be $0,1,?$ indicating ref, alt, or missing entries. The rows are \#snps the columns are and \#haps. Note that there should be no spaces 
+    in these files. 
+  \item A population names file: ``sample.names'' format unimportant apart from first column should have all the population names.
+  \item SNP files: ``snpfile.chr'' with \#snps rows and 6 columns comprising rsID, chr, distance, position, allele ?, allele ?. 
+  \item Recombination rates files: ``rates.chr'' 3 rows of \#sites, position, cumulative recombination rate (in centiMorgans). 
+\end{enumerate}
+Examination of the files in the \texttt{example\_data} folder should make the format of each of the above clear. 
 
-or in an interactive R session:\\
-\verb+ mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)+
+\section{Outputs / Results}
+\begin{enumerate}
+  \item A folder called \texttt{MOSAIC\_RESULTS} is required to hold log-files (foo.out) and results (foo.RData).  
+  \item A folder called \texttt{MOSAIC\_PLOTS} is required to hold the plots created by default by a MOSAIC run.
+  \item A folder called \texttt{FREQS} is required to hold the frequencies used to compute $\Fst$ statistics if required.
+\end{enumerate}
 
-User defined simulations can also be provided by specifying a vector of populations:\\
+\section{Simple Simulation Study}
+
+%A real-data example run of mosaic can be done using:\\
+%\verb+ Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22+
+
+%or in an interactive R session:\\
+%\verb+ mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)+
+
+User defined simulations can be created by specifying a vector of populations:\\
 \verb+ Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"+
 
-or equivalently in an interactive R session:\\
-\verb+ mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka")) +
+or equivalently in an interactive \texttt{R} session:\\
+\verb+ mosaic.result=run_mosaic("simulated","example_data/",chrnos=18:22,A=2,NUMI=3,+
+\verb+                                pops=c("English","Mandenka"),gens=50) +
 
+Once this has run, MOSAIC will have done:
+\begin{enumerate}
+  \item Simulated 2-way admixture using English and Mandenkan chromosomes $50$ generations ago.
+  \item Read in these simulated chromosomes, along with all available reference panels in the \texttt{example\_data} folder.
+  \item Inferred the model parameters $(\bm\mu, \theta, \bm\Pi, \rho)$ via EM.
+  \item Corrected phasing errors that scramble local ancestry. 
+  \item Estimated 2-way 2-way local ancestry along each chromosome for each admixed individual. 
+  \item Estimated $\Fst$ between each ancestral group and each ancestral group and each reference panel. 
+  \item Saved key plots to \texttt{MOSAIC\_PLOTS} as PDFs.
+  \item Saved key results to \texttt{MOSAIC\_RESULTS}.
+\end{enumerate}
+The results can be loaded in an \texttt{R} session using:\\
+\verb+load("simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc+  \\
+\verb+load("localaanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry estimates+ 
+
+If MOSAIC has been run withing \texttt{R} using the \verb+run_mosaic()+ command above then you can alternatively use\\
+\verb+attach(mosaic.result)+ \\
+to attach the results for further use. 
+
+\subsection{Plots}
+After loading or attaching the results in \texttt{R}, 
+each of the plots can be created within \texttt{R} by running:\\
+\verb+ plot_all_mosaic(pathout="MOSAIC_PLOTS/",target)+
+to output default plots to the folder \texttt{MOSAIC\_PLOTS/}. 
+Note that this is already run automatically by default in \verb+run_mosaic()+
+
+Or you can individually run:
+\begin{itemize}
+  \item Plot the copying matrix:\\
+\verb+ ord.Mu<-plot_Mu(Mu,alpha,NL) +
+\item Plot co-ancestry curves used to infer event timings:\\
+\verb+ plot_coanccurves(acoancs,dr)+
+\item Cycle through local ancestry plots (one per target diploid chromosome):\\
+\verb+ plot_localanc(chrnos,g.loc,localanc,g.true_anc)+ 
+\item Plot the model fit across iterations of thin/phase/EM (if EM is on):\\
+\verb+ plot_loglike(extract_log(logfile))+
+\end{itemize}
+
+The final plot above plots local ancestry along evenly spaced gridpoints on recombination distances. You can get 
+local ancestry estimates at the SNP positions using:\\
+\verb+ ans=grid_to_pos(localanc[[1]],loci,g.loc[[1]])+\\
+where loci are the SNP positions you'd like to map back to and this is for the first chromosome for which local ancestry has been estimated.
+
+
+\begin{figure} \centering
+    \includegraphics[width=3.0in]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Mu}
+    \caption{Simulation Inferred Copying Matrix}\label{simMu}
+\end{figure}
+
+\subsection{Other Options}
 Note that additional groups will be used as the donor panels but can also be specified manually as follows:\\
-\verb+ mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,+\\
+\verb+ mosaic.result=run_mosaic("simulated","example_data/",18:22,2,3,+\\
 \verb+                          c("English","Mandenka", "French", "Yoruba"))+
+%\begin{figure} \centering
+%    \includegraphics[width=3.0in]{MOSAIC_PLOTS/simulated_2way_6_18-22_FLAG_60_Mu}
+%    \caption{Simulation Inferred Copying Matrix}\label{simMu}
+%\end{figure}
 
 %##### OUTPUTS ####################################################################################################
 A folder called MOSAIC\_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
 A folder called MOSAIC\_PLOTS is required to hold the plots created by default by a MOSAIC run.
-A folder called FREQS is required to hold the frequencies used to compute Fst statistics if required.
+A folder called FREQS is required to hold the frequencies used to compute $\Fst$ statistics if required.
 %##################################################################################################################
 
 %########  PARAMETERS INFERRED   ##################################################################################
@@ -58,9 +145,22 @@ There are 4 sets of parameters inferred via EM:
 Note that PI and rho will depend on grid granularity (GpcM); finer grid means lower prob. of switching between gridpoints.
 %##################################################################################################################
 
+Finally, use \\
+\verb+Rscript mosaic.R --help+\\
+on the command line to list all arguments to MOSAIC. 
 
-FLAG include plots, extraction of localanc, r2 calcs, localanc on SNP positions. 
+%FLAG include plots, extraction of localanc, r2 calcs, localanc on SNP positions. 
 
-email michael.salter-townshend@ucd.ie for help
+email \url{michael.salter-townshend@ucd.ie} for help
+
+
+\begin{thebibliography}{2}
+
+  \bibitem[{Salter-Townshend and Myers}(2019)]{st2019fine}
+    \textit{Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups}
+{Salter-Townshend, M {\rm and} Myers, S.R.}
+    Genetics: 10.1534/genetics.119.302139.
+
+\end{thebibliography}
 
 \end{document}

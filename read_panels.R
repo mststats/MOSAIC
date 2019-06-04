@@ -94,7 +94,6 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       NL[LL]<-min(NL[LL],nrow(multipanels[[LL]])) # make sure none are asked for more than they have
     NN<-sum(NL)
     t.NUMA=NL[LL] # to make sure it doesn't go over available target haps
-    NUMI=max(1,t.NUMA/2)
     label=rep(NaN,NN)
     tmp<-c(0,cumsum(NL))
     for (ll in 1:LL)
@@ -104,6 +103,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     KNOWN[label<LL]<-T # last one / group only not known
     NUMP<-sum(KNOWN) # i.e. number in panels
     t.NUMA<-sum(!KNOWN) #i.e. number of targets / admixed
+    t.NUMI=max(1,t.NUMA/2)
 
     all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=T),ncol=2)
     locs<-as.integer(snps[,4])
@@ -165,14 +165,14 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     d.w[[ch]]$u=NULL;d.w[[ch]]$du=NULL
     t.w[[ch]]$u=NULL;t.w[[ch]]$du=NULL
     rm(multipanels)
-    tmp=create_grid(t.target,G[ch],S[ch],g.map, t.chrnos[ch], t.NUMA, t.A, umatch[[ch]], t.w[[ch]], true_anc[[ch]], locs, NUMI)
+    tmp=create_grid(t.target,G[ch],S[ch],g.map, t.chrnos[ch], t.NUMA, t.A, umatch[[ch]], t.w[[ch]], true_anc[[ch]], locs, t.NUMI)
     g.loc[[ch]]=tmp$g.loc;gobs[[ch]]=tmp$gobs;maxmatch_chr=tmp$maxmatch_chr;maxmiss_chr=tmp$maxmiss_chr 
     if (t.target=="simulated") g.true_anc[[ch]]=tmp$g.true_anc_chr
     maxmatch<-max(maxmatch,maxmatch_chr)
     maxmiss<-max(maxmiss,maxmiss_chr)
     rm(snps,rates) # leave in if planning to re-grid
   }
-  ans=list(maxmatch=maxmatch, maxmiss=maxmiss,g.loc=g.loc,gobs=gobs,d.w=d.w,t.w=t.w,umatch=umatch,NUMP=NUMP,LL=LL,NUMI=NUMI,NUMA=t.NUMA,
+  ans=list(maxmatch=maxmatch, maxmiss=maxmiss,g.loc=g.loc,gobs=gobs,d.w=d.w,t.w=t.w,umatch=umatch,NUMP=NUMP,LL=LL,NUMI=t.NUMI,NUMA=t.NUMA,
 	   label=label,KNOWN=KNOWN,NN=NN,kLL=kLL,NL=NL,G=G,maxmatchsize=maxmatchsize,panels=panels)
   if (t.target=="simulated") 
     ans$g.true_anc=g.true_anc
