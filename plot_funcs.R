@@ -13,7 +13,7 @@ happlot<-function(ch,k,x,A,probs,ylab,mlab=paste("Haplotype", k),xlab="",cexa=1,
   upper=lower=rep(0,G)
   for (i in 1:A) 
   {
-    upper=lower+probs[i,]
+    upper=lower+probs[[ch]][i,k,]
     polygon(x=x,y=c(lower,rev(upper)),col=colvec[i],xlim=xlim,ylim=ylim,border=NA)
     lower=upper
   }
@@ -26,11 +26,12 @@ dipplot<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual",ind),xlab="",cex
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,2)
+  hap=c(ind*2-1,ind*2)
   plot(x=range(x),y=c(0,2),xlim=xlim,ylim=ylim,t='n',axes=FALSE,ylab=ylab,main=mlab,xlab=xlab)
   upper=lower=rep(0,G)
   for (i in 1:A) 
   {
-    upper=lower+probs[i,]
+    upper=lower+probs[[ch]][i,hap[1],]+probs[[ch]][i,hap[2],]
     polygon(x=x,y=c(lower,rev(upper)),col=colvec[i],xlim=xlim,ylim=ylim,border=NA)
     lower=upper
   }
@@ -53,7 +54,7 @@ happlot_Mu<-function(ch,k,x,A,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu
     for (ll in 1:kLL) 
     {
       tmprgb=rgb(t(col2rgb(colvec[i])/255),alpha=alpha.Mu[ll,i]) 
-      upper=lower+probs[[k]][,(i-1)*kLL+ll]
+      upper=lower+probs[[ch]][[k]][,(i-1)*kLL+ll]
       polygon(x=x,y=c(lower,rev(upper)),col=tmprgb,border=NA)
       lower=upper
     }
@@ -78,7 +79,7 @@ dipplot_Mu<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual", ind),xlab=""
     for (ll in 1:kLL) 
     {
       tmprgb=rgb(t(col2rgb(colvec[i])/255),alpha=alpha.Mu[ll,i]) 
-      upper=lower+probs[[hap[1]]][,(i-1)*kLL+ll]+probs[[hap[2]]][,(i-1)*kLL+ll]
+      upper=lower+probs[[ch]][[hap[1]]][,(i-1)*kLL+ll]+probs[[ch]][[hap[2]]][,(i-1)*kLL+ll]
       polygon(x=x,y=c(lower,rev(upper)),col=tmprgb,border=NA)
       lower=upper
     }
@@ -248,7 +249,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=TRUE, beside=
   if (beside)
     return(ordMu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
 }
-plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst),
+plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst), reverse=TRUE,
 		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Fst)
   if ((!ord) & (cutoff!=t.kLL))
@@ -263,7 +264,7 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   if (!ord) 
   {
     par(mar=c(6,2,1+shiftt,1),bty='n', cex.axis=cexa, cex.lab=cexa, cex.main=cexa)
-    nf <- layout(matrix(c(1:(A+1)),ncol=A+1), widths=c(1,rep(2,A)), TRUE);layout.show(nf)
+    nf <- layout(matrix(c(1:(A+1)),ncol=A+1), widths=c(1,rep(2,A)), TRUE);#layout.show(nf)
     plot(c(-cexa,ncol(t.Fst)),c(0.5,nrow(t.Fst)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
     text(x=2,pos=2,y=(1:nrow(t.Fst)),rownames(t.Fst),cex=cexa)
   }
@@ -278,18 +279,31 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   rangeFst=NULL
   for (a in 1:A) {
     ordFst[[a]]=tail(ordFst[[a]],cutoff) # only show those that are below cutoff place
-    rangeFst[[a]]=range(1-ordFst[[a]])
+    if (reverse) 
+      rangeFst[[a]]=range(1-ordFst[[a]])
+    if (!reverse) 
+      rangeFst[[a]]=range(ordFst[[a]])
   }
   for (a in 1:A) 
   {
     if (ord) {
-      plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="1-Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
-      tmp=1-ordFst[[a]]-rangeFst[[a]][1]
-      y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
+      if (reverse)
+        plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="1-Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
+      if (!reverse)
+        plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(0,rangeFst[[a]][2]))
+      if (reverse) {
+	tmp=1-ordFst[[a]]-rangeFst[[a]][1]
+        y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
+      }
+      if (!reverse) 
+        y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T)
     }
-    if (!ord)
+    if (!ord & reverse)
       y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",xlab="1-Fst",
 		cex.main=cexa,names.arg=rep("",length(ordFst[[a]])),offset=rangeFst[[a]][1])
+    if (!ord & !reverse)
+      y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",xlab="Fst",
+		cex.main=cexa,names.arg=rep("",length(ordFst[[a]])))
   }
   if (ord) 
     return(ordFst)
@@ -368,7 +382,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	    axis(2)
 	  }
 	  if (MODE=="BAR" | MODE=="GRAD")
-	    happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.g.true_anc[[ch]][,k,],ylab="truth",cexa=cexa)
+	    happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,ylab="truth",cexa=cexa)
 	}
 	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	if (MODE=="LINE")
@@ -378,9 +392,9 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  axis(2)
 	}
 	if (MODE=="BAR")
-	  happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.localanc[[ch]][,k,],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	  happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
 	if (MODE=="GRAD")
-	  happlot_Mu(ch,k,t.g.loc[[ch]]*1e-6,A,t.gfbs[[ch]],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
+	  happlot_Mu(ch,k,t.g.loc[[ch]]*1e-6,A,t.gfbs,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
 	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()
@@ -424,7 +438,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	    axis(2)
 	  }
 	  if (MODE=="BAR" | MODE=="GRAD")
-	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.g.true_anc[[ch]][,hap[1],]+t.g.true_anc[[ch]][,hap[2],],xlab=paste("Position on Chromosome",t.chrnos[ch]),
+	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,xlab=paste("Position on Chromosome",t.chrnos[ch]),
 		    ylab="truth",cexa=cexa)
 	}
 	if (MODE=="LINE")
@@ -434,9 +448,9 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  axis(2)
 	}
 	if (MODE=="BAR")
-	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.localanc[[ch]][,hap[1],]+t.localanc[[ch]][,hap[2],],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
 	if (MODE=="GRAD")
-	  xy<-dipplot_Mu(ch,ind,t.g.loc[[ch]]*1e-6,A,t.gfbs[[ch]],xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
+	  xy<-dipplot_Mu(ch,ind,t.g.loc[[ch]]*1e-6,A,t.gfbs,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
 	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()

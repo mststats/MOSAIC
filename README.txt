@@ -73,12 +73,12 @@ The main work is multiple rounds of EM->phase->thin where:
 
 ########  PARAMETERS INFERRED   ##################################################################################
 There are 4 sets of parameters inferred via EM:
-	1. PI (prob. of switching between latent ancestries, including switch to same anc; AxA)
+	1. Pi (prob. of switching between latent ancestries, including switch to same anc; AxA)
 	2. rho (prob. of switching haps within each ancestry)
-	3. Mu (copying matrix; Mu[i,j] is  prob. of donor from group i given ancestry j; KxA where K is #donorpops) 
-	4. theta (error / mutation; vector length a; prob. of a difference b/w copied and copying haps at a locus)
+	3. Mu (copying matrix; Mu[k,a] is  prob. of donor from group k given ancestry a; KxA where K is #donorpops) 
+	4. theta (error / mutation; vector length A; prob. of a difference b/w copied and copying haps at a locus)
 
-Note that PI and rho will depend on grid granularity (GpcM); finer grid => lower prob. of switching between gridpoints.
+Note that Pi and rho will depend on grid granularity (GpcM); finer grid => lower prob. of switching between gridpoints.
 ##################################################################################################################
 
 #######  CHANGING DEFAULTS   #####################################################################################
