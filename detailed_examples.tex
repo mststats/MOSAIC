@@ -96,8 +96,8 @@ Once this has completed, MOSAIC will have done:
 
 \subsection{Loading Results}
 The results can be loaded in an \texttt{R} session using:\\
-\verb+load("simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc+  \\
-\verb+load("localaanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry estimates+ 
+\verb+load("MOSAIC_RESULTS/simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc+  \\
+\verb+load("MOSAIC_RESULTS/localaanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry estimates+ 
 
 If MOSAIC has been run withing \texttt{R} using the \verb+run_mosaic()+ command above then you can alternatively use\\
 \verb+attach(mosaic.result)+ \\
@@ -116,7 +116,7 @@ Or you can individually run:
 \begin{itemize}
   \item Plot the copying matrix:\\
 \verb+ ord.Mu<-plot_Mu(Mu,alpha,NL) +\\
-    \includegraphics[width=1.0\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Mu}\\
+    \includegraphics[width=0.6\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Mu}\\
     Simulation inferred Copying Matrix $\bm\mu$. One ancestry (that generated from English segments)
     mostly copies haplotypes in the French panel and the other (Mandenkan) mostly copies haplotypes
     from the Yoruban panel, as expected. 
@@ -128,7 +128,7 @@ Or you can individually run:
     
     This can be flipped to show the
     actual $\Fst$ values by including the \texttt{reverse=TRUE} argument:\\
-    \verb+plot_Fst(all_Fst$panels,cexa=2,reverse=TRUE)+\\
+    \verb+plot_Fst(all_Fst$panels,cexa=2,reverse=FALSE)+\\
     \includegraphics[width=0.6\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Fst_norev}\\
     In this case we've also not reordered the panels in order of closeness under $\Fst$. 
 
@@ -150,7 +150,7 @@ Or you can individually run:
     \verb+mp<-axTicks(1,round(axp=c(min(g.loc[[1]]),max(g.loc[[1]]),5)))+\\
     \verb+axis(1,at=mp,labels=signif(mp,3))+\\
     The second and third line add details to the axes, etc. \\
-    \includegraphics[width=1\textwidth]{MOSAIC_PLOTS/dip_local_2}\\
+    \includegraphics[width=1\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_local_1_2}\\
 
 \item Cycle through local ancestry plots (one per target diploid chromosome):\\
 \verb+ plot_localanc(chrnos,g.loc,localanc,g.true_anc)+ \\
@@ -167,13 +167,21 @@ Estimated and actual accuracy of local ancestry is calculated using \verb+dip_ex
 \verb+dip_fr2(localanc,g.true_anc)+ respectively, calculated across all target individuals and all chromosomes analysed. 
 
 \subsection{Other Options}
-Note that additional groups will be used as the donor panels but can also be specified manually as follows:\\
+\begin{itemize}
+  \item Note that additional groups will be used as the donor panels but can also be specified manually as follows:\\
 \verb+ mosaic.result=run_mosaic("simulated","example_data/",18:22,2,3,+\\
 \verb+                          c("English","Mandenka", "French", "Yoruba"))+
 
-Finally, use \\
+%\item Run \\
+%  \verb+ord.Mu<-plot_Mu(Mu,alpha,NL,showgradient=TRUE)+\\
+%    to create a version of the copying matrix $\bm\mu$ plot that uses bar colour densities rather than bar lengths 
+%    to represent copying proportions\\
+%    \includegraphics[width=0.6\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Mu_grad}\\
+
+\item Finally, use \\
 \verb+Rscript mosaic.R --help+\\
 on the command line to list all arguments to MOSAIC. 
+\end{itemize}
 
 % FLAG extraction of localanc and mean
 

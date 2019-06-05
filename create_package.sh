@@ -28,5 +28,5 @@ cp -r README.txt mosaic.R example_data/ MOSAIC/
 rm MOSAIC/Read-and-delete-me
 
 R CMD build MOSAIC
-R CMD INSTALL -l $rlib MOSAIC_1.2.tar.gz
+R CMD INSTALL -l $rlib MOSAIC_1.3.tar.gz
 

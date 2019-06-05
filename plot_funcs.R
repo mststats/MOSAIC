@@ -155,7 +155,7 @@ plot_panel_dist=function(donors,ch,a)
   plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
 }
 
-plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=TRUE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, 
+plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, 
 		      shiftl=ifelse(showgradient,0,max(sapply(rownames(t.Mu),nchar))/2*cexa), shiftt=ifelse(!showgradient,cexa,cexa*2),
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
@@ -231,7 +231,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=TRUE, beside=
   {
     alpha.Mu<-t.Mu^pow
     alpha.Mu<-t(t(alpha.Mu)/apply(alpha.Mu,2,max))
-    plot(c(-cexa,ncol(t.Mu)),c(0.5,nrow(t.Mu)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
+    plot(c(-shiftl,ncol(t.Mu)),c(0.5,nrow(t.Mu)+0.5),t='n',yaxt='n',xaxt='n',main="",xlab="",ylab="")
     mtext(side=3, at=1:A-0.5, round(t.alpha,3), cex=cexa)
     for (l in 1:ncol(t.Mu))
       for (ll in 1:nrow(t.Mu))
