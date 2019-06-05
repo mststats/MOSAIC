@@ -97,9 +97,9 @@ Once this has completed, MOSAIC will have done:
 \subsection{Loading Results}
 The results can be loaded in an \texttt{R} session using:\\
 \verb+load("MOSAIC_RESULTS/simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc+  \\
-\verb+load("MOSAIC_RESULTS/localaanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry estimates+ 
+\verb+load("MOSAIC_RESULTS/localanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry estimates+ 
 
-If MOSAIC has been run withing \texttt{R} using the \verb+run_mosaic()+ command above then you can alternatively use\\
+If MOSAIC has been run within \texttt{R} using the \verb+run_mosaic()+ command above then you can alternatively use\\
 \verb+attach(mosaic.result)+ \\
 to attach the results for further use. 
 
@@ -127,7 +127,7 @@ Or you can individually run:
     Simulation inferred $\Fst$ values, shown as $1-\Fst$ so that closer population pairs are larger. 
     
     This can be flipped to show the
-    actual $\Fst$ values by including the \texttt{reverse=TRUE} argument:\\
+    actual $\Fst$ values by including the \texttt{reverse=FALSE} argument:\\
     \verb+plot_Fst(all_Fst$panels,cexa=2,reverse=FALSE)+\\
     \includegraphics[width=0.6\textwidth]{MOSAIC_PLOTS/simulated_2way_6_18-22_148_60_Fst_norev}\\
     In this case we've also not reordered the panels in order of closeness under $\Fst$. 
