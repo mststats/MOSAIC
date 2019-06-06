@@ -33,19 +33,22 @@ For results on a large set of human populations see <https://maths.ucd.ie/~mst/M
 
 It is not necessary that any of the panels are good surrogates for the unseen mixing populations as MOSAIC will infer parameters controlling:
 
-1. Recombination rates before and after admixture ($\rho$ and $\Pi$ respectively). 
+* Recombination rates before and after admixture ($\rho$ and $\Pi$ respectively). 
 
-1. The stochastic relationship between panels and ancestral populations ($\mu$). 
+* The stochastic relationship between panels and ancestral populations ($\mu$). 
    
-1. Timings (from coancestry curves) and ancestry proportions ($\alpha$) of the admixture events.
+* Timings (from coancestry curves) and ancestry proportions ($\alpha$) of the admixture events.
 
-1. Mutation / error rates for the haplotypes ($\theta$).
+* Mutation / error rates for the haplotypes ($\theta$).
 
 Phasing improvements in light of the admixture model are performed and local ancestry along the genome is estimated.
 
 
 ## Inputs / Data
 The `example_data` folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
+
+**Examination of the files in the `example_data` folder should make the format of each of the below clear. **
+
 
 As inputs MOSAIC requires:
 
@@ -60,15 +63,13 @@ All entries should be $0,1,?$ indicating ref, alt, or missing entries respective
 
 - Recombination rates files: `rates.chr` 3 rows of \#sites, position, cumulative recombination rate (in centiMorgans). 
 
-Examination of the files in the `example_data` folder should make the format of each of the above clear. 
-
 
 ## Outputs / Results
-1. A folder called `MOSAIC_RESULTS` is required to hold log-files (foo.out) and results (foo.RData).  
+- A folder called `MOSAIC_RESULTS` is required to hold log-files (foo.out) and results (foo.RData).  
 
-1. A folder called `MOSAIC_PLOTS` is required to hold the plots created by default by a MOSAIC run.
+- A folder called `MOSAIC_PLOTS` is required to hold the plots created by default by a MOSAIC run.
 
-1. A folder called `FREQS` is required to hold the frequencies used to compute $F_{st}$ statistics if required.
+- A folder called `FREQS` is required to hold the frequencies used to compute $F_{st}$ statistics if required.
 
 
 ## Parameters Inferred
@@ -95,7 +96,7 @@ To run the simulation and output default results and plots, run either:
 Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 ```
 or equivalently in an interactive *R* session:
-```{r, message=FALSE}
+```{r, eval=T, echo=T}
 mosaic.result=run_mosaic("simulated","example_data/",chrnos=18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka"),gens=30)
 ```
@@ -120,13 +121,13 @@ Once this has completed, MOSAIC will have done:
 
 ## Loading Results
 The results can be loaded in an *R* session using:
-```{r, eval=FALSE}
+```{r, eval=F, echo=T}
 load("MOSAIC_RESULTS/simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc
 load("MOSAIC_RESULTS/localanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry 
 ```
 
 If MOSAIC has been run within *R* using the ``run_mosaic()`` command above then you can alternatively use
-```{r}
+```{r, message=F}
 attach(mosaic.result)
 ```
 to attach the results for further use while in the same session (or after quitting *R* and saving the workspace).
@@ -134,11 +135,11 @@ to attach the results for further use while in the same session (or after quitti
 ## Plots
 After loading (or attaching) the results in *R*,  
 each of the plots can be created within *R* by running:
-```{r, eval=F}
+```{r, eval=F, echo=T}
 plot_all_mosaic(pathout="MOSAIC_PLOTS/",target)
 ```
 to output default plots to the folder `MOSAIC_PLOTS/`. 
-Note that this is already run automatically by default in ``run_mosaic()``
+Note that this is already run automatically by default within ``run_mosaic()``
 
 ### Or you can generate each plot individually:
 ```{r, fig.height=3}
@@ -181,7 +182,7 @@ Local ancestry estimates. The second and third line add details to the axes, etc
 \
 
 You can cycle quickly through all individuals and all chromosomes using:
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=T}
 plot_localanc(chrnos,g.loc,localanc,g.true_anc)
 ```
 and hit return to display each new plot. 
@@ -241,7 +242,7 @@ dip_fr2(local_pos,true_anc_pos)
 ## Other Options
 
 * MOSAIC will use any additional groups found in the data folder as donor panels but these can also be specified manually as follows:
-```{r, eval=FALSE}
+```{r, eval=FALSE, echo=T}
 mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka", "French", "Yoruba"))
 ```
@@ -249,19 +250,18 @@ so that only `French` and `Yoruba` are used here. When the first argument (the t
 $A$ populations are used to simulate admixed chromosomes (and haplotypes not used for the simulated targets aren't used
 for inference) but when the target is not `simulated` then all specified `pops` are used as reference panels. 
 
-* Use
-````{r, eval=FALSE}
+* To create a version of the copying matrix $\mu$ plot that uses bar colour densities rather than bar lengths 
+to represent copying proportions, use:
+````{r, eval=FALSE, echo=T}
 ord.Mu<-plot_Mu(Mu,alpha,NL,showgradient=TRUE)
 ```
-to creates a version of the copying matrix $\mu$ plot that uses bar colour densities rather than bar lengths 
-to represent copying proportions. 
 
 * For help use
-```{bash, eval=F}
+```{bash, eval=F, echo=T}
 Rscript mosaic.R --help
 ```
 on the command line to list all arguments to MOSAIC or
-```{r, eval=F}
+```{r, eval=F, echo=T}
 ?run_mosaic
 ```
 within R for help on the main function. 
