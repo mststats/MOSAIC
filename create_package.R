@@ -7,4 +7,4 @@ Rcpp.package.skeleton(name="MOSAIC",example_code=F,cpp_files=dir(pattern="*.cpp"
 				   "mix_hmm.R","cleanup.R","phase_funcs.R","initProb.R","EM_updates.R","noanc.R","klikelihood.R",
 				   "log_funcs.R","summarise_panels.R","read_panels.R","localanc.R","setup.R","run.R"))
 
-rmarkdown::render("mosaic.Rmd")
+#rmarkdown::render("mosaic.Rmd")

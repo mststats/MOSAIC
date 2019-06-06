@@ -95,7 +95,7 @@ To run the simulation and output default results and plots, run either:
 Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 ```
 or equivalently in an interactive *R* session:
-```{r, eval=FALSE}
+```{r, message=FALSE}
 mosaic.result=run_mosaic("simulated","example_data/",chrnos=18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka"),gens=30)
 ```
@@ -120,13 +120,13 @@ Once this has completed, MOSAIC will have done:
 
 ## Loading Results
 The results can be loaded in an *R* session using:
-```{r}
+```{r, eval=FALSE}
 load("MOSAIC_RESULTS/simulated_2way_1-3_18-22_148_60_0.99_100.RData") # model parameters, etc
 load("MOSAIC_RESULTS/localanc_simulated_2way_1-3_18-22_148_60_0.99_100.RData") # local ancestry 
 ```
 
 If MOSAIC has been run within *R* using the ``run_mosaic()`` command above then you can alternatively use
-```{r, eval=F}
+```{r}
 attach(mosaic.result)
 ```
 to attach the results for further use while in the same session (or after quitting *R* and saving the workspace).
