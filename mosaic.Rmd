@@ -31,11 +31,11 @@ See Salter-Townshend and Myers, 2019 <https://doi.org/10.1534/genetics.119.30213
 for details on the MOSAIC method. 
 For results on a large set of human populations see <https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/>. 
 
-It is not necessary that any of the panels are good surrogates for the unseen mixing groups as MOSAIC will infer parameters controlling:
+It is not necessary that any of the panels are good surrogates for the unseen mixing populations as MOSAIC will infer parameters controlling:
 
 1. Recombination rates before and after admixture ($\rho$ and $\Pi$ respectively). 
 
-1. The stochastic relationship between panels and ancestral groups ($\mu$). 
+1. The stochastic relationship between panels and ancestral populations ($\mu$). 
    
 1. Timings (from coancestry curves) and ancestry proportions ($\alpha$) of the admixture events.
 
@@ -81,15 +81,21 @@ There are 4 sets of parameters inferred via EM:
 
 
 # Simple Simulation Study
+The following demonstrates MOSAIC via a quick and simple simulation that takes about 5 minutes to run, 
+involving 2-way admixture between English and Mandenkan genomes $30$ generations ago in approximately equal proportions
+on chromosomes $18$ to $22$. 
+When the seed is set in *R* as below, identical results and plots should be obtained.
+```{r}
+require(MOSAIC)
+set.seed(123)
+```
 
-A quick and simple simulation that takes about 5 minutes to run can be created using:
+To run the simulation and output default results and plots, run either:
 ```{bash, eval=F, echo=T}
 Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 ```
 or equivalently in an interactive *R* session:
 ```{r, eval=FALSE}
-require(MOSAIC)
-set.seed(123)
 mosaic.result=run_mosaic("simulated","example_data/",chrnos=18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka"),gens=30)
 ```
@@ -112,7 +118,6 @@ Once this has completed, MOSAIC will have done:
 
 * Saved key results to `MOSAIC_RESULTS`.
 
-
 ## Loading Results
 The results can be loaded in an *R* session using:
 ```{r}
@@ -124,11 +129,10 @@ If MOSAIC has been run within *R* using the ``run_mosaic()`` command above then 
 ```{r, eval=F}
 attach(mosaic.result)
 ```
-to attach the results for further use.
+to attach the results for further use while in the same session (or after quitting *R* and saving the workspace).
 
 ## Plots
 After loading (or attaching) the results in *R*,  
-^[When the seed is set in \texttt{R} using set.seed(123) then identical plots should be obtained.]
 each of the plots can be created within *R* by running:
 ```{r, eval=F}
 plot_all_mosaic(pathout="MOSAIC_PLOTS/",target)
@@ -142,6 +146,7 @@ ord.Mu=plot_Mu(Mu,alpha,NL)
 ```
 Inferred Copying Matrix $\mu$. One ancestry (that generated from English segments) mostly copies haplotypes in the French panel and the other (Mandenkan) mostly copies haplotypes from the Yoruban panel, as expected.
 \
+
 
 ```{r, fig.height=3}
 ord.Fst=plot_Fst(all_Fst$panels,ord=T)
@@ -158,20 +163,119 @@ In this case we've also not reordered the panels in order of closeness under $F_
 \
  
 Plot co-ancestry curves used to infer event timings:
-```{r, fig.height=2.5}
+```{r, fig.height=2.2}
 fitcc=plot_coanccurves(acoancs,dr)
 ```
 Inferred Coancestry Curves. `dr` is the gap in genetic distance between successive gridpoints. These coancestry curves are somewhat rough at longer distances as we have only used short chromosomes in the analysis. The black lines are empirical coancestry curves across all target individuals, the light grey are per individual, and the green is the fitted single-event coancestry curve.
 \
  
 Look at the $2^{nd}$ individuals first chromosome:
-```{r}
-ch=1
+```{r, fig.height=2.5}
+chr=1
 ind=2
-dipplot(ch,ind,g.loc[[ch]],ind,localanc,xlab=paste("Position on Chromosome",chrnos[ch]),ylab="estimated")
-mp<-axTicks(1,round(axp=c(min(g.loc[[ch]]),max(g.loc[[ch]]),5)))
+dipplot(chr,ind,g.loc[[chr]],ind,localanc,xlab=paste("Position on Chromosome",chrnos[chr]),ylab="")
+mp<-axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
 axis(1,at=mp,labels=signif(mp,3))
 ```
 Local ancestry estimates. The second and third line add details to the axes, etc. 
 \
+
+You can cycle quickly through all individuals and all chromosomes using:
+```{r, eval=FALSE}
+plot_localanc(chrnos,g.loc,localanc,g.true_anc)
+```
+and hit return to display each new plot. 
+
+When any such second set of local ancestries is provided, both are plotted and the Pearson correlation $r^2$
+between them over chromosomal positions is reported for each individual on each chromosome. Here we've supplied the true local ancestry
+`g.true_anc`, known as this is simulated data. 
+
+
+## Accuracy of estimated local ancestry
+The object `localanc` is a list; each entry represents one chromosome, each of which is an array of dimension $A\times 2N \times G$
+where $A$ is the number of modelled ancestries (A-way admixture), $N$ is the number of target individuals, and $G$ is the number
+of gridpoints (evenly spaced positions on genetic distance) on that chromosome. The $a,h,g$ entry of `localanc[[chr]]`
+is therefore the inferred probability that haplotype $(h+1)\%\%2+1$ of individual $(h+h\%\%2)/2$ is of ancestry $a$
+at the $g^{th}$ point of chromosome `chr`. 
+
+The expected number of alleles on each diploid individual can be quickly found using
+```{r}
+dip_localanc=dip(localanc)
+```
+
+Plots of the mean (across individuals) local ancestry can be made using
+```{r}
+chr=1
+m_localanc=plot_mean_localanc(chr,chrnos,g.loc,localanc,ret=TRUE)
+```
+which will plot the mean for each ancestry with a different colour on chromosome `chr`. 
+Here the non-default setting `ret=TRUE` has been used to also return mean values in the form of
+a list. Each element represents the mean local ancestry for an ancestry across all gridpoints on that chromosome. 
+
+Expected accuracy of local ancestry $\mathbf{E}[r^2]$ is calculated using 
+```{r}
+dip_expected_fr2(localanc)
+``` 
+and accuracy of local ancestry estimation in the presence of a known truth given by `g.true_anc` is provided by
+```{r}
+dip_fr2(localanc,g.true_anc)
+```
+which calculates $r^2$ across all target individuals and all chromosomes analysed. 
+
+
+## Local ancestry at SNP positions
+The above calculations and plots show local ancestry along evenly spaced gridpoints on recombination distances. You can get 
+local ancestry estimates at the SNP positions using:
+```{r}
+local_pos=grid_to_pos(localanc,"example_data/",g.loc,chrnos)
+```
+where the SNP positions you'd like to map back are read from the relevant `snpfile`s to and this is for the first chromosome for which local ancestry has been estimated.
+Naturally, local ancestry estimation accuracy will be slightly different at the SNP positions (typically higher as these are where we have genotype information)
+
+```{r}
+true_anc_pos=grid_to_pos(g.true_anc,"example_data/",g.loc,chrnos)
+dip_fr2(local_pos,true_anc_pos)
+```
+
+
+## Other Options
+
+* MOSAIC will use any additional groups found in the data folder as donor panels but these can also be specified manually as follows:
+```{r, eval=FALSE}
+mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,
+			 pops=c("English","Mandenka", "French", "Yoruba"))
+```
+so that only `French` and `Yoruba` are used here. When the first argument (the target) is `simulated` then the first
+$A$ populations are used to simulate admixed chromosomes (and haplotypes not used for the simulated targets aren't used
+for inference) but when the target is not `simulated` then all specified `pops` are used as reference panels. 
+
+* Use
+````{r, eval=FALSE}
+ord.Mu<-plot_Mu(Mu,alpha,NL,showgradient=TRUE)
+```
+to creates a version of the copying matrix $\mu$ plot that uses bar colour densities rather than bar lengths 
+to represent copying proportions. 
+
+* For help use
+```{bash, eval=F}
+Rscript mosaic.R --help
+```
+on the command line to list all arguments to MOSAIC or
+```{r, eval=F}
+?run_mosaic
+```
+within R for help on the main function. 
+
+
+## email <michael.salter-townshend@ucd.ie> for help
+
+
+\begin{thebibliography}{2}
+
+  \bibitem[{Salter-Townshend and Myers}(2019)]{st2019fine}
+    \textit{Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups}
+{Salter-Townshend, M {\rm and} Myers, S.R.}
+    Genetics: 10.1534/genetics.119.302139.
+
+\end{thebibliography}
 

@@ -43,13 +43,27 @@ get_localanc=function(t.gfbs,t.G,t.A,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=N
 }
 
 # function to find snp positions values of x based on gridded values of x
-grid_to_pos=function(x,pos,glocs) { # arguments are thing-to-map, SNP positions, grid locations
+grid_to_pos_chr=function(x,pos,glocs) { # arguments are thing-to-map, SNP positions, grid locations
   S=length(pos)
   g.map<-vapply(1:S, function(s) which.min((pos[s]-glocs)^2),0L) # create map from rates to grid
   if (length(dim(x))==2)
     ans=x[,g.map]
   if (length(dim(x))==3)
     ans=x[,,g.map]
+  return(ans)
+}
+
+grid_to_pos=function(x,pathin,glocs,chrnos) { # arguments are thing-to-map, SNP positions, grid locations
+  ans=list()
+  for (ch in 1:length(chrnos)) {
+    pos=read.table(paste0(pathin,"snpfile.",chrnos[ch]))[,4]
+    S=length(pos)
+    g.map<-vapply(1:S, function(s) which.min((pos[s]-glocs[[ch]])^2),0L) # create map from rates to grid
+    if (length(dim(x[[ch]]))==2)
+      ans[[ch]]=x[[ch]][,g.map]
+    if (length(dim(x[[ch]]))==3)
+      ans[[ch]]=x[[ch]][,,g.map]
+  }
   return(ans)
 }
 

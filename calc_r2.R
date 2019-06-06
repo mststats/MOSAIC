@@ -166,6 +166,14 @@ hap_expected_fr2<-function(x)
   return(ans)
 }
 
+dip<-function(x) {
+  ans=list()
+  for (ch in 1:length(x)) {
+    ans[[ch]]=x[[ch]][,seq(1,dim(x[[ch]])[2],2),]+x[[ch]][,seq(2,dim(x[[ch]])[2],2),]
+    dim(ans[[ch]])=c(dim(x[[ch]])[1],dim(x[[ch]])[2]/2,dim(x[[ch]])[3])
+  }
+  return(ans)
+}
 dip_chr<-function(x) {ans=x[,seq(1,dim(x)[2],2),]+x[,seq(2,dim(x)[2],2),];dim(ans)=c(dim(x)[1],dim(x)[2]/2,dim(x)[3]);ans}
 dip_chr_ind<-function(x,ind) {hap<-c(ind*2-1,ind*2);ans=x[,hap[1],]+x[,hap[2],];dim(ans)=c(dim(x)[1],1,dim(x)[3]);ans}
 

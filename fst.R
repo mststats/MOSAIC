@@ -42,7 +42,7 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
     tmp<-strsplit(tmp,"")
     y=matrix(sapply(tmp, as.double), ncol=S)[1:NUMA,]
     populations=matrix(NaN,NUMA,S)
-    tmp=grid_to_pos(t.localanc[[ch]],snps[,4],glocs[[ch]])
+    tmp=grid_to_pos_chr(t.localanc[[ch]],snps[,4],glocs[[ch]])
     k=0
     for (ind in 1:(NUMA/2))
       for (h in 1:2)
