@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 knitr::opts_chunk$set(fig.pos = "H")
 ```
 
-# Introduction
+# MOSAIC Organises Segments of Ancestry In Chromosomes
 ## Reference 
 See _Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups_ Salter-Townshend, M. and Myers, S.R. 
     **Genetics** (2019): [10.1534/genetics.119.302139](https://doi.org/10.1534/genetics.119.302139).
