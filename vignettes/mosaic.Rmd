@@ -1,5 +1,5 @@
 ---
-title: "MOSAIC Organises Segments of Ancestry In Chromosomes"
+title: "MOSAIC"
 author: "Michael Salter-Townshend"
 date: "`r Sys.Date()`"
 output: rmarkdown::pdf_document
@@ -24,10 +24,10 @@ knitr::opts_chunk$set(fig.pos = "H")
 
 # MOSAIC Organises Segments of Ancestry In Chromosomes
 ## Reference 
-See _Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups_ Salter-Townshend, M. and Myers, S.R. 
-    **Genetics** (2019): [10.1534/genetics.119.302139](https://doi.org/10.1534/genetics.119.302139).
-for details on the MOSAIC method. 
-For results on a large set of human populations see <https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/>. 
+_Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups_ Salter-Townshend, M. and Myers, S.R. 
+    **Genetics** (2019): [10.1534/genetics.119.302139](https://doi.org/10.1534/genetics.119.302139)
+
+For a result browser on $95$ human populations see <https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/>. 
 
 ## Overview 
 MOSAIC is a tool for modelling multiway admixture using dense genotype data. 
@@ -44,20 +44,20 @@ MOSAIC will infer the most recent admixture events occurring in the targets in t
 
 * Mutation / error rates for the haplotypes ($\theta$).
 
-Phasing improvements in light of the admixture model are performed and local ancestry along the genome is estimated.
+Phasing improvements in light of the admixture model are performed and **local ancestry along the genome** is estimated.
 
 
 ## Inputs / Data
 The `example_data` folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
 
-**Examination of the files in the `example_data` folder should make the format of each of the below clear. **
+**Examination of the files** in the `example_data` folder should make the format of each of the below clear.
 
 
 As inputs MOSAIC requires:
 
 - Phased haplotypes for reference panels and target (admixed) individuals (MOSAIC attempts to detect and correct phasing errors in targets): 
 these should be named `pop.genofile.chr` where pop is the population (panel) name and chr is the chromosome index.  
-All entries should be $0,1,?$ indicating ref, alt, or missing entries respectively. The rows are \#snps the columns are and \#haps. 
+All entries should be $0,1,?$ indicating ref, alt, or missing entries respectively. The rows are \#snps and the columns are \#haps. 
 **Note that there should be no spaces in these files.**
 
 - A population names file: `sample.names` format unimportant apart from first column should have all the population names.
@@ -74,15 +74,17 @@ All entries should be $0,1,?$ indicating ref, alt, or missing entries respective
 
 - A folder called `FREQS` is required to hold the frequencies used to compute $F_{st}$ statistics if required.
 
+The above will be created on Linux systems as required if not present. 
 
 ## Parameters Inferred
 There are 4 sets of parameters inferred via EM:
 
-1. $\Pi$: prob. of switching between latent ancestries, including switch to same anc; $A\times A$.
-1. $\rho$: prob. of switching haps within each ancestry.
-1. $\mu$: copying matrix; $\mu_{ia}$ is  the probability of a donor from group i given ancestry a; $K\times A$ where K is \#donorpops. 
-1. $\theta$: error / mutation; vector length A; prob. of a difference b/w copied and copying haps at a locus.
+1. $\Pi$: prob. of switching between latent ancestries, including switch to same anc; dimension $A\times A$ where $A$ is the number of mixing groups.
+1. $\rho$: prob. of switching haps within each ancestry; scalar.
+1. $\mu$: copying matrix; $\mu_{ia}$ is  the probability of a donor from group i given ancestry a; dimension $K\times A$ where K is \#donorpops. 
+1. $\theta$: prob. of a difference b/w copied and copying haps at a locus; scalar.
 
+See reference for details. 
 
 # Simple Simulation Study
 The following demonstrates MOSAIC via a quick and simple simulation that takes about 5 minutes to run, 
@@ -96,12 +98,12 @@ set.seed(123)
 
 To run the simulation and output default results and plots, run either:
 ```{bash, eval=F, echo=T}
-Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
+Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka" -gens 30
 ```
 or equivalently in an interactive *R* session:
 ```{r, eval=T, echo=T}
 mosaic.result=run_mosaic("simulated","../example_data/",chrnos=18:22,A=2,NUMI=3,
-			 pops=c("English","Mandenka"),gens=30)
+                         pops=c("English","Mandenka"),gens=30)
 ```
 
 Once this has completed, MOSAIC will have done:
@@ -114,13 +116,13 @@ Once this has completed, MOSAIC will have done:
 
 * Corrected phasing errors that scramble local ancestry. 
 
-* Estimated 2-way 2-way local ancestry along each chromosome for each admixed individual. 
+* Estimated 2-way local ancestry along each chromosome for each admixed individual. 
 
-* Estimated $F_{st}$ between each ancestral group and each ancestral group and each reference panel. 
+* Estimated $F_{st}$ between each ancestral group and each ancestral group and each reference panel and $R_{st}$ (see paper). 
 
 * Saved key plots to `MOSAIC_PLOTS` as PDFs.
 
-* Saved key results to `MOSAIC_RESULTS`.
+* Saved all results to `MOSAIC_RESULTS`.
 
 ## Loading Results
 The results can be loaded in an *R* session using:
@@ -147,32 +149,40 @@ Note that this is already run automatically by default within ``run_mosaic()``
 ### Or you can generate each plot individually:
 ```{r, fig.height=3}
 ord.Mu=plot_Mu(Mu,alpha,NL)
-```
+```  
 Inferred Copying Matrix $\mu$. One ancestry (that generated from English segments) mostly copies haplotypes in the French panel and the other (Mandenkan) mostly copies haplotypes from the Yoruban panel, as expected.
 \
 
+-----------
 
 ```{r, fig.height=3}
 ord.Fst=plot_Fst(all_Fst$panels,ord=T)
-```
+```  
 $1-F_{st}$ estimates between each ancestral group and each donor panel; closer population pairs are larger.
 \
  
+-----------
+
 This can be flipped to show the actual $F_{st}$ values by including the `reverse=FALSE` argument:
 ```{r,fig.height=3}
 tmp=plot_Fst(all_Fst$panels,reverse=FALSE)
-```
+```  
 Raw unordered $F_{st}$ values; closer population pairs are smaller.
 In this case we've also not reordered the panels in order of closeness under $F_{st}$. 
 \
  
+-----------
+ 
 Plot co-ancestry curves used to infer event timings:
 ```{r, fig.height=2.2}
 fitcc=plot_coanccurves(acoancs,dr)
-```
+```  
 Inferred Coancestry Curves. `dr` is the gap in genetic distance between successive gridpoints. These coancestry curves are somewhat rough at longer distances as we have only used short chromosomes in the analysis. The black lines are empirical coancestry curves across all target individuals, the light grey are per individual, and the green is the fitted single-event coancestry curve.
 \
  
+-----------
+ 
+
 Look at the $2^{nd}$ individuals first chromosome:
 ```{r, fig.height=2.5}
 chr=1
@@ -180,14 +190,16 @@ ind=2
 dipplot(chr,ind,g.loc[[chr]],ind,localanc,xlab=paste("Position on Chromosome",chrnos[chr]),ylab="")
 mp<-axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
 axis(1,at=mp,labels=signif(mp,3))
-```
+```  
 Local ancestry estimates. The second and third line add details to the axes, etc. 
 \
+ 
+-----------
 
 You can cycle quickly through all individuals and all chromosomes using:
 ```{r, eval=FALSE, echo=T}
 plot_localanc(chrnos,g.loc,localanc,g.true_anc)
-```
+```  
 and hit return to display each new plot. 
 
 When any such second set of local ancestries is provided, both are plotted and the Pearson correlation $r^2$
