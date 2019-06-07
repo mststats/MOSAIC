@@ -23,15 +23,18 @@ knitr::opts_chunk$set(fig.pos = "H")
 ```
 
 # Introduction
+## Reference 
+See _Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups_ Salter-Townshend, M. and Myers, S.R. 
+    **Genetics** (2019): [10.1534/genetics.119.302139](https://doi.org/10.1534/genetics.119.302139).
+for details on the MOSAIC method. 
+For results on a large set of human populations see <https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/>. 
+
+## Overview 
 MOSAIC is a tool for modelling multiway admixture using dense genotype data. 
 Given a set of potentially admixed haplotypes (targets) and multiple labelled sets of potentially related haplotypes (panels), 
 MOSAIC will infer the most recent admixture events occurring in the targets in terms of the panels.
 
-See Salter-Townshend and Myers, 2019 <https://doi.org/10.1534/genetics.119.302139>
-for details on the MOSAIC method. 
-For results on a large set of human populations see <https://maths.ucd.ie/~mst/MOSAIC/HGDP_browser/>. 
-
-It is not necessary that any of the panels are good surrogates for the unseen mixing populations as MOSAIC will infer parameters controlling:
+**It is not necessary that any of the panels are good direct surrogates for the unseen mixing populations** as MOSAIC will infer parameters controlling:
 
 * Recombination rates before and after admixture ($\rho$ and $\Pi$ respectively). 
 
@@ -268,14 +271,4 @@ within R for help on the main function.
 
 
 ## email <michael.salter-townshend@ucd.ie> for help
-
-
-\begin{thebibliography}{2}
-
-  \bibitem[{Salter-Townshend and Myers}(2019)]{st2019fine}
-    \textit{Fine-Scale Inference of Ancestry Segments Without Prior Knowledge of Admixing Groups}
-{Salter-Townshend, M {\rm and} Myers, S.R.}
-    Genetics: 10.1534/genetics.119.302139.
-
-\end{thebibliography}
 
