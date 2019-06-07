@@ -97,7 +97,7 @@ Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
 ```
 or equivalently in an interactive *R* session:
 ```{r, eval=T, echo=T}
-mosaic.result=run_mosaic("simulated","example_data/",chrnos=18:22,A=2,NUMI=3,
+mosaic.result=run_mosaic("simulated","../example_data/",chrnos=18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka"),gens=30)
 ```
 
@@ -228,13 +228,13 @@ which calculates $r^2$ across all target individuals and all chromosomes analyse
 The above calculations and plots show local ancestry along evenly spaced gridpoints on recombination distances. You can get 
 local ancestry estimates at the SNP positions using:
 ```{r}
-local_pos=grid_to_pos(localanc,"example_data/",g.loc,chrnos)
+local_pos=grid_to_pos(localanc,"../example_data/",g.loc,chrnos)
 ```
 where the SNP positions you'd like to map back are read from the relevant `snpfile`s to and this is for the first chromosome for which local ancestry has been estimated.
 Naturally, local ancestry estimation accuracy will be slightly different at the SNP positions (typically higher as these are where we have genotype information)
 
 ```{r}
-true_anc_pos=grid_to_pos(g.true_anc,"example_data/",g.loc,chrnos)
+true_anc_pos=grid_to_pos(g.true_anc,"../example_data/",g.loc,chrnos)
 dip_fr2(local_pos,true_anc_pos)
 ```
 
@@ -243,7 +243,7 @@ dip_fr2(local_pos,true_anc_pos)
 
 * MOSAIC will use any additional groups found in the data folder as donor panels but these can also be specified manually as follows:
 ```{r, eval=FALSE, echo=T}
-mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,
+mosaic.result=run_mosaic("simulated","../example_data/",18:22,A=2,NUMI=3,
 			 pops=c("English","Mandenka", "French", "Yoruba"))
 ```
 so that only `French` and `Yoruba` are used here. When the first argument (the target) is `simulated` then the first

@@ -20,10 +20,8 @@ echo "importFrom(combinat,permn)" >> MOSAIC/NAMESPACE
 #echo "importFrom(argparser,parse_args)" >> MOSAIC/NAMESPACE
 cp DESCRIPTION MOSAIC/DESCRIPTION
 cp -r inst MOSAIC/
-#cp mosaic.Rmd mosaic.pdf vignettes/
-#cp -r vignettes/ MOSAIC/
+cp -r vignettes/ MOSAIC/
 cp -r man MOSAIC/
-cp MOSAIC-package.Rd MOSAIC/man/
 
 cp -r README.txt mosaic.R example_data/ MOSAIC/ 
 
