@@ -372,7 +372,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
       lines(gap*coancs$drange*100 , x[i,j,][1]*exp(-gap*x[i,j,][3]*coancs$drange)+x[i,j,][2], col=3, lwd=lwd) # note x[3] is already exponentiated
     }
   }
-  return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3])) # redundancy here but useful to focus 
+  return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3]), kweights=kweights, keep=keep) # redundancy here but useful to focus 
 }
 
 
