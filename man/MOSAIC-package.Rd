@@ -31,7 +31,8 @@ Michael Salter-Townshend, michael.salter-townshend@ucd.ie
 Maintainer: michael.salter-townshend@ucd.ie <michael.salter-townshend@ucd.ie>
 }
 \references{
-  "Fine-scale Inference of Ancestry Segments without Prior Knowledge of Admixing Groups" by Salter-Townshend, M. and Myers, S.R. 2019.
+  "Fine-scale Inference of Ancestry Segments without Prior Knowledge of Admixing Groups" by Salter-Townshend, M. and Myers, S.R.; 
+  Genetics (2019): https://doi.org/10.1534/genetics.119.302139
 }
 \keyword{admixture, local ancestry, population genetics, Hidden Markov Model}
 \seealso{
