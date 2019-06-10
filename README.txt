@@ -1,5 +1,5 @@
 ######  OVERVIEW   ###############################################################################################
-MOSAIC is designed to run on the linux command line. 
+MOSAIC is designed to run on the linux command line or within R. 
 You can install MOSAIC by running the command
 > R CMD INSTALL -l rlib MOSAIC_1.3.tar.gz
 where rlib is the location where you'd like to install the R package (e.g. /usr/lib/R/site-library/)
@@ -11,6 +11,8 @@ This is once-off and compiles all C++ code for the Hidden Markov Models underlyi
 To run MOSAIC on the command line it is also necessary to install "argparser" (available from CRAN). 
 
 #######  HELP    #################################################################################################
+See www.maths.ucd.ie/~mst/MOSAIC/MOSAIC.pdf for a manual. 
+
 Try 
 > Rscript mosaic.R --help 
 to see how to use MOSAIC. The only two arguments that must be provided are:
