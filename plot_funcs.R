@@ -478,7 +478,7 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 }
 
 # function to plot most useful figures to PDF. Note defaults are 
-plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
 			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile){
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
@@ -502,10 +502,12 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,t.GpcM=GpcM,t.all_Fst=al
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
   this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
   dev.off()
-  EMlog=extract_log(t.logfile)
-  pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
-  plot_loglike(EMlog)
-  dev.off()
+  if (EM | PHASE) {
+    EMlog=extract_log(t.logfile)
+    pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
+    plot_loglike(EMlog)
+    dev.off()
+  }
 }
 
 # create a map showing closest populations to mixing groups based on MOSAIC output

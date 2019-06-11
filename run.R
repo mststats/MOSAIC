@@ -29,6 +29,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   Mu<-matrix(rep(1/kLL,A*kLL),kLL);for (ind in 1:NUMI) alpha[[ind]]=rep(1/A,A) # flatten out w.r.t. ancestry
   runtime=NaN
   # always need to run noanc.R b/c need good paras for init_Mu
+  if (verbose) cat("Initialise parameters of MOSAIC based on ancestry unaware copying probabilities\n");
   tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, A, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
 		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, 100, HPC, runtime, resultsdir, GpcM, eps, NaN,
 		      doMu, doPI, dorho, dotheta, ffpath, firstind, EM) 
@@ -210,7 +211,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
 
   if (PLOT) {
     if (verbose) cat("saving plots to MOSAIC_PLOTS/ folder\n")
-    plot_all_mosaic("MOSAIC_PLOTS/",target,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+    plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
 			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile)
   }
 
