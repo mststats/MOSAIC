@@ -1,3 +1,4 @@
+*) check usage of missing data. e.g. ?01 versus 101; how many matches, etc
 *) shapeit inputs OR a conversion tool packaged with MOSAIC
 *) parallelise compressed_grid.cpp?
 *) read in one SNP at a time for all individuals to reduce memory usage and speed up gridding
