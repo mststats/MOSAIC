@@ -2,7 +2,7 @@
 title: "MOSAIC"
 author: "Michael Salter-Townshend"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_document
+output: pdf_document
 fig_caption: yes
 urlcolor: blue
 header-includes: 
