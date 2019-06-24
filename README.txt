@@ -56,7 +56,7 @@ or in an interactive R session:
 > mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
 
 User defined simulations can also be provided by specifying a vector of populations:
-> Rscript mosaic.R simulated example_data/ -c 18:22 -n 2 -p "English Mandenka"
+> Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka"
 or equivalently in an interactive R session:
 > mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))
 Note that additional groups will be used as the donor panels but can also be specified manually as follows:

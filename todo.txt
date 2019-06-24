@@ -1,7 +1,0 @@
-*) check usage of missing data. e.g. ?01 versus 101; how many matches, etc
-*) shapeit inputs OR a conversion tool packaged with MOSAIC
-*) parallelise compressed_grid.cpp?
-*) read in one SNP at a time for all individuals to reduce memory usage and speed up gridding
-*) don't grab all memory by default on a cluster: see Busby email.
-	*) remove or reduce gfbs memory footprint
-*) pass indices of individuals to MOSAIC rather than -n and -i

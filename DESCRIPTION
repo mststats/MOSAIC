@@ -15,7 +15,7 @@ URL: https://maths.ucd.ie/~mst/MOSAIC/
 License: GPL (>= 2)
 Imports: Rcpp (>= 0.12.17)
 LinkingTo: Rcpp
-Suggests: 
-    knitr,
-    rmarkdown
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
+NeedsCompilation: yes
+Packaged: 2019-06-20 12:41:39 UTC; mst
