@@ -1,8 +1,8 @@
 Package: MOSAIC
 Type: Package
 Title: MOSAIC Organises Segments of Ancestry In Chromosomes.
-Version: 1.3
-Date: 2019-06-05
+Version: 1.3.1
+Date: 2019-08-14
 Author: Michael Salter-Townshend
 Maintainer: Michael Salter-Townshend <michael.salter-townshend@ucd.ie>
 Description: MOSAIC is a package for inferring ancestry segments and characterizing admixture events from dense genotype data. 
@@ -18,4 +18,4 @@ LinkingTo: Rcpp
 Suggests: knitr, rmarkdown
 VignetteBuilder: knitr
 NeedsCompilation: yes
-Packaged: 2019-06-20 12:41:39 UTC; mst
+Packaged: 2019-08-14 14:05:23 UTC; mst
