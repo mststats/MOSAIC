@@ -58,6 +58,8 @@ dpg=argv$donors_per_group
 max.donors=argv$maxdonors
 prop.don=argv$prop
 ffpath=argv$fastfiles
+if (!file.exists(ffpath))
+  stop(paste0("requested location '", ffpath, "' for storage of fast files doesn't exist. Please use any temporary folder on your system. \n"))
 if (pops=="NULL") pops=NULL
 if (mask=="NULL") mask=NULL
 if (ratios=="NULL") ratios=NULL
