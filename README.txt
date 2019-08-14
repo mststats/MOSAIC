@@ -88,6 +88,11 @@ MOSAIC can be tuned to run differently by changing from the default values used.
 > Rscript mosaic.R --help 
 to view these arguments and their defaults. For example, turn re-phasing on or off (see below).
 
+Note that MOSAIC uses the ff package to store and manipulate "fast files". The default location for these when running in
+an interactive R session is set by a call to tempdir(), whereas when running using Rscript on the command line it uses 
+/dev/shm/ (which assumes a linux installation). These defaults can be changed by using the -f option for the command
+line or the ffpath argument when using run_mosaic() within R. 
+
 ########  PHASE  #################################################################################################
 Phase is by default updated from initial phasing. You can turn this off by including -nophase in the command. 
 Re-phasing is done by two algorithms: "phase hunting" and MCMC. The hunting is called in each round of EM->phase->thin. 
