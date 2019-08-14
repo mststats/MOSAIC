@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-# reads in .haps files (one per chromosome) and outputs MOSAIC haps files (one per population per chromosome)
+# reads in MOSAIC haps files (one per population per chromosome) and outputs .haps files (one per chromosome) 
 require(argparser, quiet=TRUE) 
-m.args=arg_parser("script to convert shapeit2 .haps output to MOSAIC input type 1")
+m.args=arg_parser("script to convert MOSAIC input files to shapeit2 .haps files")
 ######################## required arguments ###############################
 m.args=add_argument(m.args, "pathin", help="full path to MOSAIC inputs", type="character")
 m.args=add_argument(m.args, "chrno", help="which chromosome to convert", type="integer")
