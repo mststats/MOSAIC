@@ -38,9 +38,9 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
   {
     snps=read.table(paste0(pathin1,"snpfile.",chrnos[ch]))
     S=nrow(snps)
-    tmp<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
-    tmp<-strsplit(tmp,"")
-    y=matrix(sapply(tmp, as.double), ncol=S)[1:NUMA,]
+    anchaps<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
+    anchaps<-strsplit(anchaps,"")
+    y=matrix(sapply(anchaps, as.double), ncol=S)[1:NUMA,]
     populations=matrix(NaN,NUMA,S)
     tmp=grid_to_pos_chr(t.localanc[[ch]],snps[,4],glocs[[ch]])
     k=0
