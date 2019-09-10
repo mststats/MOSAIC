@@ -175,6 +175,9 @@ create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRUE,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
 			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
 {
+  lpop<-dim(coancs$relprobs)[1]
+  if (any(rowMeans(res$acoancs$ancprobs)/lpop<0.05))
+    warning("minor ancestry proportions small; may be hard to fit estimate coancestry curves",immediate.=TRUE)
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
   # asym=T allows asymptote to be something other than 1
@@ -195,7 +198,6 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 							dim(coancs$relprobs)[4]-length(max.cM)))
     } else (warning(paste("cannot select this distance (you would need to recompute the coancestry curves); using max distance of", max(coancs$drange)*100*dr)))
   }
-  lpop<-dim(coancs$relprobs)[1]
   if (samedates& lpop>2)
     warning("using samedates for more than 2-way event is not sensible")
   relcurve=array(0,c(lpop,lpop,dim(coancs$relprobs)[4]))
