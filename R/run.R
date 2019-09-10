@@ -207,11 +207,18 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
   if (target=="simulated") 
     cat("Actual r-squared (genomewide):", dip_fr2(localanc,g.true_anc),"\n")
-  cat("Fst between mixing groups:\n")
-  print(all_Fst$ancs)
-  cat("Rst between mixing groups:\n")
-  print(all_Fst$Rst)
-
+  if (!is.nan(all_Fst$ancs)) {
+    cat("Fst between mixing groups:\n")
+    print(all_Fst$ancs)
+  } 
+  if (!is.nan(all_Fst$Rst)) {
+    cat("Rst between mixing groups:\n")
+    print(all_Fst$Rst)
+  } 
+  if (any(is.nan(all_Fst$ancs)) | any(is.nan(all_Fst$Rst))) {
+    warning("cannot estimate Fst: insufficient loci mapped to different ancestries across target individuals", immediate.=TRUE)
+    cat("average alpha=", Reduce("+",alpha)/length(alpha),"\n")
+  }
   if (PLOT) {
     if (verbose) cat("saving plots to MOSAIC_PLOTS/ folder\n")
     plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,

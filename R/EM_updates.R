@@ -77,6 +77,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 	for (ch in 1:t.nchrno)
 	  for (k in 1:t.NUMA)
 	    t.Mu[jl,ja]<-t.Mu[jl,ja]+initg[ch,k,ja,jl]+sum(E.n[[ch]][[k]]$a[,jl,ja]) + E.n[[ch]][[k]]$r[jl,ja]
+      if (all(is.nan(t.Mu[,ja]))) t.Mu[,ja]=1/t.kLL
       if (all(t.Mu[,ja]==0)) t.Mu[,ja]=1/t.kLL
     }
     t.Mu<-t(t(t.Mu)/colSums(t.Mu))

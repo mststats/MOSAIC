@@ -490,11 +490,12 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   dev.off()
   
   # note that it takes a while to calculate frequencies, etc
-  if (!is.null(t.all_Fst)) {
-    pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
-    ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
-    dev.off()
-  }
+  if (!is.null(t.all_Fst))
+    if (all(!is.nan(t.all_Fst$panels))) {
+      pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
+      ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
+      dev.off()
+    }
   
   # dimensions of plots
   d1=switch(t.A,NaN,1,2,2,3,3) 
