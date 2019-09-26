@@ -176,7 +176,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
 {
   lpop<-dim(coancs$relprobs)[1]
-  if (any(rowMeans(res$acoancs$ancprobs)/lpop<0.05))
+  if (any(rowMeans(coancs$ancprobs)/lpop<0.05))
     warning("minor ancestry proportions small; may be hard to fit estimate coancestry curves",immediate.=TRUE)
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves

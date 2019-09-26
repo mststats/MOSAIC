@@ -147,29 +147,23 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   }
   final.flips=flips
-  EM=F;getnoancgfbs=T;eps=log(1.01);LOG=F;
-  a.Mu=Mu;a.rho=rho;a.theta=theta;a.PI=PI;a.alpha=alpha;a.lambda=lambda
-  a.o.Mu=o.Mu;a.o.rho=o.rho;a.o.theta=o.theta;a.o.PI=o.PI;a.o.alpha=o.alpha;a.o.lambda=o.lambda
-  samp_chrnos=chrnos;
 
   ######### MOSAIC curves with MOSAIC phasing ############
-  gfbs=get_gfbs(NUMP, nchrno, max.donors, donates, donatesl, donatesr, NUMA, A, G, kLL, transitions, umatch, maxmatchsize, d.w, t.w, gobs, mutmat, maxmiss, initProb, 
-		label, ndonors, flips, HPC)
   if (verbose) cat("saving localanc results to file\n")
-  if (target!="simulated") tmp=get_localanc(gfbs,G,A,kLL,NUMA,NUMI)
-  if (target=="simulated") tmp=get_localanc(gfbs,G,A,kLL,NUMA,NUMI,t.g.true_anc=g.true_anc)
+  if (target!="simulated") tmp=get_localanc(NUMP, nchrno, max.donors, donates, donatesl, donatesr, transitions, umatch, maxmatchsize, d.w, t.w, 
+					    gobs, mutmat, maxmiss, initProb, label, ndonors, flips, HPC, G, A, kLL, NUMA, NUMI)
+  if (target=="simulated") tmp=get_localanc(NUMP, nchrno, max.donors, donates, donatesl, donatesr, transitions, umatch, maxmatchsize, d.w, t.w, 
+					    gobs, mutmat, maxmiss, initProb, label, ndonors, flips, HPC, G, A, kLL, NUMA, NUMI, t.g.true_anc=g.true_anc)
   localanc=tmp$localanc
   if (target=="simulated") 
     g.true_anc=tmp$g.true_anc
 
+  if (target!="simulated")
   save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
   if (target=="simulated")
     save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, g.true_anc, final.flips, g.loc)
-  save(file=paste0(resultsdir,"gfbs_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
-		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), gfbs)
-
   if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
   all_Fst=NULL
   if (doFst) {
@@ -183,26 +177,11 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     all_Fst=Fst_combos(target, A, sum(NL), rownames(Mu))
   }
 
-  ######## GlobeTrotter style curves original phasing ##########
-  for (ind in 1:NUMI) for (ch in 1:nchrno) flips[[ind]][[ch]][]=F # undo phase flips
-  tmp=fit_noanc_model(target, samp_chrnos, chrnos, NUMA, NUMP, kLL, A, KNOWN, label, NL, NN, umatch, G, dr, flips, gobs, PI, Mu, rho, theta, alpha, lambda, 
-		      prop.don, min.donors, max.donors, maxmatchsize, maxmatch, maxmiss, initProb, d.w, t.w, NUMA, max(NL), HPC, runtime, resultsdir, 
-		      GpcM, eps, NaN, doMu, doPI, dorho, dotheta, ffpath, firstind, EM, getnoancgfbs=TRUE) 
-  transitions=tmp$t.transitions;mutmat=tmp$mutmat;Mu=tmp$Mu;theta=tmp$theta;rho=tmp$rho
-  ndonors=tmp$ndonors;donates=tmp$donates;donatesl=tmp$donatesl;donatesr=tmp$donatesr;
-  noanc_gfbs=tmp$noanc_gfbs
-  if (HPC) cleanup_ff_files(donates, donatesl, donatesr, nchrno, NUMI, ffpath, FALSE)
-  Mu=a.Mu;rho=a.rho;theta=a.theta;PI=a.PI;alpha=a.alpha;lambda=a.lambda
-  o.Mu=a.o.Mu;o.rho=a.o.rho;o.theta=a.o.theta;o.PI=a.o.PI;o.alpha=a.o.alpha;o.lambda=a.o.lambda
-  noanc_unphased_localanc=get_ancunaware_localanc(NUMA,A,G,nchrno,noanc_gfbs,Mu,alpha) # works off noanc_gfbs
-  save(file=paste0(resultsdir,"noanc_unphased_localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
-		   "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), noanc_unphased_localanc, flips, g.loc)
-  if (verbose) cat("calculating ancestry unaware input phasing coancestry curves\n"); coancs=create_coancs(noanc_unphased_localanc,dr,"DIP")
 
   if (verbose) cat("saving final results to file\n")
   save(file=paste0(resultsdir,"",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
 		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
-       Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, coancs, all_Fst, GpcM)
+       Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, all_Fst, GpcM)
 
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
   if (target=="simulated") 
@@ -227,10 +206,10 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
 
   if (return.res & target!="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,final.flips=final.flips,dr=dr,A=A,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
-		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
+		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,target=target,
 		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
   if (return.res & target=="simulated")
     return(list(g.loc=g.loc,localanc=localanc,logfile=logfile,g.true_anc=g.true_anc,final.flips=final.flips,dr=dr,A=A,kLL=kLL,NUMP=NUMP,NN=NN,NL=NL,label=label,chrnos=chrnos,
-		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,coancs=coancs,target=target,
+		NUMA=NUMA,NUMI=NUMI,GpcM=GpcM,PI=PI,lambda=lambda,alpha=alpha,Mu=Mu,theta=theta,rho=rho,acoancs=acoancs,target=target,
 		prop.don=prop.don,max.donors=max.donors,all_Fst=all_Fst))
 }

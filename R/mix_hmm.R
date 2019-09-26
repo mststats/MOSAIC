@@ -17,13 +17,14 @@ get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.dona
 {
   ans<-list()
   THIN=ifelse(t.max.donors==t.NUMP, F, T)
+  t.NUMI=t.NUMA/2
   for (ch in 1:t.nchrno)
   {
     if (t.HPC==1)
     {
-      donates_chr=getdonates(t.donates[[ch]],NUMI)
-      donatesl_chr=getdonates(t.donatesl[[ch]],NUMI)
-      donatesr_chr=getdonates(t.donatesr[[ch]],NUMI)
+      donates_chr=getdonates(t.donates[[ch]],t.NUMI)
+      donatesl_chr=getdonates(t.donatesl[[ch]],t.NUMI)
+      donatesr_chr=getdonates(t.donatesr[[ch]],t.NUMI)
       ans[[ch]]<-list()
       tmp<-foreach(k=1:t.NUMA) %dopar% 
       {
@@ -52,9 +53,9 @@ get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.dona
 	t.backs<-rep(0,t.G[ch]*t.max.donors*t.A);t.scalefactorb<-rep(0,t.G[ch]);
 	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
 		    t.mutmat,t.maxmiss,t.label,t.ndonors[[ch]][[ind]],donates_chr_ind,donatesr_chr_ind,t.flips[[ind]][[ch]],t.backs,t.scalefactorb)
-	ans=cppgforback(t.max.donors,THIN,t.kLL,t.NUMP,t.label,t.A,t.G[ch],t.ndonors[[ch]][[ind]],donates_chr_ind,t.fors,t.backs)
+	tmp2=cppgforback(t.max.donors,THIN,t.kLL,t.NUMP,t.label,t.A,t.G[ch],t.ndonors[[ch]][[ind]],donates_chr_ind,t.fors,t.backs)
 	rm(donates_chr_ind,donatesl_chr_ind,donatesr_chr_ind)
-	ans
+	tmp2
       }
     }
     if (!t.HPC)

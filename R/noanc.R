@@ -94,7 +94,6 @@ fit_noanc_model=function(target, t.samp_chrnos, t.chrnos, t.NUMA, t.NUMP, t.kLL,
   # next line gets called if some groups dropped but it's fast so potential redundancy is ok
   for (ind in 1:t.NUMI) transitions[[ind]]<-s_trans(t.A,t.kLL,t.PI[[ind]],t.Mu,t.rho,t.NL)
   mutmat<-fmutmat(t.theta, t.A, t.maxmiss, t.maxmatch)
-  if (!getnoancgfbs)
   ans$transitions=transitions
   ans$mutmat=mutmat
   ans$Mu=t.Mu

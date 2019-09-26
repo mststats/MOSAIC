@@ -1,4 +1,4 @@
-// this performs the forward-backward algorithm on the MOSAIC HMM (see gfbs)
+// this performs the forward-backward algorithm on the MOSAIC HMM 
 #include <Rcpp.h>
 using namespace Rcpp;
 // [[Rcpp::export]]
