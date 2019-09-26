@@ -492,7 +492,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
 
   pdf(file=paste0(pathout,targetdetails,"_karyograms.pdf"), width=12, height=12)
   for (ind in 1:(t.NUMA/2)) 
-    karyogram(t.chrnos, t.localanc, t.g.loc, t.GpcM, ind, dist="genetic", g.true_anc=g.true_anc) # one per PDF page
+    karyogram(t.A, t.chrnos, t.localanc, t.g.loc, t.GpcM, ind, dist="genetic", g.true_anc=g.true_anc) # one per PDF page
   dev.off()
 
   # note that it takes a while to calculate frequencies, etc
@@ -577,7 +577,7 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) {
 }
 
 # function to plot local ancestry karyogram for one individual based on estimated local ancestry 
-karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind), g.true_anc=NULL) {
+karyogram=function(t.A, chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind), g.true_anc=NULL) {
   colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
   hap=c(ind*2-1,ind*2)
   if (is.null(g.true_anc))
@@ -601,7 +601,7 @@ karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m
       x=c(0:(G-1),(G-1):0)/GpcM
       upper=lower=rep(0,G)
     }
-    for (i in 1:A) 
+    for (i in 1:t.A) 
     {
       upper=lower+localanc[[ch]][i,hap[1],]+localanc[[ch]][i,hap[2],]
       polygon(x=x,y=chrnos[ch]-0.5+0.4*c(lower,rev(upper)),col=colvec[i],border=NA)
@@ -624,7 +624,7 @@ karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m
         x=c(0:(G-1),(G-1):0)/GpcM
         upper=lower=rep(0,G)
       }
-      for (i in 1:A) 
+      for (i in 1:t.A) 
       {
         upper=lower+g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],]
         polygon(x=x,y=chrnos[ch]-0.5+0.4*c(lower,rev(upper)),col=colvec[i],border=NA)
