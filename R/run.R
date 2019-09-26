@@ -200,8 +200,12 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   }
   if (PLOT) {
     if (verbose) cat("saving plots to MOSAIC_PLOTS/ folder\n")
-    plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
-			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile)
+    if (target!="simulated")
+      plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+	  		 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile,localanc)
+    if (target=="simulated")
+      plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+	  		 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile,localanc,g.true_anc)
   }
 
   if (return.res & target!="simulated")

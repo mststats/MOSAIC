@@ -479,7 +479,8 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 
 # function to plot most useful figures to PDF. Note defaults are 
 plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
-			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile){
+			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile, 
+			 t.localanc, t.g.loc=g.loc, g.true_anc=NULL){
   if (!file.exists(pathout))
     dir.create(file.path(getwd(), pathout))
   nchrno=length(t.chrnos)
@@ -487,6 +488,11 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
 		       "_",sum(t.NL),"_",t.GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
   ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
+  dev.off()
+
+  pdf(file=paste0(pathout,targetdetails,"_karyograms.pdf"), width=12, height=12)
+  for (ind in 1:(t.NUMA/2)) 
+    karyogram(t.chrnos, t.localanc, t.g.loc, t.GpcM, ind, dist="genetic", g.true_anc=g.true_anc) # one per PDF page
   dev.off()
 
   # note that it takes a while to calculate frequencies, etc
@@ -571,18 +577,23 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) {
 }
 
 # function to plot local ancestry karyogram for one individual based on estimated local ancestry 
-karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind)) {
+karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind), g.true_anc=NULL) {
   colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
   hap=c(ind*2-1,ind*2)
-  par(mar=c(4, 5.2, cexa*2, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa, yaxt='n')
-  if (dist=="BP")
-    plot(range(sapply(g.loc,range))*1e-6, c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="position (Mb)",ylab="chromosome", main=m.lab)
+  if (is.null(g.true_anc))
+    par(mar=c(4, 5.2, cexa*2, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa, yaxt='n')
+  if (!is.null(g.true_anc)) {
+    par(mar=c(4, 5.2, cexa*2, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa, yaxt='n',mfrow=c(1,2))
+    m.lab=c(paste0("E[",m.lab,"]"),paste0("truth[",m.lab,"]"))
+  }
+  if (dist=="physical")
+    plot(range(sapply(g.loc,range))*1e-6, c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="position (Mb)",ylab="chromosome", main=m.lab[1])
   if (dist=="genetic")
-    plot(c(0,max(sapply(g.loc,length))/GpcM), c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="genetic position (cM)",ylab="chromosome", main=m.lab)
+    plot(c(0,max(sapply(g.loc,length))/GpcM), c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="genetic position (cM)",ylab="chromosome", main=m.lab[1])
   mtext(chrnos, 2, at=chrnos,cex=cexa,las=1)
   for (ch in 1:length(chrnos)) {
     G=length(g.loc[[ch]])
-    if (dist=="BP") {
+    if (dist=="physical") {
       x=c(g.loc[[ch]],rev(g.loc[[ch]]))*1e-6
       upper=lower=rep(0,G)
     }
@@ -597,4 +608,29 @@ karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m
       lower=upper
     }
   }
+  if (!is.null(g.true_anc)) {
+    if (dist=="physical")
+      plot(range(sapply(g.loc,range))*1e-6, c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="position (Mb)",ylab="chromosome", main=m.lab[2])
+    if (dist=="genetic")
+      plot(c(0,max(sapply(g.loc,length))/GpcM), c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="genetic position (cM)",ylab="chromosome", main=m.lab[2])
+    mtext(chrnos, 2, at=chrnos,cex=cexa,las=1)
+    for (ch in 1:length(chrnos)) {
+      G=length(g.loc[[ch]])
+      if (dist=="physical") {
+        x=c(g.loc[[ch]],rev(g.loc[[ch]]))*1e-6
+        upper=lower=rep(0,G)
+      }
+      if (dist=="genetic") {
+        x=c(0:(G-1),(G-1):0)/GpcM
+        upper=lower=rep(0,G)
+      }
+      for (i in 1:A) 
+      {
+        upper=lower+g.true_anc[[ch]][i,hap[1],]+g.true_anc[[ch]][i,hap[2],]
+        polygon(x=x,y=chrnos[ch]-0.5+0.4*c(lower,rev(upper)),col=colvec[i],border=NA)
+        lower=upper
+      }
+    }
+  }
 }
+
