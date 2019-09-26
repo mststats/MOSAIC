@@ -39,7 +39,7 @@ dipplot<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual",ind),xlab="",cex
 }
 
 happlot_Mu<-function(ch,k,x,A,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu,pow=4,cexa=1,
-		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+		     colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
   kLL=nrow(Mu)
@@ -62,7 +62,7 @@ happlot_Mu<-function(ch,k,x,A,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu
 }
 
 dipplot_Mu<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual", ind),xlab="",t.Mu,pow=4,cexa=1, 
-		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+		     colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
@@ -156,7 +156,7 @@ plot_panel_dist=function(donors,ch,a)
 }
 
 plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, 
-		      shiftl=ifelse(showgradient,0,max(sapply(rownames(t.Mu),nchar))/2*cexa), shiftt=ifelse(!showgradient,cexa,cexa*2),
+		  shiftl=ifelse(showgradient,0,max(sapply(rownames(t.Mu),nchar))/2*cexa), shiftt=ifelse(!showgradient,cexa,cexa*2),
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Mu)
   t.alpha=Reduce("+",t.alpha)/length(t.alpha)
@@ -250,7 +250,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
     return(ordMu) # return as re-ordered version is useful for dipplot_Mu and happlot_Mu
 }
 plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nrow(t.Fst), reverse=TRUE,
-		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+		   colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   t.kLL=nrow(t.Fst)
   if ((!ord) & (cutoff!=t.kLL))
   {
@@ -288,15 +288,15 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   {
     if (ord) {
       if (reverse)
-        plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="1-Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
+	plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="1-Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(rangeFst[[a]][1],rangeFst[[a]][2]))
       if (!reverse)
-        plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(0,rangeFst[[a]][2]))
+	plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(0,rangeFst[[a]][2]))
       if (reverse) {
 	tmp=1-ordFst[[a]]-rangeFst[[a]][1]
-        y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
+	y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
       }
       if (!reverse) 
-        y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T)
+	y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T)
     }
     if (!ord & reverse)
       y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",xlab="1-Fst",
@@ -333,7 +333,7 @@ phase_localanc=function(t.localanc,t.flips)
 
 # function to plot the local ancestry of each target admixed genome along each chromosome
 plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,t.gfbs=NULL,
-		  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
+		       colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   if (is.null(t.Mu) & MODE=="GRAD") stop("Please supply a copying matrix Mu for use with this plot")
   if (is.null(t.gfbs) & MODE=="GRAD") stop("Please supply a full array of posterior probabilities for use with this plot")
   G=sapply(t.localanc, function(x) dim(x)[3])
@@ -488,7 +488,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
   ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
   dev.off()
-  
+
   # note that it takes a while to calculate frequencies, etc
   if (!is.null(t.all_Fst))
     if (all(!is.nan(t.all_Fst$panels))) {
@@ -496,7 +496,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
       ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
       dev.off()
     }
-  
+
   # dimensions of plots
   d1=switch(t.A,NaN,1,2,2,3,3) 
   d2=switch(t.A,NaN,3,3,5,5,7) 
@@ -566,6 +566,35 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) {
       theta=atan2(xy[2],xy[1]) # tan(theta)=y/x
       endp=c(geolocs[ii,2]-rad*cos(theta),geolocs[ii,3]-rad*sin(theta))
       arrows(sourcelocs[i,1],sourcelocs[i,2],endp[1],endp[2],lwd=2,length=0.1)
+    }
+  }
+}
+
+# function to plot local ancestry karyogram for one individual based on estimated local ancestry 
+karyogram=function(chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind)) {
+  colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
+  hap=c(ind*2-1,ind*2)
+  par(mar=c(4, 5.2, cexa*2, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa, yaxt='n')
+  if (dist=="BP")
+    plot(range(sapply(g.loc,range))*1e-6, c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="position (Mb)",ylab="chromosome", main=m.lab)
+  if (dist=="genetic")
+    plot(c(0,max(sapply(g.loc,length))/GpcM), c(min(chrnos)-0.5,max(chrnos)+0.5), ,t='n',xlab="genetic position (cM)",ylab="chromosome", main=m.lab)
+  mtext(chrnos, 2, at=chrnos,cex=cexa,las=1)
+  for (ch in 1:length(chrnos)) {
+    G=length(g.loc[[ch]])
+    if (dist=="BP") {
+      x=c(g.loc[[ch]],rev(g.loc[[ch]]))*1e-6
+      upper=lower=rep(0,G)
+    }
+    if (dist=="genetic") {
+      x=c(0:(G-1),(G-1):0)/GpcM
+      upper=lower=rep(0,G)
+    }
+    for (i in 1:A) 
+    {
+      upper=lower+localanc[[ch]][i,hap[1],]+localanc[[ch]][i,hap[2],]
+      polygon(x=x,y=chrnos[ch]-0.5+0.4*c(lower,rev(upper)),col=colvec[i],border=NA)
+      lower=upper
     }
   }
 }
