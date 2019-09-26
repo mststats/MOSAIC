@@ -501,7 +501,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   d1=switch(t.A,NaN,1,2,2,3,3) 
   d2=switch(t.A,NaN,3,3,5,5,7) 
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
-  this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F,min.cM=0.5)
+  this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F)
   dev.off()
   if (EM | PHASE) {
     EMlog=extract_log(t.logfile)
