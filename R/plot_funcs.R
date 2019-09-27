@@ -254,7 +254,7 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   t.kLL=nrow(t.Fst)
   if ((!ord) & (cutoff!=t.kLL))
   {
-    warning("showing all as re-ordering not allowed")
+    warning("########## showing all as re-ordering not allowed ##########", immediate.=T)
     cutoff=t.kLL
   }
   if (cutoff>t.kLL) cutoff=t.kLL
@@ -343,7 +343,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
   NUMI=NUMA/2
   if (NCHR==2 & NUMA==1)
   {
-    warning("changing NCHR to HAP as only on hap in target",immediate.=T)
+    warning("########## changing NCHR to HAP as only on hap in target ##########",immediate.=T)
     NCHR=1
   }
   if (NCHR==1)

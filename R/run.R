@@ -195,7 +195,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     print(all_Fst$Rst)
   } 
   if (any(is.nan(all_Fst$ancs)) | any(is.nan(all_Fst$Rst))) {
-    warning("cannot estimate Fst: insufficient loci mapped to different ancestries across target individuals", immediate.=TRUE)
+    warning("########## cannot estimate Fst: insufficient loci mapped to different ancestries across target individuals ##########", immediate.=TRUE)
     cat("average alpha=", Reduce("+",alpha)/length(alpha),"\n")
   }
   if (PLOT) {

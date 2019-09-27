@@ -9,7 +9,11 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
   if (!is.null(pops))
     if ((length(pops)!=t.A & t.target=="simulated") | (t.target!="simulated"))
   {
-    usepanels=NULL;for (usepanel in pops) {tmp2=match(usepanel,panels);if (!is.na(tmp2)) usepanels=c(usepanels,tmp2)}
+    usepanels=NULL;for (usepanel in pops) {
+      tmp2=match(usepanel,panels)
+      if (is.na(tmp2)) warning("########## cannot find panel '", usepanel, "'; please check the provided list of panel names ##########", immediate.=TRUE)
+      if (!is.na(tmp2)) usepanels=c(usepanels,tmp2)
+    }
     panels<-panels[usepanels] # use supplied groups 
   }
   if (!is.null(mask))
@@ -58,7 +62,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
 	N2<-length(tmp[[1]])
 	multipanels[[kLL+i]]<-matrix(sapply(tmp, as.double), N2, allS)
 	if ((t.NUMA*2)>N2) {
-	  warning("Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel",immediate.=T)
+	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=T)
 	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
 	  cat("Reducing the number of simulated individuals to", t.NUMA/2,"\n")
 	}
@@ -104,13 +108,12 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     NUMP<-sum(KNOWN) # i.e. number in panels
     t.NUMA<-sum(!KNOWN) #i.e. number of targets / admixed
     t.NUMI=max(1,t.NUMA/2)
-
+    # FLAG doesn't work apparently
     all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=T),ncol=2)
     locs<-as.integer(snps[,4])
     if (all_rates[1,1]>locs[1]) {
       all_rates=rbind(c(locs[1],0),all_rates)
-      tmp=paste("You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left")
-      warning(tmp,immediate.=T)
+      warning("########## You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left ##########",immediate.=T)
     }
     tmp=match(locs, all_rates[,1])
     rates=all_rates[tmp,2] # use ones with hap data; some may be missing if in snps file but not in rates file
@@ -121,7 +124,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     if (t.FLAT) 
     {
       rates<-seq(rates[1],2*rates[S[ch]],l=S[ch])
-      warning("using flat recombination rates map",immediate.=T)
+      warning("########## using flat recombination rates map ##########",immediate.=T)
     }
     rm(all_rates)
     # G will be correct / consistent w/in 0.5 and is large so almost exactly the same dr across chromosomes

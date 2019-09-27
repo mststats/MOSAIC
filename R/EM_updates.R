@@ -180,7 +180,7 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
       {
 	t.Mu<-old.Mu; t.PI<-old.PI; t.lambda<-old.lambda; t.alpha<-old.alpha; t.rho<-old.rho; t.theta<-old.theta
 	t.transitions=old.transitions;t.mutmat=old.mutmat;t.initProb=old.initProb;t.cloglike<-old.cloglike
-	warning("loglikelihood has decreased; abandoning EM", immediate.=T)
+	warning("########## loglikelihood has decreased; abandoning EM ##########", immediate.=T)
 	break
       }
       if ((t.cloglike - old.cloglike)< t.eps) 

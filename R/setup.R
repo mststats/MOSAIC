@@ -82,7 +82,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
       cat(ratios, " supplied as vector of mixing group ratios\n")
       ratios=rep(1/A,A)
       if (!EM)
-        warning("length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group", immediate.=T)
+        warning("########## length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group ##########", immediate.=T)
     }
   }
   if (!is.null(t.pops)) {
@@ -106,6 +106,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
   tmp=read_panels(datasource, t.target, t.chrnos, t.NUMI, A, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios) 
+  if (tmp$kLL < A) stop(paste0("cannot fit ", A, "-way model using only ", tmp$kLL, " donor panels"))
   if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", A, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
   if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
   ans$maxmatch=tmp$maxmatch;ans$maxmiss=tmp$maxmiss;ans$umatch=tmp$umatch;ans$d.w=tmp$d.w;ans$t.w=tmp$t.w;ans$g.loc=tmp$g.loc;ans$gobs=tmp$gobs

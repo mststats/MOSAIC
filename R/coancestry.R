@@ -177,7 +177,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 {
   lpop<-dim(coancs$relprobs)[1]
   if (any(rowMeans(coancs$ancprobs)/lpop<0.05))
-    warning("minor ancestry proportions small; may be hard to fit estimate coancestry curves",immediate.=TRUE)
+    warning("########## minor ancestry proportions small; may be hard to fit estimate coancestry curves ##########",immediate.=TRUE)
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
   # asym=T allows asymptote to be something other than 1
@@ -196,10 +196,11 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
       coancs$drange=coancs$drange[-max.cM] # always remove leftmost entries of relprobs i.e. at distance~=0
       coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
 							dim(coancs$relprobs)[4]-length(max.cM)))
-    } else (warning(paste("cannot select this distance (you would need to recompute the coancestry curves); using max distance of", max(coancs$drange)*100*dr)))
+    } else (warning("########## cannot select this distance (you would need to recompute the coancestry curves); using max distance of ", 
+			  max(coancs$drange)*100*dr, " ##########", immediate.=T))
   }
   if (samedates& lpop>2)
-    warning("using samedates for more than 2-way event is not sensible")
+    warning("########## using samedates for more than 2-way event is not sensible ##########", immediate.=T)
   relcurve=array(0,c(lpop,lpop,dim(coancs$relprobs)[4]))
   kweights=keep=list()
   if (is.null(popnames)) popnames<-1:lpop

@@ -89,7 +89,7 @@ get_localanc=function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.d
     {
       tmp.anc<-t.g.true_anc
       for (ch in 1:t.nchrno) tmp.anc[[ch]][,,]=t.g.true_anc[[ch]][ord,,]
-      return(dip_fr2(tmp.anc,localanc))
+      return(dip_fr(tmp.anc,localanc))
     }
     all.ord<-permn(t.A)
     best.r<-0
@@ -135,7 +135,7 @@ get_localanc_using_gfbs=function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.do
     {
       tmp.anc<-t.g.true_anc
       for (ch in 1:t.nchrno) tmp.anc[[ch]][,,]=t.g.true_anc[[ch]][ord,,]
-      return(dip_fr2(tmp.anc,localanc))
+      return(dip_fr(tmp.anc,localanc))
     }
     all.ord<-permn(t.A)
     best.r<-0

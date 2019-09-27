@@ -155,7 +155,7 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     if (!is.nan(old.ll))
       if ((ll-old.ll)<eps)
       {
-	if (ll<old.ll-eps) warning("Decreasing log-likelihood",immediate.=T)
+	if (ll<old.ll-eps) warning("########## Decreasing log-likelihood ##########",immediate.=T)
 	if (verbose) cat("EM converged in mixture model for initialising copying matrix Mu\n")
 	ll=old.ll # shouldn't see LL decreases but...
 	break
