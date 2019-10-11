@@ -90,7 +90,7 @@ dip_expected_fr2<-function(x)
     #avarx=sum(p1*(1-p1)+4*p0*p2)+varp
     #avarx=sum(px-px^2+2*vecx[1,]*vecx[2,])+varp # MST Feb2019
     avarx=sum(px+2*vecx[1,]*vecx[2,])-sum(px)^2/sumG # MST Feb2019
-    ar2=ifelse(varp<(sumG*1e-1), 1, varp/avarx) # skip over negligible ancestry contributions
+    ar2=ifelse(varp<1e-6, 1, varp/avarx) # skip over negligible ancestry contributions
     ans=ans+ar2/A
   }
   return(ans)
