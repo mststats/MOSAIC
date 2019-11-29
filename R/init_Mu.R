@@ -60,13 +60,16 @@ ziffy<-function(veccounts, k)
 {
   if (k<as.integer(nrow(veccounts)/2)) 
   {
-    tmp=fanny(veccounts, k, memb.exp=1.05);Mu=tmp$membership;alpha=colSums(Mu)
+    tmp=fanny(veccounts, k, memb.exp=1.05);Mu=tmp$membership
   }
   if (k>=as.integer(nrow(veccounts)/2)) 
   {
-    tmp=zhclust(veccounts, k);Mu=tmp$membership;alpha=colSums(Mu)
+    tmp=zhclust(veccounts, k);Mu=tmp$membership
   }
+  Mu[which(is.nan(Mu))]=1/nrow(Mu) # remove NaNs
+  Mu[which(is.infinite(Mu))]=100 # remove infinities
   Mu=t(t(Mu)/colSums(Mu))
+  alpha=colSums(Mu)
   alpha=alpha/sum(alpha)
   return(list(Mu=Mu,alpha=alpha))
 }
@@ -122,10 +125,13 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     # M-step
     o.Mu<-Mu
     Mu[]=0
-    for (k in 1:t.kLL)
-      for (i in 1:t.A)
+    for (i in 1:t.A) {
+      for (k in 1:t.kLL)
 	for (h in 1:t.NUMA)
 	  Mu[k,i]=Mu[k,i]+sum(p[,h,i]*counts[[h]][k,]) # mean of Multinomial = np
+        Mu[which(is.nan(Mu))]=1/t.kLL # remove NaNs
+      if (all(Mu[,i]==0)) Mu[,i]=1/t.kLL # if all zero replace with 1/t.kLL
+    }
     Mu<-t(t(Mu)/colSums(Mu))
     Mu[Mu<tmpexp]=tmpexp;Mu<-t(t(Mu)/colSums(Mu))
     if (!t.singlePI)
@@ -148,6 +154,7 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     for (ind in 1:t.NUMI)
       alpha[[ind]]<-alpha[[ind]]/sum(alpha[[ind]])
     logMu=log(Mu)
+    print(alpha)
     tmp.ll=loglikeMult(counts, alpha, logMu, t.kLL, t.A, t.NUMI)
     ll=tmp.ll
     if (verbose)
