@@ -154,7 +154,6 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     for (ind in 1:t.NUMI)
       alpha[[ind]]<-alpha[[ind]]/sum(alpha[[ind]])
     logMu=log(Mu)
-    print(alpha)
     tmp.ll=loglikeMult(counts, alpha, logMu, t.kLL, t.A, t.NUMI)
     ll=tmp.ll
     if (verbose)

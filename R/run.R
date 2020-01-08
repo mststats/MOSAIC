@@ -1,6 +1,6 @@
 run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=0,ratios=NULL,EM=TRUE,
 			 ffpath=tempdir(),MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
-			 doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4) {
+			 doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4,MODE="DIP",singlePI=FALSE) {
   ffpath=paste0(ffpath,"/") # ensure this is a folder
   if (!dir.exists(ffpath))
     stop(paste("Requested location ", ffpath, " for fast-file storage not found\n"))
@@ -10,7 +10,11 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     stop("need to fit at least a 2-way model\n")
   if (target=="simulated" & length(pops)<A)
     stop("Please provide ", A, " groups to simulate from\n")
-  tmp=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne) 
+  if (MODE=="HAP")
+    stop("Haploid mode is under construction; await version 1.3.6")
+  if (MODE=="HAP" & PHASE)
+    stop("are you trying to perform phasing on haploid data?")
+  tmp=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI) 
   resultsdir=tmp$resultsdir;PHASE=tmp$PHASE;HPC=tmp$HPC;GpcM=tmp$GpcM;LOG=tmp$LOG
   mcmcprog=tmp$mcmcprog;absorbrho=tmp$absorbrho;commonrho=tmp$commonrho;commontheta=tmp$commontheta;prethin=tmp$prethin
   s.M=tmp$s.M;M=tmp$M;PI.total=tmp$PI.total;s.total=tmp$s.total;REPS=tmp$REPS
@@ -164,7 +168,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   if (target=="simulated")
     save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
 		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, g.true_anc, final.flips, g.loc)
-  if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,"DIP");
+  if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,MODE);
   all_Fst=NULL
   if (doFst) {
     if (verbose) cat("calculating Fst values\n")

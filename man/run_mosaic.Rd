@@ -10,7 +10,7 @@ PHASE = TRUE, gens = 0, ratios = NULL, EM = TRUE,
 ffpath = "/dev/shm/", MC = 0, return.res = TRUE, 
 REPS = 0, GpcM = 60, nl = 1000, max.donors = 100, prop.don = 0.99, 
 doMu = TRUE, doPI = TRUE, dorho = TRUE, dotheta = TRUE, 
-firstind = 1, verbose = TRUE, Ne = 90000) 
+firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP") 
 }
 \arguments{
   \item{target}{a string giving the name of admixed target population.
@@ -84,6 +84,12 @@ firstind = 1, verbose = TRUE, Ne = 90000)
   } 
   \item{Ne}{integer specifying effective population size for the species. Only usage is in estimating initial value of
     theta above which will be re-estimated by default as part of the algorithm. 
+  }
+  \item{MODE}{either "DIP" or "HAP" to run coancestry curve estimation on diploid or haploid genomes. Note that if "HAP" then PHASE should be FALSE.
+    Defaults to "DIP".
+  }
+  \item{singlePI}{should MOSAIC be constrained to assume that all admixed genomes experienced the same admixture event (timings and proportions)?
+    Defaults to FALSE. 
   }
 }
 \value{a list containing inferred parameters, local ancestry estimates, etc. 
