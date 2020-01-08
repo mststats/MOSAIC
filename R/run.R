@@ -10,8 +10,9 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     stop("need to fit at least a 2-way model\n")
   if (target=="simulated" & length(pops)<A)
     stop("Please provide ", A, " groups to simulate from\n")
-  if (MODE=="HAP")
-    stop("Haploid mode is under construction; await version 1.3.6")
+  if (MODE=="HAP") {
+    warning("Haploid mode is under construction; for now ancestry recombination rates are equal for consecutive haplotypes as per diploid runs")
+  }
   if (MODE=="HAP" & PHASE)
     stop("are you trying to perform phasing on haploid data?")
   tmp=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI) 
