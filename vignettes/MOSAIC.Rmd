@@ -200,7 +200,12 @@ You can cycle quickly through all individuals and all chromosomes using:
 ```{r, eval=FALSE, echo=T}
 plot_localanc(chrnos,g.loc,localanc,g.true_anc)
 ```  
-and hit return to display each new plot. 
+and hit return to display each new plot or create a karyogram (local ancestry of entire genome) for a given individual using:
+```{r, eval=TRUE, echo=T}
+ind=2
+karyogram(A, chrnos, localanc, g.loc, GpcM, ind, dist = "genetic", g.true_anc = g.true_anc)
+```  
+The karyogram can also be plotted using physical distances by setting dist="physical". 
 
 When any such second set of local ancestries is provided, both are plotted and the Pearson correlation $r^2$
 between them over chromosomal positions is reported for each individual on each chromosome. Here we've supplied the true local ancestry

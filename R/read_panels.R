@@ -47,20 +47,18 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     multipanels<-list() # shouldn't read all of these in at once!
     for (i in 1:length(panels))
     {
-      tmp<-scan(paste0(datasource,panels[i],"genofile.",t.chrnos[ch]),what="character",quiet=T)
-      tmp<-strsplit(tmp,"")
-      allS<-length(tmp)
-      N2<-length(tmp[[1]])
-      multipanels[[i]]<-matrix(sapply(tmp, as.double), N2, allS)
+      tmpfilename<-paste0(datasource,panels[i],"genofile.",t.chrnos[ch])
+      tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+      N2<-nchar(tmp)
+      multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("integer",N2))
     }
     if (t.target=="simulated")
       for (i in 1:t.A)
       {
-	tmp<-scan(paste0(datasource,mixers[i],"genofile.",t.chrnos[ch]),what="character",quiet=T)
-	tmp<-strsplit(tmp,"")
-	allS<-length(tmp)
-	N2<-length(tmp[[1]])
-	multipanels[[kLL+i]]<-matrix(sapply(tmp, as.double), N2, allS)
+	tmpfilename<-paste0(datasource,mixers[i],"genofile.",t.chrnos[ch])
+        tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+        N2<-nchar(tmp)
+	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("integer",N2))
 	if ((t.NUMA*2)>N2) {
 	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=T)
 	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
@@ -82,20 +80,20 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     }
     if (S[ch]==nrow(snps)) locs<-1:S[ch]
     snps<-snps[locs,]
-    for (i in 1:length(multipanels)) multipanels[[i]]<-multipanels[[i]][,locs]
+    for (i in 1:length(multipanels)) multipanels[[i]]<-multipanels[[i]][locs,]
     
     # start at firstind i.e. remove all before this in target pop. 
     if (firstind!=1)
     {
       i=length(multipanels) # Admixed target is always stored last
-      multipanels[[i]]<-multipanels[[i]][-(1:(2*(firstind-1))),]
+      multipanels[[i]]<-multipanels[[i]][,-(1:(2*(firstind-1)))]
     }
     NL<-c(rep(t.nl,kLL),t.NUMA)
     LL<-kLL+1
     for (i in 1:kLL)
-      NL[i]<-min(NL[i],nrow(multipanels[[i]])) # make sure none are asked for more than they have
+      NL[i]<-min(NL[i],ncol(multipanels[[i]])) # make sure none are asked for more than they have
     if (t.target!="simulated")
-      NL[LL]<-min(NL[LL],nrow(multipanels[[LL]])) # make sure none are asked for more than they have
+      NL[LL]<-min(NL[LL],ncol(multipanels[[LL]])) # make sure none are asked for more than they have
     NN<-sum(NL)
     t.NUMA=NL[LL] # to make sure it doesn't go over available target haps
     label=rep(NaN,NN)
@@ -140,7 +138,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
 	# do mixers
 	for (n in 1:NL[l])
 	{
-	  Y<-as.integer(multipanels[[l]][n,]) # take whole of the nth haplotype here
+	  Y<-as.integer(multipanels[[l]][,n]) # take whole of the nth haplotype here
 	  d.w[[ch]]=cpp_unique_haps(Y,k,S[ch],G[ch],g.map-1,max(table(g.map)),d.w[[ch]])
 	  k<-k+1 # go to next one next
 	}
@@ -150,7 +148,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       k=1
       for (n in 1:NL[l])
       {
-	Y<-as.integer(multipanels[[l]][n,]) # take whole of the nth haplotype here
+	Y<-as.integer(multipanels[[l]][,n]) # take whole of the nth haplotype here
 	t.w[[ch]]=cpp_unique_haps(Y,k,S[ch],G[ch],g.map-1,max(table(g.map)),t.w[[ch]])
 	k<-k+1 # go to next one next
       }

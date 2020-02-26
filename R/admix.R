@@ -35,7 +35,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMI, t.NUMP, t.KNOWN, t.NN, t.multipan
       #tmp2k=(tmp2k+1-1)%%t.NUMA+2 # this adds 2 to tmp2k then shifts back to 1:t.NUMA; the 2 avoids haps of same donor ind 
       #tmp2k=(tmp2k+1-1)%%(t.NUMA*2)+2 # this adds one to tmp2k then shifts back to 1:(t.NUMA*2)
       tmp2k=haps2[haps2!=tmp2k] # use 2 donors per target; switch to one not last used
-      Y[tmpk,l]<-as.integer(t.multipanels[[tmpil]][tmp2k,l]) 
+      Y[tmpk,l]<-as.integer(t.multipanels[[tmpil]][l,tmp2k]) 
     }
   }
   write.table(t(Y),file=paste0(t.resultsdir,"simulatedgenofile.",t.chrnos[t.ch],sep=""),row.names=F,col.names=F,sep="") # write out admixed individuals
@@ -60,7 +60,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMI, t.NUMP, t.KNOWN, t.NN, t.multipan
     # do donors
     for (n in 1:t.NL[l])
     {
-      tmpY<-as.integer(t.multipanels[[l]][n,]) 
+      tmpY<-as.integer(t.multipanels[[l]][,n]) 
       d.w.ch=cpp_unique_haps(tmpY,k,t.S[t.ch],t.G[t.ch],t.g.map-1,max(table(t.g.map)),d.w.ch)
       k<-k+1 # go to next one next
     }
