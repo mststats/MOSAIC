@@ -150,6 +150,7 @@ Note that this is already run automatically by default within ``run_mosaic()``
 ```{r, fig.height=3}
 ord.Mu=plot_Mu(Mu,alpha,NL)
 ```  
+
 Inferred Copying Matrix $\mu$. One ancestry (that generated from English segments) mostly copies haplotypes in the French panel and the other (Mandenkan) mostly copies haplotypes from the Yoruban panel, as expected.
 \
 
@@ -158,6 +159,7 @@ Inferred Copying Matrix $\mu$. One ancestry (that generated from English segment
 ```{r, fig.height=3}
 ord.Fst=plot_Fst(all_Fst$panels,ord=T)
 ```  
+
 $1-F_{st}$ estimates between each ancestral group and each donor panel; closer population pairs are larger.
 \
  
@@ -167,8 +169,9 @@ This can be flipped to show the actual $F_{st}$ values by including the `reverse
 ```{r,fig.height=3}
 tmp=plot_Fst(all_Fst$panels,reverse=FALSE)
 ```  
+
 Raw unordered $F_{st}$ values; closer population pairs are smaller.
-In this case we've also not reordered the panels in order of closeness under $F_{st}$. 
+In this case we have also not reordered the panels in order of closeness under $F_{st}$. 
 \
  
 -----------
@@ -177,6 +180,7 @@ Plot co-ancestry curves used to infer event timings:
 ```{r, fig.height=2.2}
 fitcc=plot_coanccurves(acoancs,dr)
 ```  
+
 Inferred Coancestry Curves. `dr` is the gap in genetic distance between successive gridpoints. These coancestry curves are somewhat rough at longer distances as we have only used short chromosomes in the analysis. The black lines are empirical coancestry curves across all target individuals, the light grey are per individual, and the green is the fitted single-event coancestry curve.
 \
  
@@ -191,6 +195,7 @@ dipplot(chr,ind,g.loc[[chr]],ind,localanc,xlab=paste("Position on Chromosome",ch
 mp<-axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
 axis(1,at=mp,labels=signif(mp,3))
 ```  
+
 Local ancestry estimates. The second and third line add details to the axes, etc. 
 \
  
@@ -200,16 +205,19 @@ You can cycle quickly through all individuals and all chromosomes using:
 ```{r, eval=FALSE, echo=T}
 plot_localanc(chrnos,g.loc,localanc,g.true_anc)
 ```  
-and hit return to display each new plot or create a karyogram (local ancestry of entire genome) for a given individual using:
+and hit return to display each new plot. 
+
+When any such second set of local ancestries is provided, both are plotted and the Pearson correlation $r^2$
+between them over chromosomal positions is reported for each individual on each chromosome. Here we have supplied the true local ancestry
+`g.true_anc`, known as this is simulated data. 
+
+Alternatively, create a karyogram (local ancestry of entire genome) for a given individual using:
 ```{r, eval=TRUE, echo=T}
 ind=2
 karyogram(A, chrnos, localanc, g.loc, GpcM, ind, dist = "genetic", g.true_anc = g.true_anc)
 ```  
-The karyogram can also be plotted using physical distances by setting dist="physical". 
 
-When any such second set of local ancestries is provided, both are plotted and the Pearson correlation $r^2$
-between them over chromosomal positions is reported for each individual on each chromosome. Here we've supplied the true local ancestry
-`g.true_anc`, known as this is simulated data. 
+The karyogram can also be plotted using physical distances by setting dist="physical". 
 
 
 ## Accuracy of estimated local ancestry
@@ -229,6 +237,7 @@ Plots of the mean (across individuals) local ancestry can be made using
 chr=1
 m_localanc=plot_mean_localanc(chr,chrnos,g.loc,localanc,ret=TRUE)
 ```
+
 which will plot the mean for each ancestry with a different colour on chromosome `chr`. 
 Here the non-default setting `ret=TRUE` has been used to also return mean values in the form of
 a list. Each element represents the mean local ancestry for an ancestry across all gridpoints on that chromosome. 
