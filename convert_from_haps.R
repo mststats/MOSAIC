@@ -22,7 +22,7 @@ NN=ncol(shapeithaps)
 locs=shapeithaps[,3]
 
 # now read in population information
-allpops=read.table(paste0(pathin,inds.data),header=TRUE)[-1,] # note the first two lines are removed here
+allpops=read.table(paste0(pathin,inds.data),header=FALSE)
 # now reduce to parts we need
 pops=as.character(unique(allpops[,1]))
 keep=rep(T,nrow(allpops)); # remove none to start

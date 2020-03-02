@@ -16,12 +16,16 @@ chrno=argv$chrno
 hapsfile=paste0(argv$haps_stem,chrno,argv$haps_end)
 inds.data=argv$samples 
 pathout=argv$pathout 
-pops=strsplit(argv$pops," ")[[1]] # split the space separated group names
+pops=argv$pops
+if (pops=="NULL") pops=NULL
+if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated group names
 snps=read.table(paste0(pathin,"snpfile.",chrno),as.is=TRUE)
 
 # read in population information; assumption is that this is correct in terms of order and size of inds in each population
 allpops=read.table(paste0(pathin,inds.data),header=FALSE)
-allpops=allpops[which(!is.na(match(allpops[,1],pops))),] # reduce to specified populations
+if (!is.null(pops))
+  allpops=allpops[which(!is.na(match(allpops[,1],pops))),] # reduce to specified populations
+pops=unique(allpops[,1])
 hap.pops=rep(allpops[,1],each=2)
 NN=length(hap.pops) # total number of haplotypes
 S=nrow(snps)
