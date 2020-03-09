@@ -173,11 +173,14 @@ create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
 #create_coancs<-r_create_coancs
 
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRUE,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
-			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,optmethod="BFGS")
+			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,ndates=1,optmethod="BFGS")
 {
   lpop<-dim(coancs$relprobs)[1]
   if (any(rowMeans(coancs$ancprobs)/lpop<0.05))
     warning("########## minor ancestry proportions small; may be hard to fit estimate coancestry curves ##########",immediate.=TRUE)
+  # FLAG should use a vector of ndates, one per pair...
+  if (ndates>2) {warning("cannot fit more than two dates per pair of ancestries",immediate.=TRUE);ndates=1}
+  if (samedates) {if (ndates==2) warning("if samedates specified then cannot fit multiple dates per pair of ancestries", immediate.=TRUE); ndates=1}
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
   # asym=T allows asymptote to be something other than 1
@@ -204,7 +207,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   relcurve=array(0,c(lpop,lpop,dim(coancs$relprobs)[4]))
   kweights=keep=list()
   if (is.null(popnames)) popnames<-1:lpop
-  params=array(0,c(lpop,lpop,3))
+  params=array(0,c(lpop,lpop,1+2*ndates))
   if (PLOT)
   {
     if (is.null(dd)) 
@@ -252,8 +255,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
     }
     relcurve[i,j,]=tmpcurve
   }
-  x=array(NaN,c(lpop,lpop,3));x[,,2]=1 # it'll always be approx 1 for x[2]
-  #dh=as.integer(0.2*length(coancs$drange)) # match at 20% of the way along to get x[3]
+  x=array(NaN,c(lpop,lpop,1+2*ndates));x[,,1]=1 # it'll always be approx 1 for x[1]
   for (i in 1:lpop) for (j in 1:lpop)
   {
     #if (diff(range(relcurve[i,j,]))<1e-3)
@@ -266,13 +268,16 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
     perc=0.5;someway=(1-perc)*relcurve[i,j,1]+perc*closest # someway b/w closest to 1 and first point on relcurve
     dh=ifelse(relcurve[i,j,1]<1,which((relcurve[i,j,]-someway)>0)[1],which((relcurve[i,j,]-someway)<0)) # first point to cross someway 
     #if (verbose) cat("closest:", closest, perc, "way", someway, "dh:", dh, "at:", gap*100*coancs$drange[dh], "curve:", relcurve[i,j,dh], "\n")
-    x[i,j,1]=relcurve[i,j,][1]-x[i,j,2] # at d=0, Y=x[1]+x[2] # match at d=0 to get x[1]
-    x[i,j,3]=5
+    for (dd in 1:ndates) x[i,j,2*dd]=relcurve[i,j,][1]-x[i,j,1] # at d=0, Y=x[1]+x[2] # match at d=0 to get x[2]
+    for (dd in 1:ndates) x[i,j,2*dd+1]=5
     if (!is.na(dh))
-      x[i,j,3]=sqrt(abs(log(((relcurve[i,j,dh]-x[i,j,2])/x[i,j,1]))/coancs$drange[dh]/gap))
-    if (is.nan(x[i,j,1]) | is.infinite(x[i,j,2])) x[i,j,1]=0 
-    if (is.nan(x[i,j,2]) | is.infinite(x[i,j,2])) x[i,j,2]=1 
-    if (is.nan(x[i,j,3]) | is.infinite(x[i,j,3]) | (x[i,j,3]==0)) x[i,j,3]=5 
+      for (dd in 1:ndates)
+	x[i,j,2*dd+1]=sqrt(abs(log(((relcurve[i,j,dh]-x[i,j,1])/x[i,j,2*dd]))/coancs$drange[dh]/gap))
+    for (dd in 1:ndates) if (is.nan(x[i,j,2*dd]) | is.infinite(x[i,j,2*dd])) x[i,j,2*dd]=0 
+      if (is.nan(x[i,j,1]) | is.infinite(x[i,j,1])) x[i,j,1]=1 
+    for (dd in 1:ndates) {
+      if (is.nan(x[i,j,2*dd+1]) | is.infinite(x[i,j,2*dd+1]) | (x[i,j,2*dd+1]==0)) x[i,j,2*dd+1]=5 
+    }
     #print(x[i,j,3])
     if (verbose) cat(i,":",j, "before:", x[i,j,],"\n")
   }
@@ -282,15 +287,28 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
     {
       if (!asym)
       {
-	mf=function(y) sum((y[1]*exp(-gap*(y[3]^2)*coancs$drange)+y[2]-relcurve[i,j,])^2)
-	fit<-optim(x[i,j,], mf, method=optmethod)
-	x[i,j,]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	if (ndates==1) { # number of dates per paired mixture
+	  mf=function(y) sum((y[2]*exp(-gap*(y[3]^2)*coancs$drange)+y[1]-relcurve[i,j,])^2)
+	  fit<-optim(x[i,j,], mf, method=optmethod)
+	}
+	if (ndates==2) { # number of dates per paired mixture
+	  mf=function(y) sum((y[2]*exp(-gap*(y[3]^2)*coancs$drange)+y[4]*exp(-gap*(y[5]^2)*coancs$drange)+y[1]-relcurve[i,j,])^2)
+	  fit<-optim(x[i,j,], mf, method=optmethod)
+      }
+	x[i,j,]=fit$par # b*exp(-lambda*d)+a w/ x=c(a,b,rate)
       }
       if (asym)
       {
-	mf=function(y) sum((y[1]*exp(-gap*(y[2]^2)*coancs$drange)+1-relcurve[i,j,])^2)
-	fit<-optim(x[i,j,][c(1,3)], mf, method=optmethod)
-	x[i,j,][c(1,3)]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	if (ndates==1) {
+	  mf=function(y) sum((y[1]*exp(-gap*(y[2]^2)*coancs$drange)+1-relcurve[i,j,])^2)
+	  fit<-optim(x[i,j,][2:3], mf, method=optmethod)
+	  x[i,j,][2:3]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	}
+	if (ndates==2) {
+	  mf=function(y) sum((y[1]*exp(-gap*(y[2]^2)*coancs$drange)+y[3]*exp(-gap*(y[4]^2)*coancs$drange)-relcurve[i,j,])^2)
+	  fit<-optim(x[i,j,][2:5], mf, method=optmethod)
+	  x[i,j,][2:5]=fit$par # a*exp(-lambda*d)+b w/ x=c(a,b,rate)
+	}
       }
     }
   }
@@ -305,7 +323,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 	l=1
 	for (i in 1:lpop) for (j in i:lpop) 
 	{
-	  ans=ans+sum((y[l]*exp(-gap*(y[length(y)]^2)*coancs$drange)+y[l+1]-relcurve[i,j,])^2)
+	  ans=ans+sum((y[l+1]*exp(-gap*(y[length(y)]^2)*coancs$drange)+y[l]-relcurve[i,j,])^2)
 	  l=l+2
 	}
 	ans
@@ -316,7 +334,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
       for (i in 1:lpop) for (j in i:lpop) 
       {
 	x[i,j,1]=x[j,i,1]=fit$par[l]
-	x[i,j,2]=x[j,i,2]=fit$par[l+1]
+	for (dd in 1:ndates)
+  	  x[i,j,2*dd]=x[j,i,2*dd]=fit$par[l+1]
 	l=l+2
       }
       x[,,3]=fit$par[length(fit$par)]
@@ -334,12 +353,12 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 	}
 	ans
       }
-      tmp=NULL;for (i in 1:lpop) for (j in i:lpop) tmp=c(tmp,x[i,j,1]);tmp=c(tmp,x[1,1,3])
+      tmp=NULL;for (i in 1:lpop) for (j in i:lpop) tmp=c(tmp,x[i,j,2]);tmp=c(tmp,x[1,1,3])
       fit<-optim(tmp, mf, method=optmethod)
       l=1
       for (i in 1:lpop) for (j in i:lpop) 
       {
-	x[i,j,1]=x[j,i,1]=fit$par[l]
+	x[i,j,2]=x[j,i,2]=fit$par[l]
 	l=l+1
       }
       x[,,3]=fit$par[length(fit$par)]
@@ -348,8 +367,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   for (i in 1:lpop) for (j in 1:lpop)
   {
     if (verbose) cat(i,j, " after:", x[i,j,], "\n")
-    x[i,j,][3]=x[i,j,][3]^2
-    #cat(i,j,x[i,j,],"\n")
+    for (dd in 1:ndates)
+      x[i,j,][1+dd*2]=x[i,j,][1+dd*2]^2
     params[i,j,]=x[i,j,]
   }
   for (i in 1:lpop) for (j in i:lpop)
@@ -372,10 +391,13 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
       }
       lines(gap*coancs$drange*100,relcurve[i,j,],t='l',lwd=lwd)
       abline(h=1,col=2)
-      lines(gap*coancs$drange*100 , x[i,j,][1]*exp(-gap*x[i,j,][3]*coancs$drange)+x[i,j,][2], col=3, lwd=lwd) # note x[3] is already exponentiated
+      if (ndates==1)
+        lines(gap*coancs$drange*100 , x[i,j,][2]*exp(-gap*x[i,j,][3]*coancs$drange)+x[i,j,][1], col=3, lwd=lwd) # note x[3] is already exponentiated
+      if (ndates==2)
+        lines(gap*coancs$drange*100 , x[i,j,][2]*exp(-gap*x[i,j,][3]*coancs$drange)+x[i,j,][4]*exp(-gap*x[i,j,5]*coancs$drange)+x[i,j,][1], col=3, lwd=lwd) 
     }
   }
-  return(list(params=params, relcurve=relcurve, gens.matrix=params[,,3], kweights=kweights, keep=keep)) # redundancy here but useful to focus 
+  return(list(params=params, relcurve=relcurve, gens.matrix=params[,,c(1+2*(1:ndates))], kweights=kweights, keep=keep)) # redundancy here but useful to focus 
 }
 
 
