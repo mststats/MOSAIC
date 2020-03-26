@@ -381,7 +381,11 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 	       max(relcurve[i,j,],coancs$relprobs[i,j,keep[[(i-1)*lpop+j]],]/kweights[[(i-1)*lpop+j]][keep[[(i-1)*lpop+j]]]))
       if (YLIM[1]>1) YLIM[1]=1 # always include 1
       if (YLIM[2]<1) YLIM[2]=1 # always include 1
-      plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab=ylab,main=paste0(targetname, popnames[i],":",popnames[j]," (",round(x[i,j,][3],1),")"))
+      if (ndates==1)
+        plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab=ylab,main=paste0(targetname, popnames[i],":",popnames[j]," (",round(x[i,j,][3],1),")"))
+      if (ndates==2)
+        plot(range(gap*coancs$drange*100),YLIM,t='n',xlab="cM",ylab=ylab,main=paste0(targetname, popnames[i],":",popnames[j],
+										     " (",round(x[i,j,][3],1),",",round(x[i,j,][5],1),")"))
       if (is.null(k) & plotall) # if plotting group consensus, also show hap / inds in grey
       {
 	# don't forget to undo the weighting
