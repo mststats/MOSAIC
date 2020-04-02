@@ -10,7 +10,7 @@ void cppforward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int kLL,int L, i
   int offset=(THIN ? maxdonors : 0); // setting offset=0 for maxdonors==NUMP => use single vector of donors
   maxmiss=maxmiss+1; // the +1 is to make room for the zero
   // end of arguments passed 
-  double tmpsum=0.0, tmpsum2=0.0;
+  double tmpsum=0, tmpsum2=0.0;
   int i,l,g,dlk,lk2,lk,llk,ndonors=maxdonors; 
   int dg, gum, glk, gm, lm, gld, ilk, lkl; // convenience indices for faster indexing
   int h=k, otherh=((k%2) ? k+1 : k-1);
@@ -68,7 +68,7 @@ void cppforward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int kLL,int L, i
     gm=g*maxdonors*L;
     h=(flips[g] ? otherh : k); // if flips[g]==0 then h=same as was else with even k to k-1 and odd k to k+1
     ndonors=kndonors[g];
-    tmpsum=0.0;
+    tmpsum=0;
     for (dlk=0;dlk<ndonors;dlk++) {
       dg=g*offset+dlk; 
       lk=donates[dg]; 
@@ -92,7 +92,7 @@ void cppforward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int kLL,int L, i
 	  glk=umatch[gum]; 
 	  fors[gld]*=mutmat[maxmiss*L*glk+L*(gobs[g]-glk)+l]; // l appears here in case we want anc-specific theta
 	}
-	//if (fors[gld]<1.0e-16) fors[gld]=1.0e-16;
+	if (fors[gld]<1.0e-32) fors[gld]=1.0e-32;
 	tmpsum+=fors[gld];
       }
     }

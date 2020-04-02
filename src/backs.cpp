@@ -10,7 +10,7 @@ void cppbackward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int L, int gl,i
   int offset=(THIN ? maxdonors : 0); // setting offset=0 for maxdonors==NUMP => use single vector of donors
   maxmiss=maxmiss+1; // the +1 is to make room for the zero
   // end of arguments passed 
-  double tmpsum=0.0, tmpsum2=0.0;
+  double tmpsum=0, tmpsum2=0.0;
   int NNL=NUMP*L;
   int i,l,g,dlk,lk2,lk,llk,ndonors=maxdonors;
   int dg, glk, gum, gm, im,lm, ilk, lkl, il; // convenience indices for faster indexing
@@ -78,7 +78,7 @@ void cppbackward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int L, int gl,i
       }
     }
     ndonors=kndonors[g-1];
-    tmpsum=0.0;
+    tmpsum=0;
     for (dlk=0;dlk<ndonors;dlk++) {
       dg=(g-1)*offset+dlk; 
       lk=donates[dg];
@@ -99,7 +99,7 @@ void cppbackward(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int L, int gl,i
 	    tmpsum2+=backs[gm+lm+lk2]*(transitions[ilk+L]-transitions[ilk])*emissions[il]; // remove wrong switch term
 	  }
 	}
-	//if (tmpsum2<1.0e-16) tmpsum2=1.0e-16;
+	if (tmpsum2<1.0e-32) tmpsum2=1.0e-32;
 	backs[gm-maxdonors*L+l*maxdonors+dlk]=tmpsum2; // -maxdonors*L takes us to g-1
 	tmpsum+=tmpsum2;
       }

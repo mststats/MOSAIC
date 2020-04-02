@@ -2,8 +2,15 @@
 r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5)
 {
   # coarser grid here will mean more averaging / smoothing of curves
-  drange=seq(as.integer(min.cM/gap/100),as.integer(max.cM/gap/100),by=gby) # 50 cM max; drange is in gridpoints
   nchrno=length(t.localanc)
+  maxconsidered=as.integer(max.cM/gap/100)
+  for (ch in 1:nchrno) {
+    if (maxconsidered > dim(t.localanc[[ch]])[3]) {
+      max.cM=100*gap*dim(t.localanc[[ch]])[3]
+      warning("########## trying to fit curves on longer segments than total length of chromosome : changing max.cM to ", max.cM, " cM #########", immediate.=T)
+    }
+  }
+  drange=seq(as.integer(min.cM/gap/100),as.integer(max.cM/gap/100),by=gby) # 50 cM max; drange is in gridpoints
   NUMA=dim(t.localanc[[1]])[2]
   NUMI=max(NUMA/2,1)
   lpop<-dim(t.localanc[[1]])[1]
