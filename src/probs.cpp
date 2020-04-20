@@ -86,6 +86,8 @@ List cppprobs(int k,int NUMA,int maxdonors,bool THIN,int L,int kLL,int NN,int NU
 	}
       }
     }
+    if (invsum<1.0e-32) invsum=1.0e-32;
+    if (ginvsum<1.0e-32) ginvsum=1.0e-32;
     invsum=1.0/invsum;
     ginvsum=1.0/ginvsum;
     for (ia=0;ia<L;ia++)

@@ -46,6 +46,7 @@ List cppswitches(int k,int NUMA,int maxdonors,bool THIN,int NUMP,int G,IntegerVe
       unscaledswitches[g*NUMP+jk]=tmp;
       invsum+=tmp;
     }
+    if (invsum<1.0e-32) invsum=1.0e-32;
     invsum=1.0/invsum;
     for (jk=0;jk<NUMP;jk++)
       switches[g*NUMP+jk]+=unscaledswitches[g*NUMP+jk]*invsum;

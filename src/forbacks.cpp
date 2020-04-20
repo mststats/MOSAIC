@@ -21,6 +21,7 @@ NumericVector cppforback(int maxdonors,bool THIN,int NUMP,int L,int G,IntegerVec
 	kforbacks[ln*G+g]=fors[g*NNL2+dln]*backs[g*NNL2+dln];
 	invsum+=kforbacks[ln*G+g];
       }
+    if (invsum<1.0e-32) invsum=1.0e-32;
     invsum=1.0/invsum;
     for (l=0; l<L; l++)
       for (n=0; n<ndonors[g]; n++)
@@ -56,6 +57,7 @@ NumericVector cppgforback(int maxdonors,int THIN,int kLL,int NUMP,IntegerVector 
 	kforbacks[ln*G+g]+=tmp;
 	invsum+=tmp;
       }
+    if (invsum<1.0e-32) invsum=1.0e-32;
     invsum=1.0/invsum;
     for (l=0; l<L; l++)
       for (n=0; n<kLL; n++)
