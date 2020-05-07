@@ -42,7 +42,7 @@ happlot_Mu<-function(ch,k,x,A,probs,ylab,mlab=paste("Haplotype", k),xlab="",t.Mu
 		     colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   G=length(x)
-  kLL=nrow(Mu)
+  kLL=nrow(t.Mu)
   xlim=range(x)
   x=c(x,rev(x))
   ylim=c(0,1)
@@ -66,7 +66,7 @@ dipplot_Mu<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual", ind),xlab=""
   par(mar=c(4, 1.5*cexa+2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
   hap<-c(ind*2-1,ind*2)
   G=length(x)
-  kLL=nrow(Mu)
+  kLL=nrow(t.Mu)
   glocs=rep(x,100)
   xlim=range(x)
   x=c(x,rev(x))
@@ -192,7 +192,7 @@ plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside
   {
     barplot(t(t.Mu),space=FALSE,col=colvec,horiz=TRUE,las=TRUE,cex.axis=cexa,cex.names=cexa)
     for (i in 1:A)
-      text(x=(i)*0.2*max(rowSums(t.Mu)), y=0.5+1.2*(nrow(Mu)+1), round(t.alpha[i],3), cex=cexa, col=colvec[i])
+      text(x=(i)*0.2*max(rowSums(t.Mu)), y=0.5+1.2*(nrow(t.Mu)+1), round(t.alpha[i],3), cex=cexa, col=colvec[i])
   }
   if (!showgradient & beside)
   {
