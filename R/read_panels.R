@@ -51,6 +51,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
       N2<-nchar(tmp)
       multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
+      multipanels[[i]][multipanels[[i]]=="?"]=NaN
     }
     if (t.target=="simulated")
       for (i in 1:t.A)
@@ -59,6 +60,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
         tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
         N2<-nchar(tmp)
 	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
+        multipanels[[kLL+i]][multipanels[[kLL+i]]=="?"]=NaN
 	if ((t.NUMA*2)>N2) {
 	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=T)
 	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
