@@ -18,7 +18,7 @@ r_calc_freqs=function(s,t.A,t.populations,t.y)
   {
     tmppops=which(t.populations[,s]==l)
     n[l]=sum(!is.nan(tmppops))
-    p[l]=mean(t.y[tmppops,s],na.rm=TRUE)
+    p[l]=mean(t.y[s,tmppops],na.rm=TRUE)
   }
   return(list(p,n)) # returns two vectors of length t.A; freq and number
 }
@@ -38,9 +38,10 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
   {
     snps=read.table(paste0(pathin1,"snpfile.",chrnos[ch]))
     S=nrow(snps)
-    anchaps<-scan(paste0(pathin2,t.target,"genofile.",chrnos[ch]),what="character",quiet=T) 
-    anchaps<-strsplit(anchaps,"")
-    y=matrix(sapply(anchaps, as.double), ncol=S)[1:NUMA,]
+    tmpfilename=paste0(pathin2,t.target,"genofile.",chrnos[ch])
+    tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+    N2<-nchar(tmp)
+    y=matrix(suppressWarnings(as.integer(as.matrix(laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))[,]))),ncol=N2)
     populations=matrix(NaN,NUMA,S)
     tmp=grid_to_pos_chr(t.localanc[[ch]],snps[,4],glocs[[ch]])
     k=0
@@ -111,7 +112,7 @@ R_Fst=function(x)
   d_fst=rep(NaN,laa)
   for (aa in 1:laa) {a1=combn_aa[1,aa]
   a2=combn_aa[2,aa]
-  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])))} # squared diff over average
+  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])),na.rm=T)} # squared diff over average
   return(d_fst)
 }
 

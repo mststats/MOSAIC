@@ -6,14 +6,12 @@ summarise_panels=function(panelname, pathin, chrnos)
   allp=list();alln=list() 
   for (ch in 1:length(chrnos))
   {
-    snps=read.table(paste0(pathin,"snpfile.",chrnos[ch]))
-    S=nrow(snps)
-    tmp<-scan(paste0(pathin,panelname,"genofile.",chrnos[ch]),what="character",quiet=T) 
-    tmp<-strsplit(tmp,"")
-    tmpy=matrix(sapply(tmp, as.double), ncol=S)
-    ny=nrow(tmpy)
-    allp[[ch]]=colMeans(tmpy)
-    alln[[ch]]=ny 
+    tmpfilename=paste0(pathin,panelname,"genofile.",chrnos[ch])
+    tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+    N2<-nchar(tmp)
+    tmpy=matrix(suppressWarnings(as.integer(as.matrix(laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))[,]))),ncol=N2)
+    allp[[ch]]=rowMeans(tmpy,na.rm=T)
+    alln[[ch]]=N2
   }
   return(list("freqs"=allp,"counts"=alln))
 }
