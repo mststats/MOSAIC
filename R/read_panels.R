@@ -50,7 +50,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       tmpfilename<-paste0(datasource,panels[i],"genofile.",t.chrnos[ch])
       tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
       N2<-nchar(tmp)
-      multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("integer",N2))
+      multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
     }
     if (t.target=="simulated")
       for (i in 1:t.A)
@@ -58,7 +58,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
 	tmpfilename<-paste0(datasource,mixers[i],"genofile.",t.chrnos[ch])
         tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
         N2<-nchar(tmp)
-	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("integer",N2))
+	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
 	if ((t.NUMA*2)>N2) {
 	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=T)
 	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
