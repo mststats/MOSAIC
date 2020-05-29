@@ -192,11 +192,11 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   if (target=="simulated") 
     cat("Actual r-squared (genomewide):", dip_fr2(localanc,g.true_anc),"\n")
   if (!is.null(all_Fst)) {
-    if (!is.nan(all_Fst$ancs)) {
+    if (all(!is.nan(all_Fst$ancs))) {
       cat("Fst between mixing groups:\n")
       print(all_Fst$ancs)
     } 
-    if (!is.nan(all_Fst$Rst)) {
+    if (all(!is.nan(all_Fst$Rst))) {
       cat("Rst between mixing groups:\n")
       print(all_Fst$Rst)
     } 
