@@ -20,6 +20,7 @@ shapeithaps=read.table(paste0(pathin,hapsfile))
 S=nrow(shapeithaps)
 NN=ncol(shapeithaps)
 locs=shapeithaps[,3]
+rsids=shapeithaps[,2]
 
 # now read in population information
 allpops=read.table(paste0(pathin,inds.data),header=FALSE)
@@ -38,8 +39,9 @@ for (i in 1:length(pops)) {
 }
 # create matrix of snps for which we have haplotypes
 snps=matrix(NaN, S, 6) # same size as hapmix files, most will be left blank here
+snps[,1]=as.character(rsids)
 snps[,2]=chrno
 snps[,4]=locs
-write.table(snps, file=paste0(pathout,"snpfile.", chrno)) 
+write.table(snps, file=paste0(pathout,"snpfile.", chrno),quote=F,col.names=F,row.names=F) 
 
 

@@ -19,6 +19,7 @@ create_logfile=function(resultsdir,target,kLL,A,NUMI,firstind,chrnos,nchrno,NN,G
 extract_log=function(logfile)
 {
   EMlog=read.delim(logfile, sep=" ")
+  EMlog$mode=as.factor(EMlog$mode) # required since R 4.0 as stringsAsFactors now defaults to FALSE
   colnames(EMlog)<-gsub("[.]","",colnames(EMlog))
   return(EMlog)
 }
