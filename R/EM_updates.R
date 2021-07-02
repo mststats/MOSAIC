@@ -1,3 +1,20 @@
+# base alpha and lambda off PI
+alphalambda_from_PI=function(t.PI,t.dr) {
+  t.A=nrow(t.PI[[1]])
+  t.alpha=t.lambda=list()
+  for (ind in 1:length(t.PI))
+  {
+    trans=t.PI[[ind]]-diag(rowSums(t.PI[[ind]])) # strictly speaking this should include an initial condition
+    w=prcomp(t(trans),center=F)$rotation[,t.A]
+    t.alpha[[ind]]=w/sum(w);t.alpha[[ind]][t.alpha[[ind]]<0]=0
+    #t.lambda[[ind]]=-log(1-sum(t.PI[[ind]])+sum(diag(t.PI[[ind]])))/dr 
+    tmp=1-t(t(t.PI[[ind]]/t.alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for t.A=2
+    tmp=-log(tmp)/t.dr; # gives same off diagonals for t.A=2
+    t.lambda[[ind]]=mean(tmp,na.rm=T)
+    #t.lambda[[ind]]=mean(-log(1-t.PI[[ind]])/dr)
+  }
+  return(list(alpha=t.alpha,lambda=t.lambda))
+}
 # function that performs the EM updates for MOSAIC's parameters. First some statistics that are used in multiple EM updates are calculated
 # using functions in intermediate_calcs.R using Cpp code. These amount to counts of various switch types along the target genomes
 update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.A, t.max.donors, t.NN, t.NUMP, t.NUMI, t.G, t.dr, t.transitions, 
@@ -106,15 +123,10 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
       }
       tmp=which(is.na(t.PI[[ind]]),arr.ind=T) 
       for (i in tmp[,1]) for (j in tmp[,2]) t.PI[[ind]][i,j]=t.alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. t.alpha
-      trans=t.PI[[ind]]-diag(rowSums(t.PI[[ind]])) # strictly speaking this should include an initial condition
-      w=prcomp(t(trans),center=F)$rotation[,t.A]
-      t.alpha[[ind]]=w/sum(w);t.alpha[[ind]][t.alpha[[ind]]<0]=0
-      #t.lambda[[ind]]=-log(1-sum(t.PI[[ind]])+sum(diag(t.PI[[ind]])))/dr 
-      tmp=1-t(t(t.PI[[ind]]/t.alpha[[ind]]));tmp[tmp==0]=NaN;tmp[tmp==1]=NaN;tmp[is.infinite(tmp)]=NaN;tmp[tmp<0]=NaN;diag(tmp)=NaN; # gives same off diagonals for t.A=2
-      tmp=-log(tmp)/t.dr; # gives same off diagonals for t.A=2
-      t.lambda[[ind]]=mean(tmp,na.rm=T)
-      #t.lambda[[ind]]=mean(-log(1-t.PI[[ind]])/dr)
     }
+    tmp=alphalambda_from_PI(t.PI,t.dr)
+    t.alpha=tmp$alpha
+    t.lambda=tmp$lambda
   }
   if (t.dorho)
   {

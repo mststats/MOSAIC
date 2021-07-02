@@ -50,11 +50,11 @@ rephaser<-function(t.ch, t.G, t.A, hap, g, t.NUMP, t.NUMA, t.kLL, t.transitions,
   c.fors<-c.sumfors<-c.backs<-c.scalefactor<-c.scalefactorb<-list()
   for (h in 1:2) 
   {
-    c.fors[[h]]<-bit::clone(t.fors[[h]])
-    c.sumfors[[h]]<-bit::clone(t.sumfors[[h]])
-    c.backs[[h]]<-bit::clone(t.backs[[h]])
-    c.scalefactor[[h]]<-bit::clone(t.scalefactor[[h]])
-    c.scalefactorb[[h]]<-bit::clone(t.scalefactorb[[h]])
+    c.fors[[h]]<-clone(t.fors[[h]])
+    c.sumfors[[h]]<-clone(t.sumfors[[h]])
+    c.backs[[h]]<-clone(t.backs[[h]])
+    c.scalefactor[[h]]<-clone(t.scalefactor[[h]])
+    c.scalefactorb[[h]]<-clone(t.scalefactorb[[h]])
   }
   tmp.backs<-c.backs
   tmp.scalefactorb<-c.scalefactorb
@@ -207,7 +207,7 @@ r_phase_mcmc<-function(t.ch, t.G, t.A, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.do
     #if (max(c.probs)==0) cat(range(ind.c.v), range(p.v), "\n") 
     g<-sample(2:t.G[t.ch],1,prob=c.probs[-1]) 
     # given j, choose to propose to flip or not flip with probability c.probs[j]
-    p.flip<-rbinom(1,p=c.probs[g],size=1) # this will be low. flip==1 => flip it
+    p.flip<-rbinom(1,prob=c.probs[g],size=1) # this will be low. flip==1 => flip it
     #cat(ind.c.ll, mean(c.probs), c.probs[g], p.flip, "\n")
     if (p.flip==1) {
       # now update proposal distribution
@@ -237,11 +237,11 @@ r_phase_mcmc<-function(t.ch, t.G, t.A, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.do
 	ind.mcmc.acc[m+1]<-1
 	t.flips[g:t.G[t.ch]]<-!t.flips[g:t.G[t.ch]] 
 	for (h in 1:2) {
-	  t.fors[[h]]<-bit::clone(rephased$fors[[h]])
-	  t.sumfors[[h]]<-bit::clone(rephased$sumfors[[h]])
-	  t.backs[[h]]<-bit::clone(rephased$backs[[h]])
-	  t.scalefactor[[h]]<-bit::clone(rephased$scalefactor[[h]])
-	  t.scalefactorb[[h]]<-bit::clone(rephased$scalefactorb[[h]])
+	  t.fors[[h]]<-clone(rephased$fors[[h]])
+	  t.sumfors[[h]]<-clone(rephased$sumfors[[h]])
+	  t.backs[[h]]<-clone(rephased$backs[[h]])
+	  t.scalefactor[[h]]<-clone(rephased$scalefactor[[h]])
+	  t.scalefactorb[[h]]<-clone(rephased$scalefactorb[[h]])
 	}
 	ind.c.ll<-n.ll # set next loglikelihood to new loglikelihood
 	ind.c.v<-p.v

@@ -15,7 +15,7 @@ m.args=add_argument(m.args, "--number", help="number of target individuals", def
 m.args=add_argument(m.args, "--maxcores", help="maximum number of cores to use (will grab half of all available if set to 0)", default=0, type="integer",short="-m")
 m.args=add_argument(m.args, "--noEM", help="whether to perform EM inference of model parameters",flag=TRUE,short="-noEM")
 m.args=add_argument(m.args, "--nophase", help="whether to re-phase",flag=TRUE,short="-nophase")
-m.args=add_argument(m.args, "--gens", help="generations since mixing", default=0, type="integer",short="-gens")
+m.args=add_argument(m.args, "--gens", help="generations since mixing", default="NULL", type="integer",short="-gens")
 m.args=add_argument(m.args, "--ratios", help="ratios of ancestral mixing groups", default="NULL", type="character",short="-ratios")
 m.args=add_argument(m.args, "--chromosomes", help="chromosomes as c_start:c_end", default="1:22", type="character",short="-c")
 m.args=add_argument(m.args, "--rounds", help="number of inference rounds", default=5, type="integer",short="-r")
@@ -62,6 +62,7 @@ if (!file.exists(ffpath))
   stop(paste0("requested location '", ffpath, "' for storage of fast files doesn't exist. Please use any temporary folder on your system. \n"))
 if (pops=="NULL") pops=NULL
 if (mask=="NULL") mask=NULL
+if (gens=="NULL") gens=NULL
 if (ratios=="NULL") ratios=NULL
 if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated group names
 if (!is.null(mask)) mask=strsplit(mask," ")[[1]] # split the space separated group names

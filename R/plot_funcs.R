@@ -121,7 +121,7 @@ report_donors<-function(MODE)
     tmp<-c(ylower[g]-1):yupper[g]
     panels<-rownames(Mu)[ind.indices[tmp[-1]]]
     donprobs<-diff(cprobs[tmp,g])
-    ord<-sort(donprobs,dec=TRUE,index=TRUE)$ix # reorder from high to low contributors
+    ord<-sort(donprobs,decreasing=TRUE,index=TRUE)$ix # reorder from high to low contributors
     ord<-ord[donprobs[ord]>0] # and drop the non-contributors
     panels<-panels[ord]
     donprobs<-donprobs[ord]
@@ -550,7 +550,6 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) {
     }
   }  
 
-  require(maps)
   ii=which(geolocs[,1]==target)
   par(bg="lightblue",mar=c(0,0,0,0))
   plot(sourcelocs,t='n',xlab="",ylab="",xaxt='n',yaxt='n',xlim=c(-125,155),ylim=c(-46,63))

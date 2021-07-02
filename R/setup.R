@@ -11,7 +11,7 @@ fmutmat<-function(theta, A, maxmiss, maxmatch)
   mutmat
 }
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
-setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,ratios,MC,
+setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,ratios,MC, 
   # some default values
   verbose=T,
   HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
@@ -40,7 +40,8 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   commonrho=TRUE, # needs to be false if it includes PI[i,i]
   commontheta=TRUE,
   prethin=FALSE,
-  resultsdir="MOSAIC_RESULTS/") # where to store results files
+  resultsdir="MOSAIC_RESULTS/", # where to store results files
+  init.rho, init.theta, init.PI) # use initial values unless not supplied here
 {
   if (!file.exists(resultsdir))
     dir.create(file.path(getwd(), resultsdir))
@@ -72,14 +73,14 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   if (t.nchrno!=22) ans$samp_chrnos=t.chrnos[1:5] # just use first 5
   if (length(ans$samp_chrnos)>t.nchrno) ans$samp_chrnos=t.chrnos # use all if try to use too many
   ans$dr<-1/(ans$GpcM*100) # GpcM is #gridpoints per centiMorgan cM
-  if (gens==0) { # if not provided
+  if (is.null(gens)) { # if not provided
     if (t.target!="simulated") gens=10 else gens=50 # this is less important now for phasing steps as we get lambda from init_Mu 
   } # note that gens is a single date (not necessarily true for multiway A>2 admixture; EM will correct this quickly if on)
   if (is.null(ratios)){  # if not provided
     ratios=rep(1/A,A)
   } else {
     if (length(ratios)==A) {ratios=ratios/sum(ratios)} else {
-      cat(ratios, " supplied as vector of mixing group ratios\n")
+      warning(ratios, " supplied as vector of mixing group ratios but need ", A, " values\n", immediate.=T)
       ratios=rep(1/A,A)
       if (!EM)
         warning("########## length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group ##########", immediate.=T)
@@ -123,20 +124,32 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   if (min.donors>ans$NUMP) min.donors<-ans$NUMP 
   ans$min.donors=min.donors
   phi.theta<-0.2
-  ans$theta=o.theta<-rep(phi.theta/(phi.theta+max.donors/A), A) # as per Hapmix
-  #invsum=1/sum(1/(1:ans$NUMP));o.theta<-rep(0.5*invsum/(ans$NUMP+invsum), A) # Watterson's estimator
-  ans$rho=o.rho=rep(1-exp(-Ne/(ans$NUMP/A)*ans$dr),A) # similar to HapMix choice but transformed; 1/A as this will include anc self-switches
+  if (is.null(init.theta)) {
+    ans$theta=rep(phi.theta/(phi.theta+max.donors/A), A) # as per Hapmix
+  } else ans$theta=init.theta
+  #invsum=1/sum(1/(1:ans$NUMP));ans$theta<-rep(0.5*invsum/(ans$NUMP+invsum), A) # Watterson's estimator
+  if (is.null(init.rho)) {
+      ans$rho=rep(1-exp(-Ne/(ans$NUMP/A)*ans$dr),A) # similar to HapMix choice but transformed; 1/A as this will include anc self-switches
+  } else ans$rho=init.rho
   if (LL<A) {stop("Can't fit more latent ancs than panels");}
   ##################################
-  # now use principal components to set sensible starting values for the copying matrix
-  ans$alpha=ans$lambda<-list()
-  for (ind in 1:ans$NUMI)
-  {
-    ans$alpha[[ind]]=ratios
-    ans$lambda[[ind]]=gens
+  ans$alpha=list()
+  for (ind in 1:ans$NUMI) {
+    if (!is.null(ratios)) {ans$alpha[[ind]]=ratios} else ans$alpha=rep(1/A,ans$NUMI)
+  }
+  ans$lambda=list()
+  for (ind in 1:ans$NUMI) {
+    if (!is.null(gens)) {ans$lambda[[ind]]=gens} else ans$lambda[[ind]]=50
+  }
+  if (is.null(init.PI)) {
+    ans$PI<-create_PI(ans$alpha,ans$lambda,A,ans$dr,ans$NUMI)
+  } else { # in this case use PI to set alpha and lambda regardless of what they're set to before now
+    ans$PI=init.PI
+    tmp=alphalambda_from_PI(ans$PI,ans$dr)
+    ans$alpha=tmp$alpha
+    ans$lambda=tmp$lambda
   }
   mutmat<-fmutmat(ans$theta, A, ans$maxmiss, ans$maxmatch)
-  ans$PI<-create_PI(ans$alpha,ans$lambda,A,ans$dr,ans$NUMI)
   ##################################
   ans$Mu=matrix(1/ans$kLL,ans$kLL,A)
   ans$transitions<-list()

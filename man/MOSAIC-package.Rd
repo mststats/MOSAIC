@@ -3,7 +3,7 @@
 \alias{MOSAIC}
 \docType{package}
 \title{
-  MOSAIC Organises Segments of Ancestry In Chromosomes.
+  MOSAIC Organises Segments of Ancestry In Chromosomes
 }
 \description{
 MOSAIC is a tool for modelling multi-way admixture events using dense haplotype data. The Hidden Markov Model approach is scalable to thousands of samples and, unlike existing methods, does not require specification of surrogate reference populations for the mixing ancestral groups. Instead, potentially complex relationships between multiple observed reference groups and unseen ancestral groups are inferred wherein the reference groups may also be admixed with respect to the ancestral groups. It automatically infers mixing proportions, timings, and parameters related to recombination rate and mutation. Our method outputs estimates of the model parameters along with measurements of model fit and confidence based on the local ancestry estimates and distribution of ancestral chromosome segment lengths with uncertainty. Phasing errors that can potentially mask ancestry are detected and corrected within the algorithm. 
@@ -35,12 +35,7 @@ Maintainer: michael.salter-townshend@ucd.ie <michael.salter-townshend@ucd.ie>
   Genetics (2019): https://doi.org/10.1534/genetics.119.302139
 }
 \keyword{admixture, local ancestry, population genetics, Hidden Markov Model}
-\seealso{
-  
-}
 \examples{
-  \dontrun{
-    mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2) # real data example
-    mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka")) # simulated example
-  }
+  \dontrun{mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)} # real data example
+  \dontrun{mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))} # simulated example
 }

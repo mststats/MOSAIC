@@ -10,7 +10,7 @@ create_logfile=function(resultsdir,target,kLL,A,NUMI,firstind,chrnos,nchrno,NN,G
   lognames<-c(lognames, "loglikelihood")
   logfile=paste0(resultsdir, target, "_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
   len=length(lognames) # total number of items to log
-  write(file=logfile, lognames, ncol=length(lognames)) # start the EM log file
+  write(file=logfile, lognames, ncolumns=length(lognames)) # start the EM log file
   rtime<-as.numeric(Sys.time())
   return(list(runtime=rtime,logfile=logfile,len=len))
 }
@@ -23,20 +23,24 @@ extract_log=function(logfile)
   colnames(EMlog)<-gsub("[.]","",colnames(EMlog))
   return(EMlog)
 }
-extract_paras=function(EMlog, iter, panelnames=NULL)
+extract_paras=function(EMlog, iter=nrow(EMlog), panelnames=NULL)
 {
   paras=as.numeric(c(EMlog[iter,-c(1,2,ncol(EMlog))])) # remove mode, time, and log-likelihood
+  NUMA=length(grep("alpha",colnames(EMlog)))
+  NUMI=max(NUMA/2,1)
+  A=length(grep("theta",colnames(EMlog)))
+  kLL=length(grep("Mu.1",colnames(EMlog)))
   t.Mu=t(matrix(paras[1:(A*kLL)],A));paras=paras[-(1:(A*kLL))] 
   rownames(t.Mu)=panelnames
   t.rho=paras[1:A];paras=paras[-(1:A)]
-  t.PI=list();for (ind in 1:NUMI) {t.PI[[ind]]=matrix(paras[1:(A*A)],A);paras=paras[-(1:(A*A))]}
+  t.PI=list();for (ind in 1:NUMI) {t.PI[[ind]]=t(matrix(paras[1:(A*A)],A));paras=paras[-(1:(A*A))]}
   t.alpha=list();for (ind in 1:NUMI) {t.alpha[[ind]]=paras[1:A];paras=paras[-(1:A)]}
   t.lambda=list();for (ind in 1:NUMI) {t.lambda[[ind]]=paras[1];paras=paras[-1]}
   t.theta=paras[1:A];paras=paras[-(1:A)]
   return(list(Mu=t.Mu, rho=t.rho, PI=t.PI, alpha=t.alpha, lambda=t.lambda, theta=t.theta))
 }
 # EMlog<-extract_log(logfile)
-# e.g. paras=extract_paras(EMlog, nrow(EMlog))
+# e.g. paras=extract_paras(EMlog)
 plot_loglike=function(EMlog,cexa=2.5,
 		      colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999"),...)
 
@@ -51,4 +55,4 @@ plot_loglike=function(EMlog,cexa=2.5,
 # function to write a row in the log file
   writelog<-function(t.logfile,t.alg,t.diff.time,t.len,t.Mu,t.rho,t.PI,t.alpha,t.lambda,t.theta,t.cloglike) # single consistent function to write to logfile
     write(file=t.logfile,c(t.alg,signif(t.diff.time,4),signif(t(t.Mu),4),signif(t.rho,4),c(sapply(t.PI, function(x) signif(t(x),4))),
-			   sapply(t.alpha, function(x) signif(x,4)),sapply(t.lambda,function(x) round(x,4)),signif(t.theta,4),round(t.cloglike,4)),ncol=t.len,append=T)
+			   sapply(t.alpha, function(x) signif(x,4)),sapply(t.lambda,function(x) round(x,4)),signif(t.theta,4),round(t.cloglike,4)),ncolumns=t.len,append=T)

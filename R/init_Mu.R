@@ -156,12 +156,12 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     logMu=log(Mu)
     tmp.ll=loglikeMult(counts, alpha, logMu, t.kLL, t.A, t.NUMI)
     ll=tmp.ll
-    if (verbose)
-      cat(iter,"/",itmax, " ", ll, " ", ll-old.ll, "\n", sep="")
+    #if (verbose)
+    #  cat(iter,"/",itmax, " ", ll, " ", ll-old.ll, "\n", sep="")
     if (!is.nan(old.ll))
       if ((ll-old.ll)<eps)
       {
-	if (ll<old.ll-eps) warning("########## Decreasing log-likelihood ##########",immediate.=T)
+	if (ll<old.ll-eps & verbose) warning("########## Decreasing log-likelihood ##########",immediate.=T)
 	if (verbose) cat("EM converged in mixture model for initialising copying matrix Mu\n")
 	ll=old.ll # shouldn't see LL decreases but...
 	break
@@ -199,10 +199,6 @@ cluster_windows<-function(windows,t.dr,t.kLL,t.A,t.NUMI,t.NUMA,t.NL,t.absorbrho,
     PI[[ind]]=PI[[ind]]/5 # ad-hoc reduction as this is typically overestimated
     tmp=which(is.na(PI[[ind]]),arr.ind=T) 
     for (i in tmp[,1]) for (j in tmp[,2]) PI[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
-    trans=PI[[ind]]-diag(rowSums(PI[[ind]])) # strictly speaking this should include an initial condition
-    w=prcomp(t(trans),center=F)$rotation[,t.A]
-    alpha[[ind]]=w/sum(w);alpha[[ind]][alpha[[ind]]<0]=0 # very close to the above alpha but now consistent with PI estimates
-    lambda[[ind]]=-log(1-PI[[ind]])/t.dr
   }
   return(list(Mu=Mu,alpha=alpha,lambda=lambda,PI=PI,ll=res$ll)) 
 }

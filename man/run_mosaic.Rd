@@ -4,20 +4,21 @@
 }
 \description{calls all other MOSAIC functions to read in data, compress, perform inference, and output results. 
 }
-\usage{run_mosaic(target, folder, chromosomes, A, NUMI, 
-pops = NULL, mask = NULL, PLOT = FALSE, doFst = TRUE, 
-PHASE = TRUE, gens = 0, ratios = NULL, EM = TRUE, 
-ffpath = "/dev/shm/", MC = 0, return.res = TRUE, 
+\usage{run_mosaic(target, datasource, chrnos, A, NUMI, 
+pops = NULL, mask = NULL, PLOT = TRUE, doFst = TRUE, 
+PHASE = TRUE, gens = NULL, ratios = NULL, EM = TRUE, 
+ffpath = tempdir(), MC = 0, return.res = TRUE, 
 REPS = 0, GpcM = 60, nl = 1000, max.donors = 100, prop.don = 0.99, 
 doMu = TRUE, doPI = TRUE, dorho = TRUE, dotheta = TRUE, 
-firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP") 
+firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP", singlePI=FALSE,
+init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL) 
 }
 \arguments{
   \item{target}{a string giving the name of admixed target population.
   }
-  \item{folder}{a string giving the path to folder where inputs are stored.
+  \item{datasource}{a string giving the path to folder where inputs are stored.
   }
-  \item{chromosomes}{vector of integers giving the chromosomes to use.
+  \item{chrnos}{vector of integers giving the chromosomes to use.
   }
   \item{A}{integer greater than or equal to 2 giving the number of ancestries to model.
   }
@@ -91,6 +92,14 @@ firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP")
   \item{singlePI}{should MOSAIC be constrained to assume that all admixed genomes experienced the same admixture event (timings and proportions)?
     Defaults to FALSE. 
   }
+  \item{init.rho}{User specified values for recombination rate within latent ancestry. Could be output from previous MOSAIC run. 
+  }
+  \item{init.theta}{User specified values for error / mutation rate within latent ancestry. Could be output from previous MOSAIC run. 
+  }
+  \item{init.Mu}{User specified values for copying rates from panels within each ancestry. Could be output from previous MOSAIC run. 
+  }
+  \item{init.PI}{User specified values for switching rates between ancestries. Could be output from previous MOSAIC run. Note this overrides ratios and gens values. 
+  }
 }
 \value{a list containing inferred parameters, local ancestry estimates, etc. 
 }
@@ -101,7 +110,7 @@ firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP")
 
 \examples{
 # infer 2-way local ancestry in 2 Moroccans using example data on chromosomes 18,19,20,21,22 
-mosaic.result=run_mosaic("Moroccan","example_data/",18:22,A=2,NUMI=4)
+\dontrun{mosaic.result=run_mosaic("Moroccan","example_data/",18:22,A=2,NUMI=4)}
 # simulate and then infer 2-way local ancestry between English and Mandenkans in 2 individuals using example data on chromosomes 18,19,20,21,22 
-mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,c("English","Mandenka"))
+\dontrun{mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,c("English","Mandenka"))}
 }
