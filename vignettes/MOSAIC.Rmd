@@ -46,6 +46,7 @@ MOSAIC will infer the most recent admixture events occurring in the targets in t
 
 Phasing improvements in light of the admixture model are performed and **local ancestry along the genome** is estimated.
 
+**Please read the README.txt packaged with MOSAIC for additional information.**
 
 ## Inputs / Data
 The `example_data` folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
@@ -98,7 +99,7 @@ set.seed(123)
 
 To run the simulation and output default results and plots, run either:
 ```{bash, eval=F, echo=T}
-Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka" -gens 30
+Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka" --gens 30
 ```
 or equivalently in an interactive *R* session:
 ```{r, eval=T, echo=T}
@@ -192,7 +193,7 @@ Look at the $2^{nd}$ individuals first chromosome:
 chr=1
 ind=2
 dipplot(chr,ind,g.loc[[chr]],ind,localanc,xlab=paste("Position on Chromosome",chrnos[chr]),ylab="")
-mp<-axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
+mp=axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
 axis(1,at=mp,labels=signif(mp,3))
 ```  
 
@@ -270,6 +271,40 @@ dip_fr2(local_pos,true_anc_pos)
 
 ## Other Options
 
+* Starting values for any or all of the 4 sets of parameters can be set using init.PI, init.rho, init.Mu, and init.theta. 
+These could for example be final estimates from a previous MOSAIC run. You can either supply these as arguments to
+run_mosaic() in R:
+```{r, eval=F, echo=T}
+# run MOSAIC on chromosomes 18 to 21 only to estimate parameters
+mosaic.result=run_mosaic("Moroccan","example_data/",18:21,A=2,NUMI=4) 
+load("MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_0.99_100.RData") # load the results. 
+# Note that you could also use attach(mosaic.result) for this, if still in the same R session 
+# or read parameters from the log file using paras=extract_paras(extract_log(EMlogfile)) 
+# then run MOSAIC on chromosome 22 using the parameter estimates from the previous run 
+mosaic.result22=run_mosaic("Moroccan","example_data/",22,A=2,NUMI=4,EM=F, # don't update via EM here
+			   init.PI=PI,init.rho=rho,init.Mu=Mu,init.theta=theta) 
+```
+
+On the command line the parameters can be provided as strings containing values separated by spaces. 
+For example:
+```{bash, eval=F, echo=T}
+Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09"  
+```
+Or (more usefully) you can extract values from the log file of a previous run and use that directly:
+```{bash, eval=F, echo=T}
+logfile=MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_2021_07_14_10:29:37_EMlog.out 
+PI_command='unlist\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$PI\)'
+PI=`eval Rscript -e $PI_command | cut -d " " -f 3-`
+Mu_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$Mu\)'
+Mu=`eval Rscript -e $Mu_command | cut -d " " -f 2-`
+rho_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$rho\)'
+rho=`eval Rscript -e $rho_command | cut -d " " -f 2-`
+theta_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$theta\)'
+theta=`eval Rscript -e $theta_command | cut -d " " -f 2-`
+Rscript mosaic.R Moroccan example_data/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" 
+  --init.Mu "$Mu" --init.rho "$rho" --init.theta "$theta"
+```
+
 * MOSAIC will use any additional groups found in the data folder as donor panels but these can also be specified manually as follows:
 ```{r, eval=FALSE, echo=T}
 mosaic.result=run_mosaic("simulated","../example_data/",18:22,A=2,NUMI=3,
@@ -282,7 +317,7 @@ for inference) but when the target is not `simulated` then all specified `pops` 
 * To create a version of the copying matrix $\mu$ plot that uses bar colour densities rather than bar lengths 
 to represent copying proportions, use:
 ````{r, eval=FALSE, echo=T}
-ord.Mu<-plot_Mu(Mu,alpha,NL,showgradient=TRUE)
+ord.Mu=plot_Mu(Mu,alpha,NL,showgradient=TRUE)
 ```
 
 * For help use

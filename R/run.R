@@ -1,4 +1,4 @@
-run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=NULL,ratios=NULL,EM=TRUE,
+run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=NULL,ratios=NULL,EM=TRUE, 
 		    ffpath=tempdir(),MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
 		    doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4,MODE="DIP",singlePI=FALSE, 
 		    init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL) {
@@ -12,11 +12,25 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   if (target=="simulated" & length(pops)<A)
     stop("Please provide ", A, " groups to simulate from\n")
   if (MODE=="HAP") {
-    warning("Haploid mode is under construction; for now ancestry recombination rates are equal for consecutive haplotypes as per diploid runs")
+    warning("########## Haploid mode is under construction; for now ancestry recombination rates are equal for consecutive haplotypes as per diploid runs  ##########", immediate.=TRUE)
   }
   if (MODE=="HAP" & PHASE)
     stop("are you trying to perform phasing on haploid data?")
-  setup=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI, 
+  if (!is.null(init.Mu)) {
+    if (ncol(init.Mu)!=A)
+      stop(paste("There should be A columns of Mu. You have provided", ncol(init.Mu), "columns for", A, "ancestries"))
+    if (!all.equal(colSums(init.Mu),rep(1,A), tolerance=0.01)) 
+      warning("########## column sums of Mu must all be one: rescaling supplied values ##########", immediate.=TRUE)
+    init.Mu=t(t(init.Mu)/colSums(init.Mu))
+  }
+  if (!is.null(init.PI)) {
+    if (length(init.PI)!=NUMI)
+      stop(paste("There should be NUMI PI matrices. You have provided", length(init.PI), "matrices for", NUMI, "individuals"))
+    if (any(sapply(init.PI, dim)!=A))
+      stop(paste("All PI matrices should be AxA but you have A =", A, "ancestries and PI dimensions of", toString(sapply(init.PI, function(x) paste0(nrow(x),"x",ncol(x))))))
+  }
+  setup=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,prop.don=prop.don,max.donors=max.donors,
+		       firstind=firstind,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI, 
 		       init.rho=init.rho, init.theta=init.theta, init.PI=init.PI) 
   resultsdir=setup$resultsdir;PHASE=setup$PHASE;HPC=setup$HPC;GpcM=setup$GpcM;LOG=setup$LOG
   mcmcprog=setup$mcmcprog;absorbrho=setup$absorbrho;commonrho=setup$commonrho;commontheta=setup$commontheta;prethin=setup$prethin
@@ -30,6 +44,10 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   transitions=setup$transitions;total=setup$total
   o.PI=setup$o.PI;o.alpha=setup$o.alpha;o.rho=setup$o.rho;o.lambda=setup$o.lambda;o.theta=setup$o.theta;o.phi.theta=setup$o.phi.theta 
   flips=setup$flips;prop.don=setup$prop.don;max.donors=setup$max.donors
+  if (!is.null(init.Mu)) {
+    if (nrow(init.Mu)!=kLL)
+      stop(paste("There should be same number of row of Mu as panels. You have provided", nrow(init.Mu), "rows for", kLL, "panels"))
+  }
   if (target=="simulated")
     g.true_anc=setup$g.true_anc
   rm(setup)
@@ -70,19 +88,13 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
 	tmp=alphalambda_from_PI(PI,dr)
 	if (is.null(ratios)) alpha<-tmp$alpha
 	if (is.null(gens)) {
-	  lambda=tmp$lambda # start with deliberately lower values as above method overestimates lambda
+	  lambda=tmp$lambda # or could start with deliberately lower values as above method overestimates lambda
 	  #lambda=o.lambda # re-use o.lambda from above
 	}
       }
       rm(windowed_copying,tmp)
     } else {diag(Mu)=10*diag(Mu);Mu=t(t(Mu)/colSums(Mu))}
   } else Mu=init.Mu
-#  cat("Mu: \n");print(Mu) # TODO remove
-#  cat("PI: \n");print(PI) # TODO remove
-#  cat("alpha: \n");print(alpha) # TODO remove
-#  cat("lambda: \n");print(lambda) # TODO remove
-#  cat("rho: \n");print(rho) # TODO remove
-#  cat("theta: \n");print(theta) # TODO remove
   rownames(Mu)<-panels[1:kLL]
   o.Mu<-Mu;o.alpha<-alpha;o.lambda=lambda;o.PI=PI # these are the official starting ancestry related parameters now
   mutmat<-fmutmat(theta, A, maxmiss, maxmatch); for (ind in 1:NUMI) transitions[[ind]]<-s_trans(A,kLL,PI[[ind]],Mu,rho,NL)

@@ -41,6 +41,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   commontheta=TRUE,
   prethin=FALSE,
   resultsdir="MOSAIC_RESULTS/", # where to store results files
+  firstind=1,
   init.rho, init.theta, init.PI) # use initial values unless not supplied here
 {
   if (!file.exists(resultsdir))
@@ -80,7 +81,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
     ratios=rep(1/A,A)
   } else {
     if (length(ratios)==A) {ratios=ratios/sum(ratios)} else {
-      warning(ratios, " supplied as vector of mixing group ratios but need ", A, " values\n", immediate.=T)
+      warning(ratios, "########## supplied as vector of mixing group ratios but need ", A, " values ##########", immediate.=T)
       ratios=rep(1/A,A)
       if (!EM)
         warning("########## length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group ##########", immediate.=T)
@@ -88,25 +89,25 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   }
   if (!is.null(t.pops)) {
     if (t.target=="simulated" & length(t.pops)>A & length(t.pops)<(2*A)) {
-      warning("Provide at least (2 X #ancestries) named groups; first #ancestries to simulate from and rest to use as donor groups.
-  Therefore using all other available groups as donors\n", immediate.=T)
+      warning("########## Provide at least (2 X #ancestries) named groups; first #ancestries to simulate from and rest to use as donor groups.
+  Therefore using all other available groups as donors ##########", immediate.=T)
       t.pops=t.pops[1:A]
     }
     if (t.target!="simulated" & length(t.pops)<A) {
-      warning("Need at least " , A, " named groups to use as donors; using all available donor groups\n", immediate.=T)
+      warning("########## Need at least " , A, " named groups to use as donors; using all available donor groups ########## ", immediate.=T)
       t.pops=NULL
     }
   }
   if (!EM & A>2)
-    warning("Turning off EM and specifying a single mixing date is not advised", immediate.=T)
+    warning("########## Turning off EM and specifying a single mixing date is not advised ########## ", immediate.=T)
   if (MC==0) {
     MC=as.integer(detectCores()/2)
-    if (is.na(MC)) {MC=2;warning("using 2 cores as detectCores() has failed",immediate.=T)} # use 2 if can't use detectCores() 
+    if (is.na(MC)) {MC=2;warning("########## using 2 cores as detectCores() has failed ########## ",immediate.=T)} # use 2 if can't use detectCores() 
   }
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
   ans$FLAT=FALSE # FALSE to use the recombination rate map. If set to TRUE then map is flattened and one gridpoint per obs is used (this is for debugging purposes). 
-  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMI, A, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios) 
+  tmp=read_panels(datasource, t.target, t.chrnos, t.NUMI, A, t.pops, nl, ans$FLAT, ans$dr, gens, resultsdir, mask=mask, ratios=ratios, firstind=firstind) 
   if (tmp$kLL < A) stop(paste0("cannot fit ", A, "-way model using only ", tmp$kLL, " donor panels"))
   if (verbose) cat("\nFitting model to ", tmp$NUMI, " ", t.target, " ", A, "-way admixed target individuals using ", tmp$kLL, " panels\n", sep="")
   if (verbose) cat("EM inference is ", ifelse(EM, "on", "off"), " and re-phasing is ", ifelse(PHASE, "on", "off"), "\n")
@@ -117,7 +118,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
     ans$g.true_anc=tmp$g.true_anc
   if (max.donors==ans$NUMP & prop.don<1)
   {
-    warning("can't use prop.don<1 and all donors: setting prop.don to 1", immediate.=T)
+    warning("########## can't use prop.don<1 and all donors: setting prop.don to 1 ########## ", immediate.=T)
     prop.don=1
   }
   if (max.donors>ans$NUMP) max.donors<-ans$NUMP # try using less than NUMP

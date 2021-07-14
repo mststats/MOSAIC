@@ -98,7 +98,7 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
 	ancprobs[,k]=ans[[k]]$kanc
       }
   }
-  if (MODE=="DIP") { # warning: this only works well when using long chromosomes!
+  if (MODE=="DIP") { # this only works well when using long chromosomes!
     ans=foreach(ind=1:NUMI) %dopar%
     {
       hap<-c(ind*2-1,ind*2)
@@ -186,8 +186,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   if (any(rowMeans(coancs$ancprobs)/lpop<0.05))
     warning("########## minor ancestry proportions small; may be hard to fit estimate coancestry curves ##########",immediate.=TRUE)
   # FLAG should use a vector of ndates, one per pair...
-  if (ndates>2) {warning("cannot fit more than two dates per pair of ancestries",immediate.=TRUE);ndates=1}
-  if (samedates) {if (ndates==2) warning("if samedates specified then cannot fit multiple dates per pair of ancestries", immediate.=TRUE); ndates=1}
+  if (ndates>2) {warning("########## cannot fit more than two dates per pair of ancestries ########## ",immediate.=TRUE);ndates=1}
+  if (samedates) {if (ndates==2) warning("########## if samedates specified then cannot fit multiple dates per pair of ancestries ########## ", immediate.=TRUE); ndates=1}
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
   # asym=T allows asymptote to be something other than 1
