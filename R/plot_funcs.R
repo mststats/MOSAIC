@@ -86,75 +86,6 @@ dipplot_Mu<-function(ch,ind,x,A,probs,ylab,mlab=paste("Individual", ind),xlab=""
   axis(2)
 }
 
-report_donors<-function(MODE) 
-{
-  w<-locator(n=2) # find 4 corners of region of interest; first is top left, second is bottom right
-  # add lines to the plot to highlight region
-  #lines(c(w$x[1],w$x[2]), c(w$y[2],w$y[2]), col=6, lwd=4) # bottom line
-  #lines(c(w$x[1],w$x[2]), c(w$y[1],w$y[1]), col=6, lwd=4) # top line
-  #lines(c(w$x[1],w$x[1]), c(w$y[1],w$y[2]), col=6, lwd=4) # left line
-  #lines(c(w$x[2],w$x[2]), c(w$y[1],w$y[2]), col=6, lwd=4) # right line
-  x<-which.min((g.loc[[ch]]*1e-6-w$x[1])^2):which.min((g.loc[[ch]]*1e-6-w$x[2])^2)
-  # y is more complicated. End points not enough as vector will change across x
-  if (MODE=="HAP") 
-    probs<-gfbs[[ch]][[k]][x,]
-  if (MODE=="DIP") 
-    probs<-gfbs[[ch]][[hap[1]]][x,]+gfbs[[ch]][[hap[2]]][x,]
-  cprobs<-apply(probs,1,cumsum)
-  plower<-pupper<-ylower<-yupper<-NULL # these will hold the indices of the donors that fall inside the highlighted region
-  for (g in 1:length(x))
-  {
-    ylower<-c(ylower,which.min((cprobs[,g]-w$y[2])^2))
-    plower<-c(plower,cprobs[ylower[g],g])
-    yupper<-c(yupper,which.min((cprobs[,g]-w$y[1])^2))
-    pupper<-c(pupper,cprobs[yupper[g],g])
-  }
-  # more accurate boxing
-  lines(g.loc[[ch]][x]*1e-6, plower, col=7, lwd=4) # bottom line
-  lines(g.loc[[ch]][x]*1e-6, pupper, col=7, lwd=4) # top line
-  lines(c(g.loc[[ch]][x[1]]*1e-6,g.loc[[ch]][x[1]]*1e-6), c(plower[1],pupper[1]), col=7, lwd=4) # left line
-  g=length(x)
-  lines(c(g.loc[[ch]][x[g]]*1e-6,g.loc[[ch]][x[g]]*1e-6), c(plower[g],pupper[g]), col=7, lwd=4) # right line
-  ind.indices<-rep(seq(1:kLL),A) 
-  f<-function(g) # donors and probabilities of copying the donors 
-  {
-    tmp<-c(ylower[g]-1):yupper[g]
-    panels<-rownames(Mu)[ind.indices[tmp[-1]]]
-    donprobs<-diff(cprobs[tmp,g])
-    ord<-sort(donprobs,decreasing=TRUE,index=TRUE)$ix # reorder from high to low contributors
-    ord<-ord[donprobs[ord]>0] # and drop the non-contributors
-    panels<-panels[ord]
-    donprobs<-donprobs[ord]
-    cbind(panels=panels,probs=donprobs) 
-  }
-  donors<-tapply(1:length(x), 1:length(x), f)
-  list(w=w,x=x,ylower=ylower,yupper=yupper,donors=donors)
-}
-all_donors<-function(t.gfbs,t.localanc) 
-{
-  donors=list()
-  for (ch in 1:nchrno)
-  {
-    donors[[ch]]=array(0,c(length(g.loc[[ch]]),kLL,A)) # contains proportion copied from each panel across the gridpoints
-    for (a in 1:A)
-    {
-      for (ll in 1:kLL)
-	for (i in 1:NUMA)
-	  donors[[ch]][,ll,a]=donors[[ch]][,ll,a]+t.gfbs[[ch]][[i]][,(a-1)*kLL+ll]
-      donors[[ch]][,,a]=donors[[ch]][,,a]/colSums(t.localanc[[ch]][a,,]) # divide by prob of that ancestry 
-    }
-    donors[[ch]]=donors[[ch]]/NUMA
-  }
-  return(donors)
-}
-# fit=apply(donors[[ch]][8898:8909,,],c(2,3),mean);rownames(fit)=rownames(Mu); a=2;head(sort(fit[,a],decreasing=TRUE),2)
-plot_panel_dist=function(donors,ch,a)
-{
-  m=colMeans(donors[[ch]][,,a]) # note difference from Chromosomal mean rather than genomewide mean
-  d2=sqrt(colMeans((t(donors[[ch]][,,a])-m)^2))
-  plot(g.loc[[ch]], d2, t='l', ylab="abs change in group copying", xlab="position", main=paste("chromosome", t.chrnos[ch]))
-}
-
 plot_Mu<-function(t.Mu, t.alpha, t.NL, MODE="scaled", showgradient=FALSE, beside=TRUE, ord=TRUE, pow=1, cexa=1.5, 
 		  shiftl=ifelse(showgradient,0,max(sapply(rownames(t.Mu),nchar))/2*cexa), shiftt=ifelse(!showgradient,cexa,cexa*2),
 		  cutoff=0,tol=1e-6, colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
@@ -332,10 +263,8 @@ phase_localanc=function(t.localanc,t.flips)
 }
 
 # function to plot the local ancestry of each target admixed genome along each chromosome
-plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,t.gfbs=NULL,
+plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,
 		       colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
-  if (is.null(t.Mu) & MODE=="GRAD") stop("Please supply a copying matrix Mu for use with this plot")
-  if (is.null(t.gfbs) & MODE=="GRAD") stop("Please supply a full array of posterior probabilities for use with this plot")
   G=sapply(t.localanc, function(x) dim(x)[3])
   NUMA=dim(t.localanc[[1]])[2]
   A=dim(t.localanc[[1]])[1]
@@ -381,7 +310,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	    axis(2)
 	  }
-	  if (MODE=="BAR" | MODE=="GRAD")
+	  if (MODE=="BAR")
 	    happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,ylab="truth",cexa=cexa)
 	}
 	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
@@ -393,8 +322,6 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	}
 	if (MODE=="BAR")
 	  happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
-	if (MODE=="GRAD")
-	  happlot_Mu(ch,k,t.g.loc[[ch]]*1e-6,A,t.gfbs,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
 	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()
@@ -437,7 +364,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,hap[1],]+t.g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
 	    axis(2)
 	  }
-	  if (MODE=="BAR" | MODE=="GRAD")
+	  if (MODE=="BAR")
 	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,xlab=paste("Position on Chromosome",t.chrnos[ch]),
 		    ylab="truth",cexa=cexa)
 	}
@@ -449,8 +376,6 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	}
 	if (MODE=="BAR")
 	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
-	if (MODE=="GRAD")
-	  xy<-dipplot_Mu(ch,ind,t.g.loc[[ch]]*1e-6,A,t.gfbs,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,t.Mu=t.Mu,pow=pow,cexa=cexa)
 	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()
