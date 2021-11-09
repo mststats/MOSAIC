@@ -25,10 +25,9 @@ extract_log=function(logfile)
 }
 extract_paras=function(EMlog, iter=nrow(EMlog), panelnames=NULL)
 {
-  paras=as.numeric(c(EMlog[iter,-c(1,2,ncol(EMlog))])) # remove mode, time, and log-likelihood
-  NUMA=length(grep("alpha",colnames(EMlog)))
-  NUMI=max(NUMA/2,1)
+  paras=as.numeric(c(EMlog[iter,-c(1,2,ncol(EMlog))])) # remove mode, time, and log-likelihood 
   A=length(grep("theta",colnames(EMlog)))
+  NUMI=length(grep("alpha",colnames(EMlog)))/A
   kLL=length(grep("Mu.1",colnames(EMlog)))
   t.Mu=t(matrix(paras[1:(A*kLL)],A));paras=paras[-(1:(A*kLL))] 
   rownames(t.Mu)=panelnames
