@@ -193,7 +193,7 @@ Look at the $2^{nd}$ individuals first chromosome:
 chr=1
 ind=2
 dipplot(chr,ind,g.loc[[chr]],ind,localanc,xlab=paste("Position on Chromosome",chrnos[chr]),ylab="")
-mp=axTicks(1,round(axp=c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
+mp=axTicks(1,axp=round(c(min(g.loc[[chr]]),max(g.loc[[chr]]),5)))
 axis(1,at=mp,labels=signif(mp,3))
 ```  
 
