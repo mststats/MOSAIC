@@ -292,15 +292,15 @@ Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09
 ```
 Or (more usefully) you can extract values from the log file of a previous run and use that directly:
 ```{bash, eval=F, echo=T}
-logfile=MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_2021_07_14_10:29:37_EMlog.out 
-PI_command='unlist\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$PI\)'
-PI=`eval Rscript -e $PI_command | cut -d " " -f 3-`
-Mu_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$Mu\)'
-Mu=`eval Rscript -e $Mu_command | cut -d " " -f 2-`
-rho_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$rho\)'
-rho=`eval Rscript -e $rho_command | cut -d " " -f 2-`
-theta_command='c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$theta\)'
-theta=`eval Rscript -e $theta_command | cut -d " " -f 2-`
+logfile=MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_2021_11_10_10:29:37_EMlog.out 
+PI_command='cat\(unlist\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$PI\)\)'
+PI=`eval Rscript -e $PI_command | cut -d " " -f 1-`
+Mu_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$Mu\)\)'
+Mu=`eval Rscript -e $Mu_command | cut -d " " -f 1-`
+rho_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$rho\)\)'
+rho=`eval Rscript -e $rho_command | cut -d " " -f 1-`
+theta_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$theta\)\)'
+theta=`eval Rscript -e $theta_command | cut -d " " -f 1-`
 Rscript mosaic.R Moroccan example_data/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" 
   --init.Mu "$Mu" --init.rho "$rho" --init.theta "$theta"
 ```
