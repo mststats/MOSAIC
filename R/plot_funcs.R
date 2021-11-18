@@ -306,7 +306,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	  if (MODE=="LINE")
 	  {
-	    plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	    axis(2)
 	  }
@@ -316,13 +316,13 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	if (MODE=="LINE")
 	{
-	  plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	  for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	  axis(2)
 	}
 	if (MODE=="BAR")
-	  happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
-	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
+	  happlot(ch,k,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Mb Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	mp<-axTicks(1,axp=round(c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()
       }
@@ -360,23 +360,23 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	  if (MODE=="LINE")
 	  {
-	    plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,hap[1],]+t.g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
 	    axis(2)
 	  }
 	  if (MODE=="BAR")
-	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,xlab=paste("Position on Chromosome",t.chrnos[ch]),
+	    dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.g.true_anc,xlab=paste("Mb Position on Chromosome",t.chrnos[ch]),
 		    ylab="truth",cexa=cexa)
 	}
 	if (MODE=="LINE")
 	{
-	  plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Position on Chromosome",t.chrnos[ch]))
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	  for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,hap[1],]+t.localanc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
 	  axis(2)
 	}
 	if (MODE=="BAR")
-	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
-	mp<-axTicks(1,round(axp=c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
+	  dipplot(ch,ind,t.g.loc[[ch]]*1e-6,A,t.localanc,xlab=paste("Mb Position on Chromosome",t.chrnos[ch]),ylab=y.lab,cexa=cexa)
+	mp<-axTicks(1,axp=round(c(min(t.g.loc[[ch]])*1e-6,max(t.g.loc[[ch]])*1e-6,5)))
 	axis(1,at=mp,labels=signif(mp,3))
 	if (PAUSE) readline()
       }
@@ -390,7 +390,7 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
   for (a in 1:A)
     m[[a]]=colMeans(localanc[[ch]][a,whichhaps,]) # mean over target haplotypes
   plot(c(g.loc[[ch]][1],g.loc[[ch]][length(g.loc[[ch]])]),c(0,1),t='n',
-       ylab="mean ancestry",xlab=paste("Position on Chromosome",chrnos[ch]),main="")  
+       ylab="mean ancestry",xlab=paste("Mb Position on Chromosome",chrnos[ch]),main="")  
   for (a in whicha)
   {
     lines(g.loc[[ch]],m[[a]],lwd=cexa,col=colvec[a])
