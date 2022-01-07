@@ -116,7 +116,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     total=PI.total
     tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
-	       dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps)
+	       dotheta, dorho, commonrho, commontheta, absorbrho, singlePI, runtime, eps)
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     if (!absorbrho | !commonrho | !commontheta) 
@@ -138,7 +138,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     if (EM) {
       tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 		 NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, doPI, doMu, 
-		 dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
+		 dotheta, dorho, commonrho, commontheta, absorbrho, singlePI, runtime, eps) 
       PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
       cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
     }
@@ -178,7 +178,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
       cat("run one final round of EM\n")
     tmp=run_EM(HPC, nchrno, PI, Mu, rho, theta, alpha, lambda, initProb, label, mutmat, transitions, ndonors, donates, donatesl, donatesr, NUMA, NN, NL, NUMP, kLL, A,
 	       NUMI, max.donors, G, dr, gobs, maxmatchsize, umatch, flips, maxmatch, maxmiss, d.w, t.w,  total, verbose=F, len, cloglike, LOG, logfile, 
-	       doPI, doMu, dotheta, dorho, commonrho, commontheta, absorbrho, runtime, eps) 
+	       doPI, doMu, dotheta, dorho, commonrho, commontheta, absorbrho, singlePI, runtime, eps) 
     PI=tmp$PI;alpha=tmp$alpha;lambda=tmp$lambda;Mu=tmp$Mu;rho=tmp$rho;theta=tmp$theta;runtime=tmp$runtime;initProb=tmp$initProb;
     cloglike=tmp$cloglike;transitions=tmp$transitions;mutmat=tmp$mutmat
   }

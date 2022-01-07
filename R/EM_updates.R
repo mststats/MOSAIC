@@ -171,7 +171,7 @@ update_params=function(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUM
 run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, t.initProb, t.label, t.mutmat, t.transitions, t.ndonors, t.donates, t.donatesl, 
 		t.donatesr, t.NUMA, t.NN, t.NL, t.NUMP, t.kLL, t.A, t.NUMI, t.max.donors, t.G, t.dr, t.gobs, t.maxmatchsize, t.umatch, t.flips, t.maxmatch, t.maxmiss, 
 		t.d.w, t.t.w,  t.total, verbose=F, t.len, t.cloglike, t.LOG, t.logfile, t.doPI, t.doMu, t.dotheta, t.dorho, t.commonrho, t.commontheta, t.absorbrho,
-		t.old.runtime, t.eps) {
+		t.singlePI, t.old.runtime, t.eps) {
   if (verbose) pb<-txtProgressBar(min=1,max=ITER,style=3)
   runtime<-as.numeric(Sys.time());diff.time<-runtime-t.old.runtime # required in case of break below
   for (ITER in 1:t.total)
@@ -180,7 +180,7 @@ run_EM=function(t.HPC, t.nchrno, t.PI, t.Mu, t.rho, t.theta, t.alpha, t.lambda, 
     old.mutmat=t.mutmat;old.transitions=t.transitions;old.initProb=t.initProb;old.cloglike<-t.cloglike
     tmp=update_params(t.HPC, t.nchrno, t.donates, t.donatesl, t.donatesr, t.NUMA, t.A, t.max.donors, t.NN, t.NUMP, t.NUMI, t.G, t.dr, t.transitions, t.flips,t.umatch,
 		      t.maxmatchsize,t.d.w,t.t.w,t.gobs,t.mutmat,t.maxmatch,t.maxmiss,t.kLL,t.PI, t.alpha, t.lambda, t.Mu, t.rho, t.theta, t.ndonors, t.doPI, t.dorho, 
-		      t.dotheta, t.doMu, t.label, t.NL, t.initProb, t.commonrho, t.commontheta, t.absorbrho)
+		      t.dotheta, t.doMu, t.label, t.NL, t.initProb, t.commonrho, t.commontheta, t.absorbrho, t.singlePI)
     t.PI=tmp$PI;t.alpha=tmp$alpha;t.lambda=tmp$lambda;t.Mu=tmp$Mu;t.rho=tmp$rho;t.theta=tmp$theta
     t.transitions=tmp$transitions;t.mutmat=tmp$mutmat;t.initProb=tmp$initProb
     # E-step: extra work here as fors will be calculated next iteration of E.n above
