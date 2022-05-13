@@ -11,7 +11,7 @@ ffpath = tempdir(), MC = 0, return.res = TRUE,
 REPS = 0, GpcM = 60, nl = 1000, max.donors = 100, prop.don = 0.99, 
 doMu = TRUE, doPI = TRUE, dorho = TRUE, dotheta = TRUE, 
 firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP", singlePI=FALSE,
-init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL) 
+init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, commontheta=TRUE) 
 }
 \arguments{
   \item{target}{a string giving the name of admixed target population.
@@ -99,6 +99,10 @@ init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL)
   \item{init.Mu}{User specified values for copying rates from panels within each ancestry. Could be output from previous MOSAIC run. 
   }
   \item{init.PI}{User specified values for switching rates between ancestries. Could be output from previous MOSAIC run. Note this overrides ratios and gens values. 
+  }
+  \item{commonrho}{Should the same recombination rate apply within each ancestry. Defaults to TRUE. 
+  }
+  \item{commontheta}{Should the same mutation / error rate apply within each ancestry. Defaults to TRUE. 
   }
 }
 \value{a list containing inferred parameters, local ancestry estimates, etc. 

@@ -1,7 +1,7 @@
 run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=NULL,ratios=NULL,EM=TRUE, 
 		    ffpath=tempdir(),MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
 		    doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4,MODE="DIP",singlePI=FALSE, 
-		    init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL) {
+		    init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, commontheta=TRUE) {
   ffpath=paste0(ffpath,"/") # ensure this is a folder
   if (!dir.exists(ffpath))
     stop(paste("Requested location ", ffpath, " for fast-file storage not found\n"))
@@ -31,7 +31,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   }
   setup=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,prop.don=prop.don,max.donors=max.donors,
 		       firstind=firstind,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI, 
-		       init.rho=init.rho, init.theta=init.theta, init.PI=init.PI) 
+		       init.rho=init.rho, init.theta=init.theta, init.PI=init.PI, commonrho=commonrho, commontheta=commontheta) 
   resultsdir=setup$resultsdir;PHASE=setup$PHASE;HPC=setup$HPC;GpcM=setup$GpcM;LOG=setup$LOG
   mcmcprog=setup$mcmcprog;absorbrho=setup$absorbrho;commonrho=setup$commonrho;commontheta=setup$commontheta;prethin=setup$prethin
   s.M=setup$s.M;M=setup$M;PI.total=setup$PI.total;s.total=setup$s.total;REPS=setup$REPS
