@@ -20,12 +20,12 @@ window_chunks<-function(nswitches, t.dr, t.G, t.kLL, t.NUMA, ww=0.5, min.swiches
       for (i in 1:nw[ch])
       {
 	wind=((i-1)*w+1):(i*w)
-	wmat[[h]][,i+offsetw[ch]]=rowSums(nswitches[[ch]][,wind,h],na.rm=T) # sum over window 
+	wmat[[h]][,i+offsetw[ch]]=rowSums(nswitches[[ch]][,wind,h],na.rm=TRUE) # sum over window 
       }
       if ((nw[ch]*w)<t.G[ch]) # if any left over just add in to last one
       {
 	wind<-(nw[ch]*w+1):t.G[ch]
-	wmat[[h]][,i+offsetw[ch]]=wmat[[h]][,i+offsetw[[ch]]]+rowSums(as.matrix(nswitches[[ch]][,wind,h]),na.rm=T) # sum over window 
+	wmat[[h]][,i+offsetw[ch]]=wmat[[h]][,i+offsetw[[ch]]]+rowSums(as.matrix(nswitches[[ch]][,wind,h]),na.rm=TRUE) # sum over window 
       }
     }
   }
@@ -161,7 +161,7 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
     if (!is.nan(old.ll))
       if ((ll-old.ll)<eps)
       {
-	if (ll<old.ll-eps & verbose) warning("########## Decreasing log-likelihood ##########",immediate.=T)
+	if (ll<old.ll-eps & verbose) warning("########## Decreasing log-likelihood ##########",immediate.=TRUE)
 	if (verbose) cat("EM converged in mixture model for initialising copying matrix Mu\n")
 	ll=old.ll # shouldn't see LL decreases but...
 	break
@@ -172,7 +172,7 @@ r_EMmult<-function(counts, t.A, t.NUMI, t.NUMA, itmax=200, eps=log(1.01), verbos
 EMmult<-r_EMmult
 #EMmult<-cmpfun(r_EMmult,list(optimize=3))
 
-cluster_windows<-function(windows,t.dr,t.kLL,t.A,t.NUMI,t.NUMA,t.NL,t.absorbrho,verbose=F)
+cluster_windows<-function(windows,t.dr,t.kLL,t.A,t.NUMI,t.NUMA,t.NL,t.absorbrho,verbose=FALSE)
 {
   nw=ncol(windows$wmat[[1]])
   res<-EMmult(windows$wmat, t.A, t.NUMI, t.NUMA, verbose=verbose) # fit the mixture model
@@ -197,7 +197,7 @@ cluster_windows<-function(windows,t.dr,t.kLL,t.A,t.NUMI,t.NUMA,t.NL,t.absorbrho,
     }
     PI[[ind]]=1-(1-PI[[ind]])^(1/gpw) # rescale PI to grid widths from window widths
     PI[[ind]]=PI[[ind]]/5 # ad-hoc reduction as this is typically overestimated
-    tmp=which(is.na(PI[[ind]]),arr.ind=T) 
+    tmp=which(is.na(PI[[ind]]),arr.ind=TRUE) 
     for (i in tmp[,1]) for (j in tmp[,2]) PI[[ind]][i,j]=alpha[[ind]][j] # if never in an anc, just randomly choose another one w.p. alpha
   }
   return(list(Mu=Mu,alpha=alpha,lambda=lambda,PI=PI,ll=res$ll)) 

@@ -7,10 +7,10 @@ summarise_panels=function(panelname, pathin, chrnos)
   for (ch in 1:length(chrnos))
   {
     tmpfilename=paste0(pathin,panelname,"genofile.",chrnos[ch])
-    tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+    tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
     N2<-nchar(tmp)
     tmpy=matrix(suppressWarnings(as.integer(as.matrix(laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))[,]))),ncol=N2)
-    allp[[ch]]=rowMeans(tmpy,na.rm=T)
+    allp[[ch]]=rowMeans(tmpy,na.rm=TRUE)
     alln[[ch]]=N2
   }
   return(list("freqs"=allp,"counts"=alln))
@@ -24,7 +24,7 @@ write_panel_summaries=function(pathout="FREQS/",datasource, chrnos=1:22, panels=
     dir.create(file.path(getwd(), pathout))
   if (is.null(panels)) 
   {
-    panels<-read.table(paste(datasource,"sample.names",sep=""), header=F)
+    panels<-read.table(paste(datasource,"sample.names",sep=""), header=FALSE)
     panels<-as.character(unique(panels[,1]))
   }
   for (panel in panels)

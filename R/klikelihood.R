@@ -2,7 +2,7 @@
 get_loglike=function(t.NUMA, t.nchrno, t.G, t.A, t.kLL, t.max.donors, t.NUMP, t.ndonors, t.donates, t.donatesl, t.transitions, t.maxmatchsize, t.umatch, t.flips,
 		     t.mutmat, t.maxmiss, t.initProb, t.d.w, t.t.w, t.gobs, t.label, t.HPC) {
   kcloglike<-matrix(0,t.nchrno,t.NUMA)
-  THIN=ifelse(t.max.donors==t.NUMP, F, T)
+  THIN=ifelse(t.max.donors==t.NUMP, FALSE, TRUE)
   for (ch in 1:t.nchrno) 
   {
     if (t.HPC==1)

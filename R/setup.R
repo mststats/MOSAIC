@@ -13,8 +13,8 @@ fmutmat<-function(theta, A, maxmiss, maxmatch)
 # function that sets default parameters, creates some required objects, and creates functions based on choice of parallelisation strategy (HPC)
 setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,ratios,MC, 
   # some default values
-  verbose=T,
-  HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=F);
+  verbose=TRUE,
+  HPC=2, # whether to use ff() chromosome-by-chromosome (HPC=1) or chromosomeXind-by-chromsomeXind(HPC=2) or not at all (HPC=FALSE);
   PHASE=TRUE,
   nl=1000, # maximum number of haps per population 
   max.donors=100, # maximum number of donors to consider per t.target at each gridpoint
@@ -31,7 +31,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   min.bg=0.1, 
   max.bg=1.0, # default cM length of buffer around phase hunting spikes; hunter will start at min.bg and ramp up to max.bg
   LOG=TRUE, # LOG turns on and off reporting of log-like after each thin and each phase (EM always reports as always needed to check convergence)
-  mcmcprog=F, # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
+  mcmcprog=FALSE, # whether to plot a progress bar for the MCMC phasing; makes for ugly log files!
   GpcM, # number of gridpoints per centiMorgan
   Ne=9e4, # effective population size
   mask=NULL,
@@ -81,28 +81,28 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
     ratios=rep(1/A,A)
   } else {
     if (length(ratios)==A) {ratios=ratios/sum(ratios)} else {
-      warning(ratios, "########## supplied as vector of mixing group ratios but need ", A, " values ##########", immediate.=T)
+      warning(ratios, "########## supplied as vector of mixing group ratios but need ", A, " values ##########", immediate.=TRUE)
       ratios=rep(1/A,A)
       if (!EM)
-        warning("########## length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group ##########", immediate.=T)
+        warning("########## length of ancestry ratios must be equal to number of mixing groups: using 1/", A, " for each group ##########", immediate.=TRUE)
     }
   }
   if (!is.null(t.pops)) {
     if (t.target=="simulated" & length(t.pops)>A & length(t.pops)<(2*A)) {
       warning("########## Provide at least (2 X #ancestries) named groups; first #ancestries to simulate from and rest to use as donor groups.
-  Therefore using all other available groups as donors ##########", immediate.=T)
+  Therefore using all other available groups as donors ##########", immediate.=TRUE)
       t.pops=t.pops[1:A]
     }
     if (t.target!="simulated" & length(t.pops)<A) {
-      warning("########## Need at least " , A, " named groups to use as donors; using all available donor groups ########## ", immediate.=T)
+      warning("########## Need at least " , A, " named groups to use as donors; using all available donor groups ########## ", immediate.=TRUE)
       t.pops=NULL
     }
   }
   if (!EM & A>2)
-    warning("########## Turning off EM and specifying a single mixing date is not advised ########## ", immediate.=T)
+    warning("########## Turning off EM and specifying a single mixing date is not advised ########## ", immediate.=TRUE)
   if (MC==0) {
     MC=as.integer(detectCores()/2)
-    if (is.na(MC)) {MC=2;warning("########## using 2 cores as detectCores() has failed ########## ",immediate.=T)} # use 2 if can't use detectCores() 
+    if (is.na(MC)) {MC=2;warning("########## using 2 cores as detectCores() has failed ########## ",immediate.=TRUE)} # use 2 if can't use detectCores() 
   }
   if (verbose) cat("using", MC, "cores\n")
   registerDoParallel(cores=MC)
@@ -118,7 +118,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
     ans$g.true_anc=tmp$g.true_anc
   if (max.donors==ans$NUMP & prop.don<1)
   {
-    warning("########## can't use prop.don<1 and all donors: setting prop.don to 1 ########## ", immediate.=T)
+    warning("########## can't use prop.don<1 and all donors: setting prop.don to 1 ########## ", immediate.=TRUE)
     prop.don=1
   }
   if (max.donors>ans$NUMP) max.donors<-ans$NUMP # try using less than NUMP
@@ -166,7 +166,7 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   {
     ans$flips[[ind]]<-list()
     for (ch in 1:t.nchrno) 
-      ans$flips[[ind]][[ch]]<-rep(F,ans$G[ch]) 
+      ans$flips[[ind]][[ch]]<-rep(FALSE,ans$G[ch]) 
   }
   ans$prop.don=prop.don
   ans$max.donors=max.donors

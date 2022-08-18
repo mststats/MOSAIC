@@ -2,7 +2,7 @@
 # observed number of switches from (ia,il) to (ja,jl) 
 r.calc_E.n<-function(ch,k,t.max.donors,t.NN,t.NUMP,t.NL,t.NUMA,t.G,t.transitions,t.flips,t.umatch,t.maxmatchsize,t.dw,t.tw,r_gobs,t.mutmat,t.maxmiss,t.kLL,t.A,t.PI,t.rho,t.Mu,t.ndonors,t.donates,t.donatesl,t.donatesr,t.initProb,t.label,doMu) 
 {
-  THIN=ifelse(t.max.donors==t.NUMP,F,T)
+  THIN=ifelse(t.max.donors==t.NUMP,FALSE,TRUE)
   a<-array(0,c(t.A,t.kLL,t.A)) # need to track which groups are switched to for t.Mu updates
   r<-matrix(0,t.kLL,t.A) # need to track which groups are switched to for t.Mu updates
   na<-matrix(0,t.kLL,t.A) # no anc switch, may or may not switch hap

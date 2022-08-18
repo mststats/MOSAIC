@@ -185,7 +185,7 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
   t.kLL=nrow(t.Fst)
   if ((!ord) & (cutoff!=t.kLL))
   {
-    warning("########## showing all as re-ordering not allowed ##########", immediate.=T)
+    warning("########## showing all as re-ordering not allowed ##########", immediate.=TRUE)
     cutoff=t.kLL
   }
   if (cutoff>t.kLL) cutoff=t.kLL
@@ -224,10 +224,10 @@ plot_Fst<-function(t.Fst, ord=TRUE, cexa=1, shiftl=cexa, shiftt=cexa, cutoff=nro
 	plot(c(0,1),c(0,cutoff+1),t='n',yaxt='n',ylab="",xlab="Fst",cex.main=cexa,main="",cex.axis=cexa,xlim=c(0,rangeFst[[a]][2]))
       if (reverse) {
 	tmp=1-ordFst[[a]]-rangeFst[[a]][1]
-	y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T,offset=rangeFst[[a]][1])
+	y=barplot(tmp,horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=TRUE,offset=rangeFst[[a]][1])
       }
       if (!reverse) 
-	y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=T)
+	y=barplot(ordFst[[a]],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",cex.main=cexa,add=TRUE)
     }
     if (!ord & reverse)
       y=barplot(1-ordFst[[a]]-rangeFst[[a]][1],horiz=TRUE,las=1,col=colvec[a],cex.names=cexa,cex.axis=cexa,main="",xlab="1-Fst",
@@ -263,7 +263,7 @@ phase_localanc=function(t.localanc,t.flips)
 }
 
 # function to plot the local ancestry of each target admixed genome along each chromosome
-plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=T,t.Mu=NULL,
+plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,pow=1,y.lab="expected",MODE="BAR",NCHR=2,PAUSE=TRUE,t.Mu=NULL,
 		       colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")) { 
   G=sapply(t.localanc, function(x) dim(x)[3])
   NUMA=dim(t.localanc[[1]])[2]
@@ -272,7 +272,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
   NUMI=NUMA/2
   if (NCHR==2 & NUMA==1)
   {
-    warning("########## changing NCHR to HAP as only on hap in target ##########",immediate.=T)
+    warning("########## changing NCHR to HAP as only on hap in target ##########",immediate.=TRUE)
     NCHR=1
   }
   if (NCHR==1)
@@ -306,7 +306,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	  if (MODE=="LINE")
 	  {
-	    plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=FALSE,t='n',ylab="truth",main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	    axis(2)
 	  }
@@ -316,7 +316,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	if (MODE=="LINE")
 	{
-	  plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=F,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,1),axes=FALSE,t='n',ylab=y.lab,main=paste("Haplotype", k), xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	  for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,k,], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa);	
 	  axis(2)
 	}
@@ -360,7 +360,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	  par(mar=c(4, 5.2, cexa, 0), cex.main=cexa, cex.axis=cexa, cex.lab=cexa)
 	  if (MODE=="LINE")
 	  {
-	    plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
+	    plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=FALSE,t='n',ylab="truth",main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	    for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.g.true_anc[[ch]][i,hap[1],]+t.g.true_anc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
 	    axis(2)
 	  }
@@ -370,7 +370,7 @@ plot_localanc=function(t.chrnos, t.g.loc, t.localanc, t.g.true_anc=NULL,cexa=2,p
 	}
 	if (MODE=="LINE")
 	{
-	  plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=F,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
+	  plot(range(t.g.loc[[ch]])*1e-6,c(0,2),axes=FALSE,t='n',ylab=y.lab,main=paste("Individual", ind),xlab=paste("Mb Position on Chromosome",t.chrnos[ch]))
 	  for (i in 1:A) lines(t.g.loc[[ch]]*1e-6, t.localanc[[ch]][i,hap[1],]+t.localanc[[ch]][i,hap[2],], t='l', col=rgb(t(col2rgb(colvec[i])/255),alpha=0.5), lwd=cexa)
 	  axis(2)
 	}
@@ -412,7 +412,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   targetdetails=paste0(target, "_", t.A, "way_", t.NUMA, "_", paste(t.chrnos[c(1,nchrno)],collapse="-"),
 		       "_",sum(t.NL),"_",t.GpcM)
   pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
-  ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=T,shiftl=5,shiftt=2,cutoff=0,ord=T)
+  ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=TRUE,shiftl=5,shiftt=2,cutoff=0,ord=TRUE)
   dev.off()
 
   pdf(file=paste0(pathout,targetdetails,"_karyograms.pdf"), width=12, height=12)
@@ -424,7 +424,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   if (!is.null(t.all_Fst))
     if (all(!is.nan(t.all_Fst$panels))) {
       pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
-      ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=T, shiftl=6, cutoff=10)
+      ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=TRUE, shiftl=6, cutoff=10)
       dev.off()
     }
 
@@ -432,7 +432,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   d1=switch(t.A,NaN,1,2,2,3,3) 
   d2=switch(t.A,NaN,3,3,5,5,7) 
   pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
-  this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=F,axisall=F,samedates=F,asym=F)
+  this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=FALSE,axisall=FALSE,samedates=FALSE,asym=FALSE)
   dev.off()
   if (EM | PHASE) {
     EMlog=extract_log(t.logfile)
@@ -447,7 +447,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
 # geolocs is matrix with each row a name/Longitude/Latitude trio. Must contain same population names as sources matrix.
 # cexa scaling factor for pie chart sizes
 # byFst specifies if we're using Fst or copying matrix values to plot
-plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) { 
+plot_admix_map=function(sources, geolocs, cexa=1, byFst=TRUE) { 
   sourcelocs=matrix(NaN,nrow(sources),2);
   for (i in 1:nrow(sources)) {
     k=which(geolocs[,1]==(rownames(sources)[i]))
@@ -478,7 +478,7 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=T) {
   ii=which(geolocs[,1]==target)
   par(bg="lightblue",mar=c(0,0,0,0))
   plot(sourcelocs,t='n',xlab="",ylab="",xaxt='n',yaxt='n',xlim=c(-125,155),ylim=c(-46,63))
-  map(col="lightgray",add=T,fill=T,border="darkgray")
+  map(col="lightgray",add=TRUE,fill=TRUE,border="darkgray")
   showsource=rep(FALSE,nrow(sources))
   tmax=0 # will be as 1.5 times big as biggest source pie chart
   for (i in 1:nrow(sources)) 

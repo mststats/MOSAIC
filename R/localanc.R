@@ -3,7 +3,7 @@ get_localanc=function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.d
 		      t.gobs, t.mutmat, t.maxmiss, t.initProb, t.label, t.ndonors, t.flips, t.HPC,  
 		      t.G,t.A,t.kLL,t.NUMA,t.NUMI,tol=1e-8,t.g.true_anc=NULL) {
   localanc<-list()
-  THIN=ifelse(t.max.donors==t.NUMP, F, T)
+  THIN=ifelse(t.max.donors==t.NUMP, FALSE, TRUE)
   t.NUMI=t.NUMA/2
   for (ch in 1:t.nchrno)
   {

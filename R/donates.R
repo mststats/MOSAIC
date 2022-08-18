@@ -5,7 +5,7 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
 			 t.min.donors,t.max.donors,t.prop.don,t.NUMP,t.NL,t.label,t.G_ch,
 			 prethin_ndonors=NULL, prethin_donates=NULL, prethin_donatesl=NULL, prethin_donatesr=NULL)
 {
-  THIN=F
+  THIN=FALSE
   if (t.NUMA==1) H=1 else H=2
   hap<-c(ind*2-1,ind*2)
   # we need these (temporarily) to calculate E[switches] and (bizarrely) to calculate the thinned version of themselves
@@ -32,7 +32,7 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   }
   if (prethin & !getswitches) # only need to use this if pre-thinning and not finding switch counts based on all donors
   {
-    THIN=T
+    THIN=TRUE
     t.ndonors=prethin_ndonors[[ch]][[ind]]
     if (t.HPC)
     {
@@ -69,7 +69,7 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   probmass<-t(t(probmass)/rowSums(probmass))
   f<-function(x)
   {
-    tmp<-order(x,decreasing=T)[1:t.max.donors] # descending order of donors; can't use partial sorting as index can't be returned
+    tmp<-order(x,decreasing=TRUE)[1:t.max.donors] # descending order of donors; can't use partial sorting as index can't be returned
     quants<-cumsum(x[tmp]);quants[t.max.donors]=1
     donors<-tmp
     cutoff<-max(which(quants>t.prop.don)[1], t.min.donors) # index of first one to go over t.prop.don but take at least t.min.donors
@@ -83,9 +83,9 @@ create_donates<-function(getswitches,ch,ind,t.NUMA,t.umatch,t.maxmatchsize,t.max
   # now calculate the right shifted and left shifted locations of the matching indices 
   t.donatesl<-t.donatesr<-matrix(0L,t.max.donors,t.G_ch) # re-sizing and 0s first
   t.donatesl[,2:t.G_ch]<-matrix(unlist(vapply(2:t.G_ch, function(g) match(t.donates[,g], t.donates[,g-1]),
-					     FUN.VALUE=rep(0L,t.max.donors)),use.names=F),t.max.donors)
+					     FUN.VALUE=rep(0L,t.max.donors)),use.names=FALSE),t.max.donors)
   t.donatesr[,1:(t.G_ch-1)]<-matrix(unlist(vapply(1:(t.G_ch-1), function(g) match(t.donates[,g], t.donates[,g+1]),
-						 FUN.VALUE=rep(0L,t.max.donors)),use.names=F),t.max.donors)
+						 FUN.VALUE=rep(0L,t.max.donors)),use.names=FALSE),t.max.donors)
   t.donatesl[is.na(t.donatesl)]<-0 # match() returns NA where no match occurs, replace with 0s
   t.donatesr[is.na(t.donatesr)]<-0 # match() returns NA where no match occurs, replace with 0s
   return(list(ndonors=t.ndonors,donates=t.donates-1,donatesl=t.donatesl-1,donatesr=t.donatesr-1,switches=switches)) # -1 to convert to cpp indexing
@@ -114,18 +114,18 @@ getdonates_ind<-function(t.donates) # note that this is used for donates, donate
 # function to estimate the most useful donors for all target admixed genomes; other donors will not be used in the HMM
 # note that this is done locally to each gridpoint allowing for changing top donors along each target genome
 # first compute the no-ancestry equivalent parameters Mu, rho, and theta. One for each ind.
-all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=T, t.get_switches, t.min.donors, t.max.donors, t.prop.don, t.NUMP, 
-		     t.NL, t.G, t.umatch, t.maxmatchsize, t.maxmatch, t.maxmiss, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=F, t.NUMA, 
+all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.lambda, t.theta, verbose=TRUE, t.get_switches, t.min.donors, t.max.donors, t.prop.don, t.NUMP, 
+		     t.NL, t.G, t.umatch, t.maxmatchsize, t.maxmatch, t.maxmiss, t.d.w, t.t.w, t.gobs, t.flips, t.label, t.KNOWN, t.HPC, prethin=FALSE, t.NUMA, 
 		     t.nchrno, t.initProb, t.old.runtime, t.len, t.LOG, t.transitions, t.mutmat, t.cloglike, t.logfile, ffpath) {
   ind.Mu=ind.rho=ind.theta=list()
   for (ind in 1:t.NUMI) 
   {
     # use current ind specific parameters from ancestry aware model
     ind.Mu[[ind]]=matrix(rowSums(t(t(t.Mu)*t.alpha[[ind]])),t.kLL) # p(g) = sum_a(p(g|a)p(a))
-    # note that if commonrho=T then this will just be t.rho 
+    # note that if commonrho=TRUE then this will just be t.rho 
     ind.rho[[ind]]=t.rho%*%t.alpha[[ind]]+sum(diag(t.PI[[ind]])) # include all ancestry self-switches as these impose a hap switch (zero if absorbrho)
     #tmp.d=-log(1-ind.rho[[ind]])*t.max.donors;ind.rho[[ind]]=1-exp(-tmp.d/t.NUMP) # ~= t.max.donors/t.NUMP for small t.rho 
-    # note that if commontheta=T then this will just be t.theta
+    # note that if commontheta=TRUE then this will just be t.theta
     ind.theta[[ind]]=t.theta%*%t.alpha[[ind]]
   }
   if (verbose & !t.get_switches & t.max.donors<t.NUMP)
@@ -152,11 +152,11 @@ all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
 	  tmp2=create_donates(t.get_switches,ch,ind,t.NUMA,t.umatch[[ch]],t.maxmatchsize[ch],t.maxmatch,t.maxmiss,t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],
 			      t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.min.donors,t.max.donors,t.prop.don,t.NUMP,t.NL,t.label,t.G[ch]) 
 	  ans_ndonors=tmp2$ndonors
-	  ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T)
+	  ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=TRUE)
 	  close(ans_donates)
-	  ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=T)
+	  ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=TRUE)
 	  close(ans_donatesl)
-	  ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=T)
+	  ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=TRUE)
 	  close(ans_donatesr)
 	  ans_switches=list()
 	  if (t.get_switches)
@@ -228,11 +228,11 @@ all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
       tmp2=create_donates(t.get_switches,ch,ind,t.NUMA,t.umatch[[ch]],t.maxmatchsize[ch],t.maxmatch,t.maxmiss,t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],t.kLL,
 			  ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.min.donors,t.max.donors,t.prop.don,t.NUMP,t.NL,t.label,t.G[ch])
       ans_ndonors=tmp2$ndonors
-      ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=T)
+      ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=TRUE)
       close(ans_donates)
-      ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=T)
+      ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=TRUE)
       close(ans_donatesl)
-      ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=T)
+      ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=TRUE)
       close(ans_donatesr)
       ans_switches=list()
       if (t.get_switches)

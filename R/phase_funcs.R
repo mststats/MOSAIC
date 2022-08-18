@@ -76,7 +76,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.A, t.GpcM, t.ind, t.flips, verb
   # fb calcs moved to here to avoid storing all fors, backs, etc
   t.fors<-list();t.sumfors<-list();t.scalefactor<-list()
   t.backs<-list();t.scalefactorb<-list()
-  THIN=ifelse(t.max.donors==t.NUMP,F,T)
+  THIN=ifelse(t.max.donors==t.NUMP,FALSE,TRUE)
   for (h in 1:2)
   {
     k=hap[h]
@@ -103,13 +103,13 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.A, t.GpcM, t.ind, t.flips, verb
       if (max(ind.c.v)<t.eps.lower) 
 	break;
       old.ll<-ind.c.ll
-      cand.l<-(ind.c.v>t.eps.lower) # T for all those that would have log-like change greater than t.eps.lower if flipped
+      cand.l<-(ind.c.v>t.eps.lower) # TRUE for all those that would have log-like change greater than t.eps.lower if flipped
       cand.u<-which(cand.l) # which are candidates
       cand<-NULL # take the max spike, block off around it, repeat until none left
       while (max(ind.c.v[cand.u])>t.eps.lower & sum(cand.l)>0) { # while some are still worth flipping
 	tmp<-which.max(ind.c.v[cand.u]) # identify maximum
 	cand<-c(cand,cand.u[tmp]) # add to the vector of candidates
-	cand.l[max(1,cand.u[tmp]-BG):min(cand.u[tmp]+BG,t.G[t.ch])]<-F # remove block of BG gridpoints to each side
+	cand.l[max(1,cand.u[tmp]-BG):min(cand.u[tmp]+BG,t.G[t.ch])]<-FALSE # remove block of BG gridpoints to each side
 	cand.u<-which(cand.l)
 	if (length(cand.u)==0)
 	  break
@@ -171,7 +171,7 @@ r_phase_hunt<-function(t.eps.lower, t.ch, t.G, t.A, t.GpcM, t.ind, t.flips, verb
 #phase_hunt<-cmpfun(r_phase_hunt,list(optimize=3)) # 
 phase_hunt<-r_phase_hunt
 r_phase_mcmc<-function(t.ch, t.G, t.A, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.donors, t.initProb, t.label, t.flips, verbose, t.ndonors, t.donates, t.donatesl, t.donatesr, 
-		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, mcmcprog, mcmchill=T) 
+		       t.transitions, t.umatch, t.maxmatchsize, t.dw, t.tw, t.gobs, t.mutmat, t.maxmiss, mcmcprog, mcmchill=TRUE) 
 {
   M=as.integer(M*t.G[t.ch])
   NNL2=t.max.donors*t.A
@@ -179,7 +179,7 @@ r_phase_mcmc<-function(t.ch, t.G, t.A, t.ind, M, t.NUMP, t.NUMA, t.kLL, t.max.do
   # fb calcs moved to here to avoid storing all fors, backs, etc
   t.fors<-list();t.sumfors<-list();t.scalefactor<-list()
   t.backs<-list();t.scalefactorb<-list()
-  THIN=ifelse(t.max.donors==t.NUMP,F,T)
+  THIN=ifelse(t.max.donors==t.NUMP,FALSE,TRUE)
   for (h in 1:2)
   {
     k=hap[h]
@@ -317,7 +317,7 @@ phase_hunt_all=function(t.donates, t.donatesl, t.donatesr, t.ndonors, t.NUMP, t.
       donates_chr_ind=getdonates_ind(t.donates[[ch]][[ind]])
       donatesl_chr_ind=getdonates_ind(t.donatesl[[ch]][[ind]])
       donatesr_chr_ind=getdonates_ind(t.donatesr[[ch]][[ind]])
-      ans=phase_hunt(t.eps.lower,ch,t.G,t.A,t.GpcM,ind,t.flips[[ind]][[ch]], F, t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, 
+      ans=phase_hunt(t.eps.lower,ch,t.G,t.A,t.GpcM,ind,t.flips[[ind]][[ch]], FALSE, t.ndonors[[ch]][[ind]], t.NUMP, t.NUMA, t.kLL, t.max.donors, donates_chr_ind, donatesl_chr_ind, donatesr_chr_ind, 
 		     t.transitions[[ind]], t.umatch[[ch]], t.maxmatchsize[ch], t.d.w[[ch]], t.t.w[[ch]], t.gobs[[ch]][[ind]], t.mutmat, t.maxmiss, 
 		     t.initProb, t.label, minbg=t.min.bg, maxbg=t.max.bg)
       ans

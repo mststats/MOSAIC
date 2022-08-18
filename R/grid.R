@@ -64,7 +64,7 @@ create_grid=function(t.target,t.G_chr,t.S_chr,t.g.map, t.chrno, t.NUMA, t.A, t.u
     gobs_chr[[ind]][is.na(gobs_chr[[ind]])]<-0
     # return maxmatch and maxmiss for this chromosome only and find max across all afterwards
     maxmatch_chr<-max(unlist(t.umatch_chr))
-    maxmiss_chr<-max(gobs_chr[[ind]]-sapply(1:t.G_chr, function(g) min(t.umatch_chr[[g]][,t.t.w_chr$w[[g]][haps]+1])),na.rm=T)
+    maxmiss_chr<-max(gobs_chr[[ind]]-sapply(1:t.G_chr, function(g) min(t.umatch_chr[[g]][,t.t.w_chr$w[[g]][haps]+1])),na.rm=TRUE)
   }
   if (t.target=="simulated") return(list(g.loc_chr=g.loc_chr,gobs_chr=gobs_chr,maxmatch_chr=maxmatch_chr,maxmiss_chr=maxmiss_chr,
 				       g.true_anc_chr=g.true_anc_chr))
@@ -79,7 +79,7 @@ r_create_umatch=function(ch.d.w,ch.t.w,g.map,t.G)
     if (length(gm)>0)
     {
       tmp=matrix(0,length(ch.d.w$u[[g]]), length(ch.t.w$u[[g]]))
-      for (i in 1:nrow(tmp)) for (j in 1:ncol(tmp)) tmp[i,j]=sum(ch.d.w$u[[g]][[i]]==ch.t.w$u[[g]][[j]],na.rm=T) # note the na.rm=T for missing data compatibility
+      for (i in 1:nrow(tmp)) for (j in 1:ncol(tmp)) tmp[i,j]=sum(ch.d.w$u[[g]][[i]]==ch.t.w$u[[g]][[j]],na.rm=TRUE) # note the na.rm=TRUE for missing data compatibility
       return(tmp)
     } else return (matrix(0))
   }

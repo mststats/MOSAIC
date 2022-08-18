@@ -7,7 +7,7 @@ r_create_coancs<-function(t.localanc, gap, MODE="DIP", min.cM=0, max.cM=50,gby=5
   for (ch in 1:nchrno) {
     if (maxconsidered > dim(t.localanc[[ch]])[3]) {
       max.cM=100*gap*dim(t.localanc[[ch]])[3]
-      warning("########## trying to fit curves on longer segments than total length of chromosome : changing max.cM to ", max.cM, " cM #########", immediate.=T)
+      warning("########## trying to fit curves on longer segments than total length of chromosome : changing max.cM to ", max.cM, " cM #########", immediate.=TRUE)
     }
   }
   drange=seq(as.integer(min.cM/gap/100),as.integer(max.cM/gap/100),by=gby) # 50 cM max; drange is in gridpoints
@@ -180,7 +180,7 @@ create_coancs<-cmpfun(r_create_coancs,list(optimize=3))
 #create_coancs<-r_create_coancs
 
 plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRUE,targetname=NULL,dd=NULL,min.cM=1,max.cM=NULL,ylab="relative prob.",
-			   plotall=(is.null(k)),axisall=F,transalpha=0.5,verbose=F,anc.thresh=0.2,asym=F,samedates=F,ndates=1,optmethod="BFGS")
+			   plotall=(is.null(k)),axisall=FALSE,transalpha=0.5,verbose=FALSE,anc.thresh=0.2,asym=FALSE,samedates=FALSE,ndates=1,optmethod="BFGS")
 {
   lpop<-dim(coancs$relprobs)[1]
   if (any(rowMeans(coancs$ancprobs)/lpop<0.05))
@@ -190,8 +190,8 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
   if (samedates) {if (ndates==2) warning("########## if samedates specified then cannot fit multiple dates per pair of ancestries ########## ", immediate.=TRUE); ndates=1}
   # plotall indicates whether to plot individual based curves as well as consensus curves
   # axisall indicates whether to use a y-axis limit based on consensus or all curves
-  # asym=T allows asymptote to be something other than 1
-  # samedates=T forces single estimation of all curves; not sensible for (>2)-way
+  # asym=TRUE allows asymptote to be something other than 1
+  # samedates=TRUE forces single estimation of all curves; not sensible for (>2)-way
   if (min.cM!=0) 
   {
     min.cM=which(coancs$drange<(min.cM/gap/100))
@@ -207,10 +207,10 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
       coancs$relprobs=array(coancs$relprobs[,,,-max.cM],c(dim(coancs$relprobs)[1],dim(coancs$relprobs)[2],dim(coancs$relprobs)[3],
 							dim(coancs$relprobs)[4]-length(max.cM)))
     } else (warning("########## cannot select this distance (you would need to recompute the coancestry curves); using max distance of ", 
-			  max(coancs$drange)*100*dr, " ##########", immediate.=T))
+			  max(coancs$drange)*100*dr, " ##########", immediate.=TRUE))
   }
   if (samedates& lpop>2)
-    warning("########## using samedates for more than 2-way event is not sensible ##########", immediate.=T)
+    warning("########## using samedates for more than 2-way event is not sensible ##########", immediate.=TRUE)
   relcurve=array(0,c(lpop,lpop,dim(coancs$relprobs)[4]))
   kweights=keep=list()
   if (is.null(popnames)) popnames<-1:lpop
@@ -246,7 +246,7 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 	kweights[[(i-1)*lpop+j]][kk]=(zzi[kk]*zzj[kk])
       keep[[(i-1)*lpop+j]]=(zzi>mean(zzi)*anc.thresh & zzj>mean(zzj)*anc.thresh)
       if (all(!keep[[(i-1)*lpop+j]])) # if none pass the threshold, use all
-	keep[[(i-1)*lpop+j]][]=T
+	keep[[(i-1)*lpop+j]][]=TRUE
       if (verbose)
 	cat("for ancs", i,":",j, "keeping", which(keep[[(i-1)*lpop+j]]), "\n")
       kweights[[(i-1)*lpop+j]][!keep[[(i-1)*lpop+j]]]=0
@@ -412,13 +412,13 @@ plot_coanccurves<-function(coancs,gap,lwd=2,cexa=2,k=NULL,popnames=NULL,PLOT=TRU
 }
 
 
-bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,alpha,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,alpha,nsamps=100,min.cM=1,max.cM=50,asym=FALSE,samedates=FALSE,optmethod="BFGS",thresh=1e-4)
 {
   NUMA=dim(localanc[[1]])[2]
   NUMI=NUMA/2
   nchrno=length(localanc)
   kgens=rep(NaN,NUMI)
-  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,gap,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,gap,k=k,PLOT=FALSE,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=TRUE)
   G=sapply(localanc,function(x) dim(x)[3])
   boot.gens=list()
   boot.localanc=list()
@@ -429,32 +429,32 @@ bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,alpha,nsamps=100
   {
     setTxtProgressBar(pb, r)
     #bootstrap chromosomes; generate NUMI pseudo-individuals using random chromosomes drawn from all inds w/ replacement; see GT S4.4 for details
-    boot.inds=matrix(sample(1:NUMI,NUMI*nchrno,replace=T),NUMI)
+    boot.inds=matrix(sample(1:NUMI,NUMI*nchrno,replace=TRUE),NUMI)
     boot.haps=matrix(NaN,NUMA,nchrno);for (t.ch in 1:nchrno) for (ind in 1:NUMI) boot.haps[c(ind*2-1,ind*2),t.ch]=c(boot.inds[ind,t.ch]*2-1,boot.inds[ind,t.ch]*2)
     for (t.ch in 1:nchrno) 
       for (l in 1:A) for (hap in 1:NUMA)
         boot.localanc[[t.ch]][l,hap,]=localanc[[t.ch]][l,boot.haps[hap,t.ch],]
     boot.coancs=create_coancs(boot.localanc,gap,"DIP",max.cM=max.cM)#*mean(unlist(lambda))/100);
-    boot.gens[[r]]=plot_coanccurves(boot.coancs,gap,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
+    boot.gens[[r]]=plot_coanccurves(boot.coancs,gap,PLOT=FALSE,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
   }  
   close(pb)
   return(list(kgens=kgens,boot.gens=boot.gens))
 }
 
 # this function bootstraps over individuals rather than chromosomes in pseudo-individuals
-bootstrap_individuals_coanc_curves=function(coancs,gap,alpha,nsamps=100,min.cM=1,max.cM=50,asym=F,samedates=F,optmethod="BFGS",thresh=1e-4)
+bootstrap_individuals_coanc_curves=function(coancs,gap,alpha,nsamps=100,min.cM=1,max.cM=50,asym=FALSE,samedates=FALSE,optmethod="BFGS",thresh=1e-4)
 {
   NUMI=dim(coancs$ancprobs)[2]
   kgens=rep(NaN,NUMI)
-  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,gap,k=k,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=T)
+  for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,gap,k=k,PLOT=FALSE,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=TRUE)
   boot.gens=list()
   pb<-txtProgressBar(min=0,max=nsamps,style=3)
   for (r in 1:nsamps) ## nsamps bootstrap samples
   {
     setTxtProgressBar(pb, r)
-    boot.inds=sample(1:NUMI,replace=T)
+    boot.inds=sample(1:NUMI,replace=TRUE)
     tmp.coancs=coancs;tmp.coancs$ancprobs=coancs$ancprobs[,boot.inds];tmp.coancs$relprobs=coancs$relprobs[,,boot.inds,]
-    boot.gens[[r]]=plot_coanccurves(tmp.coancs,gap,PLOT=F,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
+    boot.gens[[r]]=plot_coanccurves(tmp.coancs,gap,PLOT=FALSE,samedates=samedates,asym=asym,min.cM=min.cM)$gens.matrix
   }  
   close(pb)
   return(list(kgens=kgens,boot.gens=boot.gens))

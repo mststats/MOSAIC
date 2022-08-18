@@ -1,5 +1,5 @@
 # function to calculate the stationary state for the MOSAIC HMM transitions to use as initial probabilities at the first gridpoint in the forward algorithm
-initprobs=function(fastcalc_init=T, t.NUMA, t.A, t.NUMP, t.kLL, t.PI, t.Mu, t.rho, t.alpha, t.label, t.NL) 
+initprobs=function(fastcalc_init=TRUE, t.NUMA, t.A, t.NUMP, t.kLL, t.PI, t.Mu, t.rho, t.alpha, t.label, t.NL) 
 {
   if (!fastcalc_init)
     allhaps_initProb=matrix(0,t.NUMA,t.A*t.NUMP)
@@ -14,8 +14,8 @@ initprobs=function(fastcalc_init=T, t.NUMA, t.A, t.NUMP, t.kLL, t.PI, t.Mu, t.rh
 	for (l in 1:t.A) 
 	  for (ik in 1:t.NUMP) 
 	  {
-	    trans_matrix[(ia-1)*t.NUMP+ik,(l-1)*t.NUMP+ik]=explicit.trans(t.PI[[ind]],t.Mu,t.rho,t.NL,ia,T,l,t.label[ik]) #same hap
-	    trans_matrix[(ia-1)*t.NUMP+(1:t.NUMP)[-ik],(l-1)*t.NUMP+ik]=explicit.trans(t.PI[[ind]],t.Mu,t.rho,t.NL,ia,F,l,t.label[ik]) #switch hap
+	    trans_matrix[(ia-1)*t.NUMP+ik,(l-1)*t.NUMP+ik]=explicit.trans(t.PI[[ind]],t.Mu,t.rho,t.NL,ia,TRUE,l,t.label[ik]) #same hap
+	    trans_matrix[(ia-1)*t.NUMP+(1:t.NUMP)[-ik],(l-1)*t.NUMP+ik]=explicit.trans(t.PI[[ind]],t.Mu,t.rho,t.NL,ia,FALSE,l,t.label[ik]) #switch hap
 	  }
       # from fiveMinuteStats
       lvec=Re(eigen(t(trans_matrix))$vectors) # Get the left eigenvectors of P

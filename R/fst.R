@@ -39,7 +39,7 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
     snps=read.table(paste0(pathin1,"snpfile.",chrnos[ch]))
     S=nrow(snps)
     tmpfilename=paste0(pathin2,t.target,"genofile.",chrnos[ch])
-    tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+    tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
     N2<-nchar(tmp)
     y=matrix(suppressWarnings(as.integer(as.matrix(laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))[,]))),ncol=N2)
     populations=matrix(NaN,NUMA,S)
@@ -82,7 +82,7 @@ r_wc_fst=function(freqs1,counts1,freqs2,counts2)
     Hs=c(Hs,ch_Hs)
     Ht=c(Ht,ch_Ht)
   }
-  return((1-sum(Hs,na.rm=T)/sum(Ht,na.rm=T)))
+  return((1-sum(Hs,na.rm=TRUE)/sum(Ht,na.rm=TRUE)))
 }
 
 v_wc_fst=function(freqs1,counts1,freqs2,counts2) 
@@ -99,7 +99,7 @@ v_wc_fst=function(freqs1,counts1,freqs2,counts2)
     Hs=c(Hs,numer)
     Ht=c(Ht,denom)
   }
-  return((1-sum(Hs,na.rm=T)/sum(Ht,na.rm=T)))
+  return((1-sum(Hs,na.rm=TRUE)/sum(Ht,na.rm=TRUE)))
 }
 
 #wc_fst=cmpfun(r_wc_fst,list(optimize=3))
@@ -112,7 +112,7 @@ R_Fst=function(x)
   d_fst=rep(NaN,laa)
   for (aa in 1:laa) {a1=combn_aa[1,aa]
   a2=combn_aa[2,aa]
-  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])),na.rm=T)} # squared diff over average
+  d_fst[aa]=mean(((x[,a1]-x[,a2])^2)/(0.5*(x[,a1]+x[,a2])),na.rm=TRUE)} # squared diff over average
   return(d_fst)
 }
 

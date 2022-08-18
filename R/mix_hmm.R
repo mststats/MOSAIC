@@ -2,7 +2,7 @@
 #### function to return transition probabilities ####
 s_trans<-function(t.A,t.kLL,t.PI,t.Mu,t.rho,t.NL) 
 {
-  knvec<-c(F,T)
+  knvec<-c(FALSE,TRUE)
   ans<-array(NaN, c(t.A,2,t.A,t.kLL)) 
   for (t.i in 1:t.A) 
     for (t.kn in 1:2)
@@ -16,7 +16,7 @@ get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.dona
 		   t.mutmat, t.maxmiss, t.initProb, t.label, t.ndonors, t.flips, t.HPC)
 {
   ans<-list()
-  THIN=ifelse(t.max.donors==t.NUMP, F, T)
+  THIN=ifelse(t.max.donors==t.NUMP, FALSE, TRUE)
   t.NUMI=t.NUMA/2
   for (ch in 1:t.nchrno)
   {

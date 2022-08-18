@@ -1,7 +1,7 @@
 # function that reads in the data and lays on a grid along recombination rates map
 read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
 		     firstind=1, ratios=NULL) {
-  panels<-read.table(paste(datasource,"sample.names",sep=""), header=F);panels<-as.character(unique(panels[,1]))
+  panels<-read.table(paste(datasource,"sample.names",sep=""), header=FALSE);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
   t.NUMA=2*t.NUMI
@@ -48,7 +48,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     for (i in 1:length(panels))
     {
       tmpfilename<-paste0(datasource,panels[i],"genofile.",t.chrnos[ch])
-      tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+      tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
       N2<-nchar(tmp)
       multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
     }
@@ -56,11 +56,11 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       for (i in 1:t.A)
       {
 	tmpfilename<-paste0(datasource,mixers[i],"genofile.",t.chrnos[ch])
-        tmp<-scan(tmpfilename,what="character",quiet=T,nlines=1)
+        tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
         N2<-nchar(tmp)
 	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
 	if ((t.NUMA*2)>N2) {
-	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=T)
+	  warning("########## Tried to simulate too many admixed individuals; need twice the number of samples in each mixing panel ##########",immediate.=TRUE)
 	  t.NUMA=2*floor(N2/4) # need twice as many in each population that is admixed
 	  cat("Reducing the number of simulated individuals to", t.NUMA/2,"\n")
 	}
@@ -101,17 +101,17 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     for (ll in 1:LL)
       label[(tmp[ll]+1):tmp[ll+1]]<-ll
     # KNOWN are of known ancestry
-    KNOWN<-rep(F,NN)
-    KNOWN[label<LL]<-T # last one / group only not known
+    KNOWN<-rep(FALSE,NN)
+    KNOWN[label<LL]<-TRUE # last one / group only not known
     NUMP<-sum(KNOWN) # i.e. number in panels
     t.NUMA<-sum(!KNOWN) #i.e. number of targets / admixed
     t.NUMI=max(1,t.NUMA/2)
     # FLAG doesn't work apparently
-    all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=T),ncol=2)
+    all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=TRUE),ncol=2)
     locs<-as.integer(snps[,4])
     if (all_rates[1,1]>locs[1]) {
       all_rates=rbind(c(locs[1],0),all_rates)
-      warning("########## You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left ##########",immediate.=T)
+      warning("########## You have used a rates file that starts above the lowest SNP locus on chromosome ", t.chrnos[ch], "; adding zeros to the left ##########",immediate.=TRUE)
     }
     tmp=match(locs, all_rates[,1])
     rates=all_rates[tmp,2] # use ones with hap data; some may be missing if in snps file but not in rates file
@@ -122,7 +122,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     if (t.FLAT) 
     {
       rates<-seq(rates[1],2*rates[S[ch]],l=S[ch])
-      warning("########## using flat recombination rates map ##########",immediate.=T)
+      warning("########## using flat recombination rates map ##########",immediate.=TRUE)
     }
     rm(all_rates)
     # G will be correct / consistent w/in 0.5 and is large so almost exactly the same dr across chromosomes

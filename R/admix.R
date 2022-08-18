@@ -40,7 +40,7 @@ admix_genomes=function(t.chrnos, t.ch, t.NUMI, t.NUMP, t.KNOWN, t.NN, t.multipan
   }
   tY=t(Y)
   tY[is.na(tY)]="?"
-  write.table(tY,file=paste0(t.resultsdir,"simulatedgenofile.",t.chrnos[t.ch],sep=""),row.names=F,col.names=F,sep="",quote=F) # write out admixed individuals
+  write.table(tY,file=paste0(t.resultsdir,"simulatedgenofile.",t.chrnos[t.ch],sep=""),row.names=FALSE,col.names=FALSE,sep="",quote=FALSE) # write out admixed individuals
   rm(tY)
   # add missing values
   if (prop.missing>0)
