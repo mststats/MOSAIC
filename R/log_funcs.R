@@ -8,7 +8,7 @@ create_logfile=function(resultsdir,target,kLL,A,NUMI,firstind,chrnos,nchrno,NN,G
   for (ind in 1:NUMI) lognames<-c(lognames, paste0("lambda[",ind,"]"))
   for (i in 1:A) lognames<-c(lognames, paste0("theta[",i,"]"))
   lognames<-c(lognames, "loglikelihood")
-  logfile=paste0(resultsdir, target, "_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H:%M:%S"),"_EMlog.out")
+  logfile=file.path(resultsdir, paste0(target, "_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",GpcM,"_",format(Sys.time(), "%Y_%m_%d_%H-%M-%S"),"_EMlog.out"))
   len=length(lognames) # total number of items to log
   write(file=logfile, lognames, ncolumns=length(lognames)) # start the EM log file
   rtime<-as.numeric(Sys.time())

@@ -40,12 +40,12 @@ setup_data_etc=function(t.NUMI,t.target,t.chrnos,t.pops,A,datasource,EM,gens,rat
   commonrho=TRUE, # needs to be false if it includes PI[i,i]
   commontheta=TRUE,
   prethin=FALSE,
-  resultsdir="MOSAIC_RESULTS/", # where to store results files
+  resultsdir="MOSAIC_RESULTS", # where to store results files
   firstind=1,
   init.rho, init.theta, init.PI) # use initial values unless not supplied here
 {
-  if (!file.exists(resultsdir))
-    dir.create(file.path(getwd(), resultsdir))
+  if (!dir.exists(resultsdir))
+    dir.create(file.path(resultsdir))
   if (REPS==0) REPS=2*A+1 # maximum number of iterations through thin/phase/EM cycle
   REPS=ifelse(EM, REPS, 1) # no need for more than 1 if no EM parameter changes
   t.nchrno=length(t.chrnos)

@@ -36,9 +36,9 @@ r_maximal_alleles=function(t.target,chrnos,glocs,t.localanc,pathin1,pathin2,thre
     allp[[l]]=alln[[l]]=list()
   for (ch in 1:length(chrnos))
   {
-    snps=read.table(paste0(pathin1,"snpfile.",chrnos[ch]))
+    snps=read.table(file.path(pathin1,paste0("snpfile.",chrnos[ch])))
     S=nrow(snps)
-    tmpfilename=paste0(pathin2,t.target,"genofile.",chrnos[ch])
+    tmpfilename=file.path(pathin2,paste0(t.target,"genofile.",chrnos[ch]))
     tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
     N2<-nchar(tmp)
     y=matrix(suppressWarnings(as.integer(as.matrix(laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))[,]))),ncol=N2)
@@ -117,8 +117,8 @@ R_Fst=function(x)
 }
 
 # function to calculate Fst between all pairs of latent ancestries and between each latent ancestry and each donor panel
-Fst_combos=function(target, A, NN, panels, pathin="FREQS/") {
-  load(file=paste0(pathin, target, "_", A, "way_", NN, "_freqs.rdata")) # use pre-calculated freq / count pairs from running write_admixed_summary
+Fst_combos=function(target, A, NN, panels, pathin="MOSAIC_RESULTS/FREQS") {
+  load(file=file.path(pathin, paste0(target, "_", A, "way_", NN, "_freqs.rdata"))) # use pre-calculated freq / count pairs from running write_admixed_summary
   anc_fst=rep(NaN,choose(A,2))
   Ls=utils::combn(A,2)
   for (l in 1:ncol(Ls))
@@ -130,7 +130,7 @@ Fst_combos=function(target, A, NN, panels, pathin="FREQS/") {
   panels_fst=matrix(NaN,length(panels),A)
   for (l1 in 1:length(panels))
   {
-    load(paste0(pathin, panels[l1],"_freqs.rdata"))
+    load(file.path(pathin, paste0(panels[l1],"_freqs.rdata")))
     for (l2 in 1:A) 
       panels_fst[l1,l2]=wc_fst(ancestral_freqs$freqs[[l2]],ancestral_freqs$counts[[l2]],pdata$freqs,pdata$counts)
   }
@@ -140,10 +140,10 @@ Fst_combos=function(target, A, NN, panels, pathin="FREQS/") {
   return(list("ancs"=anc_fst, "Rst"=Rst, "panels"=panels_fst))
 }
 
-Fst_panels=function(panel1,panel2, pathin="FREQS/") {
-  load(paste0(pathin, panel1,"_freqs.rdata"))
+Fst_panels=function(panel1,panel2, pathin="MOSAIC_RESULTS/FREQS") {
+  load(file.path(pathin, paste0(panel1,"_freqs.rdata")))
   tmp1=pdata
-  load(paste0(pathin, panel2,"_freqs.rdata"))
+  load(file.path(pathin, paste0(panel2,"_freqs.rdata")))
   tmp2=pdata
   return(wc_fst(tmp1$freqs,tmp1$counts,tmp2$freqs,tmp2$counts))
 }

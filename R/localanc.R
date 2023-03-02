@@ -166,7 +166,7 @@ grid_to_pos_chr=function(x,pos,glocs) { # arguments are thing-to-map, SNP positi
 grid_to_pos=function(x,pathin,glocs,chrnos) { # arguments are thing-to-map, SNP positions, grid locations
   ans=list()
   for (ch in 1:length(chrnos)) {
-    pos=read.table(paste0(pathin,"snpfile.",chrnos[ch]))[,4]
+    pos=read.table(file.path(pathin,paste0("snpfile.",chrnos[ch])))[,4]
     S=length(pos)
     g.map<-vapply(1:S, function(s) which.min((pos[s]-glocs[[ch]])^2),0L) # create map from rates to grid
     if (length(dim(x[[ch]]))==2)

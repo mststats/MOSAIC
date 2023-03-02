@@ -11,7 +11,8 @@ ffpath = tempdir(), MC = 0, return.res = TRUE,
 REPS = 0, GpcM = 60, nl = 1000, max.donors = 100, prop.don = 0.99, 
 doMu = TRUE, doPI = TRUE, dorho = TRUE, dotheta = TRUE, 
 firstind = 1, verbose = TRUE, Ne = 90000, MODE="DIP", singlePI=FALSE,
-init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, commontheta=TRUE) 
+init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, 
+commonrho=TRUE, commontheta=TRUE, resultsdir="MOSAIC_RESULTS") 
 }
 \arguments{
   \item{target}{a string giving the name of admixed target population.
@@ -30,7 +31,7 @@ init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, comm
   \item{mask}{vector of strings giving names of populations not to use. 
     Defaults to NULL so that no populations are dropped from the analysis. 
   }
-  \item{PLOT}{logical specifying whether MOSAIC should save default plots to summarise results in folder MOSAIC_PLOTS/.
+  \item{PLOT}{logical specifying whether MOSAIC should save default plots to summarise results in folder MOSAIC_RESULTS/.
   }
   \item{doFst}{logical to set whether or not to calculate Fst between each pair of ancestries (using estimated local ancestry). 
     Defaults to TRUE and run times are sped up by using FALSE. 
@@ -104,6 +105,8 @@ init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, comm
   }
   \item{commontheta}{Should the same mutation / error rate apply within each ancestry. Defaults to TRUE. 
   }
+  \item{resultsdir}{The name of the folder in which to store all results. It will be created if if does not yet exist. Defaults to "MOSAIC_RESULTS". 
+  }
 }
 \value{a list containing inferred parameters, local ancestry estimates, etc. 
 }
@@ -114,7 +117,14 @@ init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, comm
 
 \examples{
 # infer 2-way local ancestry in 2 Moroccans using example data on chromosomes 18,19,20,21,22 
-\dontrun{mosaic.result=run_mosaic("Moroccan","example_data/",18:22,A=2,NUMI=4)}
-# simulate and then infer 2-way local ancestry between English and Mandenkans in 2 individuals using example data on chromosomes 18,19,20,21,22 
-\dontrun{mosaic.result=run_mosaic("simulated","example_data/",18:22,A=2,NUMI=3,c("English","Mandenka"))}
+\donttest{
+  fpath=system.file("extdata", package="MOSAIC")
+  mosaic.result=run_mosaic("Moroccan", fpath, 18:22, A=2, NUMI=4, MC=2) # use two cores 
+}
+# simulate and then infer 2-way local ancestry between English and Mandenkans 
+# in 2 individuals using example data on chromosomes 18,19,20,21,22 
+\donttest{
+  fpath=system.file("extdata", package="MOSAIC")
+  mosaic.result=run_mosaic("simulated", fpath, 18:22, A=2, NUMI=3, c("English","Mandenka"))
+}
 }

@@ -19,10 +19,10 @@ pathout=argv$pathout
 pops=argv$pops
 if (pops=="NULL") pops=NULL
 if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated group names
-snps=read.table(paste0(pathin,"snpfile.",chrno),as.is=TRUE)
+snps=read.table(file.path(pathin,paste0("snpfile.",chrno)),as.is=TRUE)
 
 # read in population information; assumption is that this is correct in terms of order and size of inds in each population
-allpops=read.table(paste0(pathin,inds.data),header=FALSE)
+allpops=read.table(file.path(pathin,inds.data),header=FALSE)
 if (!is.null(pops))
   allpops=allpops[which(!is.na(match(allpops[,1],pops))),] # reduce to specified populations
 pops=unique(allpops[,1])
@@ -34,10 +34,10 @@ S=nrow(snps)
 Y=matrix(NaN,S,5+NN)
 Y[,1]=chrno;Y[,2]=snps[,1];Y[,3]=snps[,4];Y[,4]=snps[,5];Y[,5]=snps[,6]
 for (i in 1:length(pops)) {
-  tmp<-scan(paste0(pathin,pops[i],"genofile.",chrno),what="character",quiet=TRUE)
+  tmp<-scan(file.path(pathin,paste0(pops[i],"genofile.",chrno)),what="character",quiet=TRUE)
   tmp<-strsplit(tmp,"")
   allS<-length(tmp)
   N2<-length(tmp[[1]])
   Y[,5+which(hap.pops==pops[i])]=matrix(sapply(tmp, as.double), N2, allS)
 }
-write.table(Y,file=paste0(pathout,hapsfile),sep=" ", quote=FALSE, row.names=FALSE, col.names=FALSE)
+write.table(Y,file=file.path(pathout,hapsfile),sep=" ", quote=FALSE, row.names=FALSE, col.names=FALSE)

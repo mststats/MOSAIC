@@ -49,9 +49,9 @@ Phasing improvements in light of the admixture model are performed and **local a
 **Please read the README.txt packaged with MOSAIC for additional information.**
 
 ## Inputs / Data
-The `example_data` folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
+The `extdata` folder packaged with MOSAIC contains example human data for chromosomes 18 to 22.
 
-**Examination of the files** in the `example_data` folder should make the format of each of the below clear.
+**Examination of the files** in the `extdata` folder should make the format of each of the below clear.
 
 
 As inputs MOSAIC requires:
@@ -69,11 +69,9 @@ All entries should be $0,1,?$ indicating ref, alt, or missing entries respective
 
 
 ## Outputs / Results
-- A folder called `MOSAIC_RESULTS` is required to hold log-files (foo.out) and results (foo.RData).  
-
-- A folder called `MOSAIC_PLOTS` is required to hold the plots created by default by a MOSAIC run.
-
-- A folder called `FREQS` is required to hold the frequencies used to compute $F_{st}$ statistics if required.
+- A folder called `MOSAIC_RESULTS` is required to hold log-files (foo.out) and results (foo.RData). 
+  This folder now also stores the plots created by default by a MOSAIC run as well as a folder called `FREQS` 
+  to hold the frequencies used to compute $F_{st}$ statistics if required.
 
 The above will be created on Linux systems as required if not present. 
 
@@ -99,19 +97,20 @@ set.seed(123)
 
 To run the simulation and output default results and plots, run either:
 ```{bash, eval=F, echo=T}
-Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka" --gens 30
+Rscript mosaic.R simulated extdata/ -c 18:22 -n 3 -p "English Mandenka" --gens 30
 ```
 or equivalently in an interactive *R* session:
 ```{r, eval=T, echo=T}
-mosaic.result=run_mosaic("simulated","../example_data/",chrnos=18:22,A=2,NUMI=3,
-                         pops=c("English","Mandenka"),gens=30)
+fpath=system.file("extdata", package="MOSAIC")
+mosaic.result=run_mosaic("simulated", fpath, chrnos=18:22, A=2, NUMI=3,
+                         pops=c("English","Mandenka"), gens=30)
 ```
 
 Once this has completed, MOSAIC will have done:
 
 * Simulated 2-way admixture using English and Mandenkan chromosomes $30$ generations ago.
 
-* Read in these simulated chromosomes, along with all available reference panels in the `example_data` folder.
+* Read in these simulated chromosomes, along with all available reference panels in the `extdata` folder.
 
 * Inferred the model parameters $(\mu, \theta, \Pi, \rho)$ via EM.
 
@@ -121,7 +120,7 @@ Once this has completed, MOSAIC will have done:
 
 * Estimated $F_{st}$ between each ancestral group and each ancestral group and each reference panel and $R_{st}$ (see paper). 
 
-* Saved key plots to `MOSAIC_PLOTS` as PDFs.
+* Saved key plots to `MOSAIC_RESULTS` as PDFs.
 
 * Saved all results to `MOSAIC_RESULTS`.
 
@@ -142,9 +141,9 @@ to attach the results for further use while in the same session (or after quitti
 After loading (or attaching) the results in *R*,  
 each of the plots can be created within *R* by running:
 ```{r, eval=F, echo=T}
-plot_all_mosaic(pathout="MOSAIC_PLOTS/",target)
+plot_all_mosaic(pathout="MOSAIC_RESULTS/",target)
 ```
-to output default plots to the folder `MOSAIC_PLOTS/`. 
+to output default plots to the folder `MOSAIC_RESULTS/`. 
 Note that this is already run automatically by default within ``run_mosaic()``
 
 ### Or you can generate each plot individually:
@@ -258,13 +257,15 @@ which calculates $r^2$ across all target individuals and all chromosomes analyse
 The above calculations and plots show local ancestry along evenly spaced gridpoints on recombination distances. You can get 
 local ancestry estimates at the SNP positions using:
 ```{r}
-local_pos=grid_to_pos(localanc,"../example_data/",g.loc,chrnos)
+fpath=system.file("extdata", package="MOSAIC")
+local_pos=grid_to_pos(localanc, fpath, g.loc, chrnos)
 ```
 where the SNP positions you'd like to map back are read from the relevant `snpfile`s to and this is for the first chromosome for which local ancestry has been estimated.
 Naturally, local ancestry estimation accuracy will be slightly different at the SNP positions (typically higher as these are where we have genotype information)
 
 ```{r}
-true_anc_pos=grid_to_pos(g.true_anc,"../example_data/",g.loc,chrnos)
+fpath=system.file("extdata", package="MOSAIC")
+true_anc_pos=grid_to_pos(g.true_anc, fpath, g.loc, chrnos)
 dip_fr2(local_pos,true_anc_pos)
 ```
 
@@ -276,19 +277,20 @@ These could for example be final estimates from a previous MOSAIC run. You can e
 run_mosaic() in R:
 ```{r, eval=F, echo=T}
 # run MOSAIC on chromosomes 18 to 21 only to estimate parameters
-mosaic.result=run_mosaic("Moroccan","example_data/",18:21,A=2,NUMI=4) 
+fpath=system.file("extdata", package="MOSAIC")
+mosaic.result=run_mosaic("Moroccan", fpath, 18:21,A=2,NUMI=4) 
 load("MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_0.99_100.RData") # load the results. 
 # Note that you could also use attach(mosaic.result) for this, if still in the same R session 
 # or read parameters from the log file using paras=extract_paras(extract_log(EMlogfile)) 
 # then run MOSAIC on chromosome 22 using the parameter estimates from the previous run 
-mosaic.result22=run_mosaic("Moroccan","example_data/",22,A=2,NUMI=4,EM=F, # don't update via EM here
+mosaic.result22=run_mosaic("Moroccan", fpath, 22, A=2, NUMI=4, EM=F, # don't update via EM here
 			   init.PI=PI,init.rho=rho,init.Mu=Mu,init.theta=theta) 
 ```
 
 On the command line the parameters can be provided as strings containing values separated by spaces. 
 For example:
 ```{bash, eval=F, echo=T}
-Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09"  
+Rscript mosaic.R Moroccan extdata/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09"  
 ```
 Or (more usefully) you can extract values from the log file of a previous run and use that directly:
 ```{bash, eval=F, echo=T}
@@ -301,13 +303,14 @@ rho_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\
 rho=`eval Rscript -e $rho_command | cut -d " " -f 1-`
 theta_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$theta\)\)'
 theta=`eval Rscript -e $theta_command | cut -d " " -f 1-`
-Rscript mosaic.R Moroccan example_data/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" 
+Rscript mosaic.R Moroccan extdata/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" 
   --init.Mu "$Mu" --init.rho "$rho" --init.theta "$theta"
 ```
 
-* MOSAIC will use any additional groups found in the data folder as donor panels but these can also be specified manually as follows:
+* MOSAIC will use any additional groups found in the extdata folder as donor panels but these can also be specified manually as follows:
 ```{r, eval=FALSE, echo=T}
-mosaic.result=run_mosaic("simulated","../example_data/",18:22,A=2,NUMI=3,
+fpath=system.file("extdata", package="MOSAIC")
+mosaic.result=run_mosaic("simulated", fpath, 18:22, A=2, NUMI=3,
 			 pops=c("English","Mandenka", "French", "Yoruba"))
 ```
 so that only `French` and `Yoruba` are used here. When the first argument (the target) is `simulated` then the first
@@ -316,7 +319,7 @@ for inference) but when the target is not `simulated` then all specified `pops` 
 
 * To create a version of the copying matrix $\mu$ plot that uses bar colour densities rather than bar lengths 
 to represent copying proportions, use:
-````{r, eval=FALSE, echo=T}
+```{r, eval=FALSE, echo=T}
 ord.Mu=plot_Mu(Mu,alpha,NL,showgradient=TRUE)
 ```
 

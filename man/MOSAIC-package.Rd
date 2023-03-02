@@ -36,6 +36,13 @@ Maintainer: michael.salter-townshend@ucd.ie <michael.salter-townshend@ucd.ie>
 }
 \keyword{admixture, local ancestry, population genetics, Hidden Markov Model}
 \examples{
-  \dontrun{mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)} # real data example
-  \dontrun{mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))} # simulated example
+  \donttest{ # real data example
+    fpath=system.file("extdata", package="MOSAIC")
+    mosaic.result=run_mosaic("Moroccan", fpath, chrnos=18:22, A=2, NUMI=2)
+    }
+  \donttest{ # simulated example
+    fpath=system.file("extdata", package="MOSAIC")
+    mosaic.result=run_mosaic("simulated", fpath, chrnos=18:22, A=2, NUMI=2, 
+			     pops=c("English","Mandenka"))
+    }
 }

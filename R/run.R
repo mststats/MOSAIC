@@ -1,8 +1,7 @@
 run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRUE,doFst=TRUE,PHASE=TRUE,gens=NULL,ratios=NULL,EM=TRUE, 
 		    ffpath=tempdir(),MC=0,return.res=TRUE,REPS=0,GpcM=60,nl=1000,max.donors=100,prop.don=0.99,
 		    doMu=TRUE,doPI=TRUE,dorho=TRUE,dotheta=TRUE,firstind=1,verbose=TRUE,Ne=9e4,MODE="DIP",singlePI=FALSE, 
-		    init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, commontheta=TRUE) {
-  ffpath=paste0(ffpath,"/") # ensure this is a folder
+		    init.rho=NULL, init.theta=NULL, init.Mu=NULL, init.PI=NULL, commonrho=TRUE, commontheta=TRUE, resultsdir="MOSAIC_RESULTS") {
   if (!dir.exists(ffpath))
     stop(paste("Requested location ", ffpath, " for fast-file storage not found\n"))
   nchrno=length(chrnos) # number of chromosomes for these target haplotypes
@@ -31,7 +30,7 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
   }
   setup=setup_data_etc(NUMI,target,chrnos,pops,A,datasource,EM,gens,ratios,MC,prop.don=prop.don,max.donors=max.donors,
 		       firstind=firstind,REPS=REPS,GpcM=GpcM,nl=nl,mask=mask,PHASE=PHASE,Ne=Ne,singlePI=singlePI, 
-		       init.rho=init.rho, init.theta=init.theta, init.PI=init.PI, commonrho=commonrho, commontheta=commontheta) 
+		       init.rho=init.rho, init.theta=init.theta, init.PI=init.PI, commonrho=commonrho, commontheta=commontheta, resultsdir=resultsdir) 
   resultsdir=setup$resultsdir;PHASE=setup$PHASE;HPC=setup$HPC;GpcM=setup$GpcM;LOG=setup$LOG
   mcmcprog=setup$mcmcprog;absorbrho=setup$absorbrho;commonrho=setup$commonrho;commontheta=setup$commontheta;prethin=setup$prethin
   s.M=setup$s.M;M=setup$M;PI.total=setup$PI.total;s.total=setup$s.total;REPS=setup$REPS
@@ -195,28 +194,28 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     g.true_anc=tmp$g.true_anc
 
   if (target!="simulated")
-    save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
-		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, final.flips, g.loc)
+    save(file=file.path(resultsdir,paste0("localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData")), localanc, final.flips, g.loc)
   if (target=="simulated")
-    save(file=paste0(resultsdir,"localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
-		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData"), localanc, g.true_anc, final.flips, g.loc)
+    save(file=file.path(resultsdir,paste0("localanc_",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),
+		     "_",NN,"_",GpcM,"_",prop.don,"_",max.donors,".RData")), localanc, g.true_anc, final.flips, g.loc)
   if (verbose) cat("calculating ancestry aware re-phased coancestry curves\n"); acoancs=create_coancs(localanc,dr,MODE);
   all_Fst=NULL
   if (doFst) {
     if (verbose) cat("calculating Fst values\n")
     flocalanc=phase_localanc(localanc,final.flips) 
     if (target=="simulated")
-      write_admixed_summary(target,NL,targetdatasource=resultsdir,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
+      write_admixed_summary(target,NL,pathout=file.path(resultsdir,"FREQS"),targetdatasource=resultsdir,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
     if (target!="simulated")
-      write_admixed_summary(target,NL,targetdatasource=datasource,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
-    write_panel_summaries(panels=rownames(Mu),datasource=datasource,,chrnos=chrnos)
-    all_Fst=Fst_combos(target, A, sum(NL), rownames(Mu))
+      write_admixed_summary(target,NL,pathout=file.path(resultsdir,"FREQS"),targetdatasource=datasource,datasource=datasource,g.loc=g.loc,t.localanc=flocalanc,chrnos=chrnos)
+    write_panel_summaries(pathout=file.path(resultsdir,"FREQS"), panels=rownames(Mu), datasource=datasource,chrnos=chrnos)
+    all_Fst=Fst_combos(target, A, sum(NL), rownames(Mu), pathin=file.path(resultsdir, "FREQS"))
   }
 
 
   if (verbose) cat("saving final results to file\n")
-  save(file=paste0(resultsdir,"",target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
-		   GpcM,"_",prop.don,"_",max.donors,".RData"), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
+  save(file=file.path(resultsdir,paste0(target,"_", A, "way_", firstind, "-", firstind+NUMI-1, "_", paste(chrnos[c(1,nchrno)],collapse="-"),"_",NN,"_",
+		   GpcM,"_",prop.don,"_",max.donors,".RData")), target, logfile, #o.Mu, o.lambda, o.theta, o.alpha, o.PI, o.rho, 
        Mu, lambda, theta, alpha, PI, rho, A, NUMA, nchrno, chrnos, dr, NL, kLL, acoancs, all_Fst, GpcM)
 
   cat("Expected r-squared (genomewide):", dip_expected_fr2(localanc),"\n")
@@ -237,12 +236,12 @@ run_mosaic=function(target,datasource,chrnos,A,NUMI,pops=NULL,mask=NULL,PLOT=TRU
     }
   }
   if (PLOT) {
-    if (verbose) cat("saving plots to MOSAIC_PLOTS/ folder\n")
+    if (verbose) cat("saving plots to ", resultsdir, "folder\n")
     if (target!="simulated")
-      plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+      plot_all_mosaic(resultsdir,target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
 		      t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile,localanc, g.loc)
     if (target=="simulated")
-      plot_all_mosaic("MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+      plot_all_mosaic(resultsdir,target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
 		      t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile,localanc,g.loc,g.true_anc)
   }
 

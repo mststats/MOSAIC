@@ -16,32 +16,32 @@ hapsfile=paste0(argv$haps_stem,chrno,argv$haps_end)
 inds.data=argv$samples 
 pathout=argv$pathout 
 
-shapeithaps=read.table(paste0(pathin,hapsfile))
+shapeithaps=read.table(file.path(pathin,hapsfile))
 S=nrow(shapeithaps)
 NN=ncol(shapeithaps)
 locs=shapeithaps[,3]
 rsids=shapeithaps[,2]
 
 # now read in population information
-allpops=read.table(paste0(pathin,inds.data),header=FALSE)
+allpops=read.table(file.path(pathin,inds.data),header=FALSE)
 # now reduce to parts we need
 pops=as.character(unique(allpops[,1]))
 keep=rep(TRUE,nrow(allpops)); # remove none to start
 keep=which(keep)
 allpops=allpops[keep,]
-write.table(allpops[,c(1,2,3)],file=paste0(pathout,"sample.names"),row.names=FALSE,col.names=FALSE,quote=FALSE)
+write.table(allpops[,c(1,2,3)],file=file.path(pathout,"sample.names"),row.names=FALSE,col.names=FALSE,quote=FALSE)
 hap.pops=rep(allpops[,1],each=2)
 
 # create list to store populations
 for (i in 1:length(pops)) {
  y=shapeithaps[,5+which(hap.pops==pops[i])]
- write.table(y,file=paste0(pathout,pops[i],"genofile.",chrno),sep="",col.names=FALSE,row.names=FALSE)
+ write.table(y,file=file.path(pathout,paste0(pops[i],"genofile.",chrno)),sep="",col.names=FALSE,row.names=FALSE)
 }
 # create matrix of snps for which we have haplotypes
 snps=matrix(NaN, S, 6) # same size as hapmix files, most will be left blank here
 snps[,1]=as.character(rsids)
 snps[,2]=chrno
 snps[,4]=locs
-write.table(snps, file=paste0(pathout,"snpfile.", chrno),quote=FALSE,col.names=FALSE,row.names=FALSE) 
+write.table(snps, file=file.path(pathout,paste0("snpfile.", chrno)),quote=FALSE,col.names=FALSE,row.names=FALSE) 
 
 

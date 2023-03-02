@@ -1,7 +1,7 @@
 # function that reads in the data and lays on a grid along recombination rates map
 read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.FLAT, dr, t.o.lambda, t.resultsdir, mask=NULL, S=rep(NaN,t.nchrno),
 		     firstind=1, ratios=NULL) {
-  panels<-read.table(paste(datasource,"sample.names",sep=""), header=FALSE);panels<-as.character(unique(panels[,1]))
+  panels<-read.table(file.path(datasource,"sample.names"), header=FALSE);panels<-as.character(unique(panels[,1]))
   gobs=g.loc=list()
   maxmatch=maxmiss=0
   t.NUMA=2*t.NUMI
@@ -47,7 +47,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     multipanels<-list() # shouldn't read all of these in at once!
     for (i in 1:length(panels))
     {
-      tmpfilename<-paste0(datasource,panels[i],"genofile.",t.chrnos[ch])
+      tmpfilename<-file.path(datasource,paste0(panels[i],"genofile.",t.chrnos[ch]))
       tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
       N2<-nchar(tmp)
       multipanels[[i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
@@ -55,7 +55,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     if (t.target=="simulated")
       for (i in 1:t.A)
       {
-	tmpfilename<-paste0(datasource,mixers[i],"genofile.",t.chrnos[ch])
+	tmpfilename<-file.path(datasource,paste0(mixers[i],"genofile.",t.chrnos[ch]))
         tmp<-scan(tmpfilename,what="character",quiet=TRUE,nlines=1)
         N2<-nchar(tmp)
 	multipanels[[kLL+i]]<-laf_open_fwf(tmpfilename, column_widths=rep(1,N2),column_types=rep("character",N2))
@@ -67,7 +67,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
       }
     if (t.target!="simulated") names(multipanels)<-panels
     if (t.target=="simulated") names(multipanels)<-c(panels,mixers)
-    snps<-read.table(paste0(datasource,"snpfile.",t.chrnos[ch])) 
+    snps<-read.table(file.path(datasource,paste0("snpfile.",t.chrnos[ch])))
     #### inputs #################################
     if (is.nan(S[ch])) S[ch]<-nrow(snps)
     if (S[ch]<nrow(snps))
@@ -106,8 +106,7 @@ read_panels=function(datasource, t.target, t.chrnos, t.NUMI, t.A, pops, t.nl, t.
     NUMP<-sum(KNOWN) # i.e. number in panels
     t.NUMA<-sum(!KNOWN) #i.e. number of targets / admixed
     t.NUMI=max(1,t.NUMA/2)
-    # FLAG doesn't work apparently
-    all_rates<-matrix(scan(paste0(datasource,"rates.",t.chrnos[ch]),skip=1,quiet=TRUE),ncol=2)
+    all_rates<-matrix(scan(file.path(datasource,paste0("rates.",t.chrnos[ch])),skip=1,quiet=TRUE),ncol=2)
     locs<-as.integer(snps[,4])
     if (all_rates[1,1]>locs[1]) {
       all_rates=rbind(c(locs[1],0),all_rates)

@@ -14,7 +14,7 @@ flip.ll<-function(g, t.ch, t.A, ndonorsg, t.NUMP, NNL2, t.G, t.scalefactor, t.sc
   ans
 }
 
-all.flip.ll<-function(g, t.ch, t.A, ndonorsg, t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
+doall.flip.ll<-function(g, t.ch, t.A, ndonorsg, t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
 {
   tmpvec=1:(ndonorsg*t.A)
   ans=0
@@ -34,7 +34,7 @@ r.create.proposal<-function(t.ch,t.G,t.A,t.NUMP,t.max.donors,t.fors,t.sumfors,t.
   NNL2=t.max.donors*t.A
   cumsum.log.fors=list(-cumsum(log(t.scalefactor[[1]])),-cumsum(log(t.scalefactor[[2]])))
   rev.cumsum.log.backs=list(-cumsum(log(rev(t.scalefactorb[[1]]))),-cumsum(log(rev(t.scalefactorb[[2]]))))
-  g.flip.ll<-function(g) all.flip.ll(g, t.ch, t.A, t.ndonors[g], t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
+  g.flip.ll<-function(g) doall.flip.ll(g, t.ch, t.A, t.ndonors[g], t.NUMP, NNL2, t.G, cumsum.log.fors, rev.cumsum.log.backs, t.fors, t.backs)
   ll=c(ind.c.ll,vapply(2:t.G[t.ch], g.flip.ll,0))
   ll=ll-ind.c.ll
   ll[is.nan(ll)|is.infinite(ll)]=-1 # can happen if no path through

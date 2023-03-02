@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 # script to run all code required to fit MOSAIC. Reads in data, initialises, performs thin->phase->EM cycles and outputs results.
-# real example: Rscript mosaic.R Moroccan example_data/ -a 2 -n 4 -c 18:22
-# simulated example: Rscript mosaic.R simulated example_data/ -a 2 -n 4 -c 18:22 -p "English Mandenka"
+# real example: Rscript mosaic.R Moroccan extdata/ -a 2 -n 4 -c 18:22
+# simulated example: Rscript mosaic.R simulated extdata/ -a 2 -n 4 -c 18:22 -p "English Mandenka"
 
 require(MOSAIC)
 require(argparser, quiet=TRUE) 

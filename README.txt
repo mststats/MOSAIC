@@ -1,10 +1,10 @@
 ######  OVERVIEW   ###############################################################################################
 MOSAIC is designed to run on the linux command line or within R. 
 You can install MOSAIC by running the command
-> R CMD INSTALL -l rlib MOSAIC_1.4.tar.gz
+> R CMD INSTALL -l rlib MOSAIC_1.5.0.tar.gz
 where rlib is the location where you'd like to install the R package (e.g. /usr/lib/R/site-library/)
 or use 
-> install.packages("MOSAIC_1.4.tar.gz")
+> install.packages("MOSAIC_1.5.0.tar.gz")
 within R
 
 This is once-off and compiles all C++ code for the Hidden Markov Models underlying MOSAIC. 
@@ -36,8 +36,8 @@ There should be a folder with 4 types of input file:
 
 #######  PLOTS   #################################################################################################
 In R, after loading the results (including localanc_foo file) of a MOSAIC run (stored in MOSAIC_RESULTS by default) use:
-> plot_all_mosaic(pathout="MOSAIC_PLOTS/",target) # note that this is already run automatically by default in run_mosaic
-to output default plots to the folder "MOSAIC_PLOTS/"
+> plot_all_mosaic(pathout="MOSAIC_RESULTS/",target) # note that this is already run automatically by default in run_mosaic
+to output default plots to the folder "MOSAIC_RESULTS/"
 You can also individually use:
 (1) > ord.Mu=plot_Mu(Mu,alpha,NL) # to look at the copying matrix 
 (2) > plot_coanccurves(acoancs,dr) # plot some co-ancestry curves that are used to infer event timings
@@ -52,22 +52,25 @@ can convert to local ancestry at your SNP positions on the first chromosome you 
 
 
 #######  EXAMPLES  ###############################################################################################
-The "example_data" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
-$ Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 18:22
-or in an interactive R session:
-> mosaic.result=run_mosaic("Moroccan","example_data/",18:22,2,2)
+The "extdata" folder contains example data for chromosomes 18 to 22 and a real-data example run of mosaic can be done using:
+$ Rscript mosaic.R Moroccan extdata/ -a 2 -n 2 -c 18:22
+Note that the extdata folder is in MOSAIC/inst/ in the source code but at installation-library/MOSAIC/ after installation of MOSAIC
+where installation-library is the location on your system where you have installed MOSAIC. 
+Alternatively, in an interactive R session you can use:
+> fpath=system.file("extdata", package="MOSAIC")
+> mosaic.result=run_mosaic("Moroccan", fpath, 18:22, 2, 2)
 
 User defined simulations can also be provided by specifying a vector of populations:
-$ Rscript mosaic.R simulated example_data/ -c 18:22 -n 3 -p "English Mandenka"
+$ Rscript mosaic.R simulated extdata/ -c 18:22 -n 3 -p "English Mandenka"
 or equivalently in an interactive R session:
-> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka"))
+> fpath=system.file("extdata", package="MOSAIC")
+> mosaic.result=run_mosaic("simulated", fpath, 18:22, 2, 2, c("English","Mandenka"))
 Note that additional groups will be used as the donor panels but can also be specified manually as follows:
-> mosaic.result=run_mosaic("simulated","example_data/",18:22,2,2,c("English","Mandenka", "French", "Yoruba"))
+> mosaic.result=run_mosaic("simulated", fpath, 18:22, 2, 2, c("English","Mandenka", "French", "Yoruba"))
 
 ##### OUTPUTS ####################################################################################################
-A folder called MOSAIC_RESULTS is required to hold log-files (foo.out) and results (foo.RData).  
-A folder called MOSAIC_PLOTS is required to hold the plots created by default by a MOSAIC run.
-A folder called FREQS is required to hold the frequencies used to compute Fst statistics if required.
+A folder called MOSAIC_RESULTS storing log-files (foo.out) and results (foo.RData).  This also stores the PDF plots created by MOSAIC. 
+A folder called FREQS within the results folder containing the frequencies used to compute Fst statistics if required.
 ##################################################################################################################
 
 The main work is multiple rounds of EM->phase->thin where:
@@ -96,15 +99,17 @@ to run_mosaic() within R.
 Specific starting values for the 4 sets of parameters can be set using init.PI, init.rho, init.Mu, and init.theta. 
 These could for example be final estimates from a previous MOSAIC run. You can either supply these as arguments to
 run_mosaic() in R:
-> mosaic.result=run_mosaic("Moroccan","example_data/",18:21,A=2,NUMI=4) # run MOSAIC on chromosomes 18 to 21 only to estimate parameters
+> fpath=system.file("extdata", package="MOSAIC")
+> mosaic.result=run_mosaic("Moroccan", fpath, 18:21,A=2,NUMI=4) # run MOSAIC on chromosomes 18 to 21 only to estimate parameters
 > load("MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_0.99_100.RData") # load the results. 
 # Note that you could also use attach(mosaic.result) for this, if still in the same R session 
 # or read parameters from the log file using paras=extract_paras(extract_log(EMlogfile)) 
-> mosaic.result22=run_mosaic("Moroccan","example_data/",22,A=2,NUMI=4,EM=F,init.PI=PI,init.rho=rho,init.Mu=Mu,init.theta=theta) 
+> fpath=system.file("extdata", package="MOSAIC")
+> mosaic.result22=run_mosaic("Moroccan", fpath, 22, A=2, NUMI=4, EM=F, init.PI=PI, init.rho=rho,init. Mu=Mu, init.theta=theta) 
 # above line runs MOSAIC on chromosome 22 using the parameter estimates from the previous run as initial values and don't update via EM
 
 On the command line the parameters can be provided as strings containing values separated by spaces. For example:
-$ Rscript mosaic.R Moroccan example_data/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09"  -p "English Mandenka"
+$ Rscript mosaic.R Moroccan extdata/ -a 2 -n 2 -c 22:22 --init.rho "0.09 0.09"  -p "English Mandenka"
 or (more usefully) you can extract values from the log file of a previous run and use that directly:
 $ logfile=MOSAIC_RESULTS/Moroccan_2way_1-4_18-21_162_60_2021_07_14_10:29:37_EMlog.out # replace with the log file generated by your MOSAIC run above
 $ PI_command='cat\(unlist\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$PI\)\)'
@@ -115,7 +120,7 @@ $ rho_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\
 $ rho=`eval Rscript -e $rho_command | cut -d " " -f 1-`
 $ theta_command='cat\(c\(MOSAIC::extract_paras\(MOSAIC::extract_log\(\"$logfile\"\)\)\$theta\)\)'
 $ theta=`eval Rscript -e $theta_command | cut -d " " -f 1-`
-$ Rscript mosaic.R Moroccan example_data/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" --init.Mu "$Mu" --init.rho "$rho" --init.theta "$theta"
+$ Rscript mosaic.R Moroccan extdata/ -c 22:22 -a 2 -n 4 --noEM --init.PI "$PI" --init.Mu "$Mu" --init.rho "$rho" --init.theta "$theta"
 
 MOSAIC uses the ff package to store and manipulate "fast files". The default location for these when running in
 an interactive R session is set by a call to tempdir(), whereas when running using Rscript on the command line it uses 

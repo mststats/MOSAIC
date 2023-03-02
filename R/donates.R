@@ -152,11 +152,11 @@ all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
 	  tmp2=create_donates(t.get_switches,ch,ind,t.NUMA,t.umatch[[ch]],t.maxmatchsize[ch],t.maxmatch,t.maxmiss,t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],
 			      t.kLL,ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.min.donors,t.max.donors,t.prop.don,t.NUMP,t.NL,t.label,t.G[ch]) 
 	  ans_ndonors=tmp2$ndonors
-	  ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=TRUE)
+	  ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donates_",ch,"_",ind,".ff")),overwrite=TRUE)
 	  close(ans_donates)
-	  ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=TRUE)
+	  ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donatesl_",ch,"_",ind,".ff")),overwrite=TRUE)
 	  close(ans_donatesl)
-	  ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=TRUE)
+	  ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donatesr_",ch,"_",ind,".ff")),overwrite=TRUE)
 	  close(ans_donatesr)
 	  ans_switches=list()
 	  if (t.get_switches)
@@ -228,11 +228,11 @@ all_donates=function(target, t.A, t.NUMI, t.Mu, t.alpha, t.kLL, t.PI, t.rho, t.l
       tmp2=create_donates(t.get_switches,ch,ind,t.NUMA,t.umatch[[ch]],t.maxmatchsize[ch],t.maxmatch,t.maxmiss,t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],t.flips[[ind]][[ch]],t.kLL,
 			  ind.Mu[[ind]],ind.rho[[ind]],ind.theta[[ind]],t.HPC,prethin=prethin,t.min.donors,t.max.donors,t.prop.don,t.NUMP,t.NL,t.label,t.G[ch])
       ans_ndonors=tmp2$ndonors
-      ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donates_",ch,"_",ind,".ff"),overwrite=TRUE)
+      ans_donates=ff(tmp2$donates,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donates_",ch,"_",ind,".ff")),overwrite=TRUE)
       close(ans_donates)
-      ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesl_",ch,"_",ind,".ff"),overwrite=TRUE)
+      ans_donatesl=ff(tmp2$donatesl,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donatesl_",ch,"_",ind,".ff")),overwrite=TRUE)
       close(ans_donatesl)
-      ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=paste0(ffpath,target,"_donatesr_",ch,"_",ind,".ff"),overwrite=TRUE)
+      ans_donatesr=ff(tmp2$donatesr,vmode="integer",dim=c(t.max.donors,NvecsG),filename=file.path(ffpath,paste0(target,"_donatesr_",ch,"_",ind,".ff")),overwrite=TRUE)
       close(ans_donatesr)
       ans_switches=list()
       if (t.get_switches)

@@ -403,19 +403,19 @@ plot_mean_localanc=function(ch, chrnos, g.loc, localanc, whichhaps=1:dim(localan
 }
 
 # function to plot most useful figures to PDF. Note defaults are 
-plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
+plot_all_mosaic=function(pathout,target,EM,PHASE,t.GpcM=GpcM,t.all_Fst=all_Fst,t.A=A,t.NUMA=NUMA,
 			 t.Mu=Mu,t.chrnos=chrnos,t.alpha=alpha,t.NL=NL,t.acoancs=acoancs,t.dr=dr,t.logfile=logfile, 
 			 t.localanc, t.g.loc=g.loc, g.true_anc=NULL){
-  if (!file.exists(pathout))
-    dir.create(file.path(getwd(), pathout))
+  if (!dir.exists(pathout))
+    dir.create(file.path(pathout))
   nchrno=length(t.chrnos)
   targetdetails=paste0(target, "_", t.A, "way_", t.NUMA, "_", paste(t.chrnos[c(1,nchrno)],collapse="-"),
 		       "_",sum(t.NL),"_",t.GpcM)
-  pdf(file=paste0(pathout,targetdetails,"_Mu.pdf"), width=12, height=7)
+  pdf(file=file.path(pathout,paste0(targetdetails,"_Mu.pdf")), width=12, height=7)
   ord.Mu=plot_Mu(t.Mu,t.alpha,t.NL,cexa=1.5,beside=TRUE,shiftl=5,shiftt=2,cutoff=0,ord=TRUE)
   dev.off()
 
-  pdf(file=paste0(pathout,targetdetails,"_karyograms.pdf"), width=12, height=12)
+  pdf(file=file.path(pathout,paste0(targetdetails,"_karyograms.pdf")), width=12, height=12)
   for (ind in 1:(t.NUMA/2)) 
     karyogram(t.A, t.chrnos, t.localanc, t.g.loc, t.GpcM, ind, dist="genetic", g.true_anc=g.true_anc) # one per PDF page
   dev.off()
@@ -423,7 +423,7 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   # note that it takes a while to calculate frequencies, etc
   if (!is.null(t.all_Fst))
     if (all(!is.nan(t.all_Fst$panels))) {
-      pdf(file=paste0(pathout,targetdetails,"_Fst.pdf"), width=21, height=28)
+      pdf(file=file.path(pathout,paste0(targetdetails,"_Fst.pdf")), width=21, height=28)
       ord.Fst=plot_Fst(t.all_Fst$panels,cexa=2,ord=TRUE, shiftl=6, cutoff=10)
       dev.off()
     }
@@ -431,12 +431,12 @@ plot_all_mosaic=function(pathout="MOSAIC_PLOTS/",target,EM,PHASE,t.GpcM=GpcM,t.a
   # dimensions of plots
   d1=switch(t.A,NaN,1,2,2,3,3) 
   d2=switch(t.A,NaN,3,3,5,5,7) 
-  pdf(file=paste0(pathout,targetdetails,"_acoanc.pdf"), width=5*d2,height=5*d1)
+  pdf(file=file.path(pathout,paste0(targetdetails,"_acoanc.pdf")), width=5*d2,height=5*d1)
   this_acoplots=plot_coanccurves(t.acoancs,t.dr,lwd=4,cexa=2,verbose=FALSE,axisall=FALSE,samedates=FALSE,asym=FALSE)
   dev.off()
   if (EM | PHASE) {
     EMlog=extract_log(t.logfile)
-    pdf(file=paste0(pathout,targetdetails,"_EMlog.pdf"), width=14,height=14)
+    pdf(file=file.path(pathout,paste0(targetdetails,"_EMlog.pdf")), width=14,height=14)
     plot_loglike(EMlog)
     dev.off()
   }
@@ -501,7 +501,7 @@ plot_admix_map=function(sources, geolocs, cexa=1, byFst=TRUE) {
 }
 
 # function to plot local ancestry karyogram for one individual based on estimated local ancestry 
-karyogram=function(t.A, chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=2, m.lab=paste("individual", ind), g.true_anc=NULL) {
+karyogram=function(t.A, chrnos, localanc, g.loc, GpcM, ind, dist="genetic", cexa=1.5, m.lab=paste("individual", ind), g.true_anc=NULL) {
   colvec=c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#D55E00", "#F0E442", "#0072B2", "#999999")
   hap=c(ind*2-1,ind*2)
   if (is.null(g.true_anc))
