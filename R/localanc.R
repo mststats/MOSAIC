@@ -62,7 +62,7 @@ get_localanc=function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.d
 	cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
 		   t.mutmat,t.maxmiss,t.initProb[k,],t.label,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.flips[[ind]][[ch]],t.fors,t.sumfors,t.scalefactor)
 	t.backs<-rep(0,t.G[ch]*t.max.donors*t.A);t.scalefactorb<-rep(0,t.G[ch]);
-	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.w[[ch]],t.gobs[[ch]][[ind]],
+	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
 		    t.mutmat,t.maxmiss,t.label,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesr[[ch]][[ind]],t.flips[[ind]][[ch]],t.backs,t.scalefactorb)
 	tmp2=cppgforback(t.max.donors,THIN,t.kLL,t.NUMP,t.label,t.A,t.G[ch],t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.fors,t.backs)
 	ans=matrix(0,t.A,t.G[ch])

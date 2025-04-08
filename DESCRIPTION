@@ -1,8 +1,8 @@
 Package: MOSAIC
 Type: Package
 Title: MOSAIC Organises Segments of Ancestry In Chromosomes
-Version: 1.5.0
-Date: 2023-02-23
+Version: 1.5.1
+Date: 2024-06-11
 Author: Michael Salter-Townshend
 Maintainer: Michael Salter-Townshend <michael.salter-townshend@ucd.ie>
 Description: MOSAIC is a package for inferring ancestry segments and characterizing admixture events from dense genotype data. 

@@ -16,6 +16,7 @@ get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.dona
 		   t.mutmat, t.maxmiss, t.initProb, t.label, t.ndonors, t.flips, t.HPC)
 {
   ans<-list()
+  k=NULL # palceholder
   THIN=ifelse(t.max.donors==t.NUMP, FALSE, TRUE)
   t.NUMI=t.NUMA/2
   for (ch in 1:t.nchrno)
@@ -68,7 +69,7 @@ get_gfbs<-function(t.NUMP, t.nchrno, t.max.donors, t.donates, t.donatesl, t.dona
 	cppforward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.kLL,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
 		   t.mutmat,t.maxmiss,t.initProb[k,],t.label,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesl[[ch]][[ind]],t.flips[[ind]][[ch]],t.fors,t.sumfors,t.scalefactor)
 	t.backs<-rep(0,t.G[ch]*t.max.donors*t.A);t.scalefactorb<-rep(0,t.G[ch]);
-	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.w[[ch]],t.gobs[[ch]][[ind]],
+	cppbackward(k,t.NUMA,t.max.donors,THIN,t.NUMP,t.A,0,t.G[ch],t.G[ch],t.transitions[[ind]],t.umatch[[ch]],t.maxmatchsize[ch],t.d.w[[ch]],t.t.w[[ch]],t.gobs[[ch]][[ind]],
 		    t.mutmat,t.maxmiss,t.label,t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.donatesr[[ch]][[ind]],t.flips[[ind]][[ch]],t.backs,t.scalefactorb)
 	cppgforback(t.max.donors,THIN,t.kLL,t.NUMP,t.label,t.A,t.G[ch],t.ndonors[[ch]][[ind]],t.donates[[ch]][[ind]],t.fors,t.backs)
       }

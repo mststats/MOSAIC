@@ -416,6 +416,7 @@ bootstrap_chromosomes_coanc_curves=function(coancs,gap,localanc,alpha,nsamps=100
 {
   NUMA=dim(localanc[[1]])[2]
   NUMI=NUMA/2
+  A=dim(localanc[[1]])[1]
   nchrno=length(localanc)
   kgens=rep(NaN,NUMI)
   for (k in 1:NUMI) if (min(alpha[[k]])>thresh) kgens[k]=mean(plot_coanccurves(coancs,gap,k=k,PLOT=FALSE,samedates=samedates,asym=asym,min.cM=min.cM)$params[,,3],na.rm=TRUE)

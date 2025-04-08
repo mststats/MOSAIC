@@ -118,6 +118,7 @@ R_Fst=function(x)
 
 # function to calculate Fst between all pairs of latent ancestries and between each latent ancestry and each donor panel
 Fst_combos=function(target, A, NN, panels, pathin="MOSAIC_RESULTS/FREQS") {
+  pdata=ancestral_freqs=NULL # placeholder, overwritten by next line
   load(file=file.path(pathin, paste0(target, "_", A, "way_", NN, "_freqs.rdata"))) # use pre-calculated freq / count pairs from running write_admixed_summary
   anc_fst=rep(NaN,choose(A,2))
   Ls=utils::combn(A,2)

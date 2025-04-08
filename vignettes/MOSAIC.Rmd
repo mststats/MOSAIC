@@ -183,6 +183,27 @@ fitcc=plot_coanccurves(acoancs,dr)
 
 Inferred Coancestry Curves. `dr` is the gap in genetic distance between successive gridpoints. These coancestry curves are somewhat rough at longer distances as we have only used short chromosomes in the analysis. The black lines are empirical coancestry curves across all target individuals, the light grey are per individual, and the green is the fitted single-event coancestry curve.
 \
+-----------
+
+You can use inbuilt bootstrapping functions to estimate the uncertainty around the dates. The bootstrapping can be done over individuals (fast):
+```{r, fig.height=4.2, message=FALSE}
+bi.fit.cc=bootstrap_individuals_coanc_curves(acoancs, dr, alpha) 
+hist(unlist(bi.fit.cc$boot.gens), xlab="generations",main="bootstrap individuals") 
+```  
+
+A bimodal distribution can occur as some individuals may have fewer ancestry switches than expected. 
+\
+ 
+-----------
+
+Another method is to bootstrap over all chromosomes (mixed across individuals) as this is the real unit of sampling. This is **far** slower as the coancestry curves need to be refitted based on the localanc estimates:
+```{r, fig.height=4.2, message=FALSE}
+bc.fit.cc=bootstrap_chromosomes_coanc_curves(acoancs, dr, localanc, alpha) 
+hist(unlist(bc.fit.cc$boot.gens), xlab="generations",main="bootstrap chromosomes") 
+```  
+
+This is a tighter distribution around the generations value used to simulate the admixed individuals. 
+\
  
 -----------
  

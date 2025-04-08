@@ -80,6 +80,7 @@ f=function(countscol, t.alpha, logMu, t.kLL, t.A)
 }
 loglikeMult<-function(counts, t.alpha, logMu, t.kLL, t.A, t.NUMI)
 {
+  ind=NULL # placeholder
   ans<-foreach(ind=1:t.NUMI) %dopar%  
   {
     hap=c(ind*2-1,ind*2)

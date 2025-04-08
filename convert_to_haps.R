@@ -15,6 +15,7 @@ pathin=argv$pathin
 chrno=argv$chrno 
 hapsfile=paste0(argv$haps_stem,chrno,argv$haps_end)
 inds.data=argv$samples 
+sampsfile=paste0(argv$haps_stem,chrno,inds.data)
 pathout=argv$pathout 
 pops=argv$pops
 if (pops=="NULL") pops=NULL
@@ -22,7 +23,7 @@ if (!is.null(pops)) pops=strsplit(pops," ")[[1]] # split the space separated gro
 snps=read.table(file.path(pathin,paste0("snpfile.",chrno)),as.is=TRUE)
 
 # read in population information; assumption is that this is correct in terms of order and size of inds in each population
-allpops=read.table(file.path(pathin,inds.data),header=FALSE)
+allpops=read.table(file.path(pathin,sampsfile),header=FALSE)
 if (!is.null(pops))
   allpops=allpops[which(!is.na(match(allpops[,1],pops))),] # reduce to specified populations
 pops=unique(allpops[,1])
@@ -41,3 +42,8 @@ for (i in 1:length(pops)) {
   Y[,5+which(hap.pops==pops[i])]=matrix(sapply(tmp, as.double), N2, allS)
 }
 write.table(Y,file=file.path(pathout,hapsfile),sep=" ", quote=FALSE, row.names=FALSE, col.names=FALSE)
+
+# format of .samples file is ID_1, ID_2, missing
+allpops=allpops[,1:3] # only first 3 columns
+allpops=rbind(c("ID_1", "ID_2", "missing"), rep(0,3), allpops)
+write.table(allpops ,file=file.path(pathout,sampsfile),sep=" ", quote=FALSE, row.names=FALSE, col.names=FALSE)
